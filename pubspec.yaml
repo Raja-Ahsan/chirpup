@@ -1,0 +1,68 @@
+name: chirp_up_app
+description: "A new Flutter project."
+publish_to: 'none' 
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  intl: ^0.20.2
+  shared_preferences: ^2.5.5
+  http: ^1.6.0
+  flutter_svg: ^2.3.0
+  pinput: ^6.0.2
+  flutter_launcher_icons: ^0.14.4
+  another_flushbar: ^2.1.0
+  keyboard_actions: ^4.2.1
+  url_launcher: ^6.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/fonts/
+    - assets/png/
+    - assets/svg/
+
+  fonts:
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito-ExtraLight.ttf
+          weight: 200
+
+        - asset: assets/fonts/Nunito-Light.ttf
+          weight: 300
+
+        - asset: assets/fonts/Nunito-Regular.ttf
+          weight: 400
+
+        - asset: assets/fonts/Nunito-Medium.ttf
+          weight: 500
+
+        - asset: assets/fonts/Nunito-SemiBold.ttf
+          weight: 600
+
+        - asset: assets/fonts/Nunito-Bold.ttf
+          weight: 700
+
+        - asset: assets/fonts/Nunito-ExtraBold.ttf
+          weight: 800
+
+        - asset: assets/fonts/Nunito-Black.ttf
+          weight: 900
+
+    - family: LuckiestGuy
+      fonts:
+        - asset: assets/fonts/LuckiestGuy-Regular.ttf
