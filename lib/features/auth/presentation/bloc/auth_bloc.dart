@@ -1,0 +1,52 @@
+import 'package:chirp_up_app/core/utils/show_common_dialog.dart';
+import 'package:chirp_up_app/features/auth/presentation/bloc/auth_events.dart';
+import 'package:chirp_up_app/features/auth/presentation/bloc/auth_states.dart';
+import 'package:chirp_up_app/features/auth/presentation/widgets/error_dialog.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class AuthBloc extends Bloc<AuthEvents, AuthStates> {
+  AuthBloc() : super(AuthStates()) {
+    on<SelectAvatarEvent>(_selectAvatar);
+    on<SelectAgeRangeEvent>(_selectAgeRange);
+    on<CreateYourChildProfileEvent>(_createYourChildProfile);
+  }
+
+  void _selectAvatar(SelectAvatarEvent event, Emitter<AuthStates> emit) {
+    emit(state.copyWith(selectedAvatarIndex: event.index));
+  }
+
+  void _selectAgeRange(SelectAgeRangeEvent event, Emitter<AuthStates> emit) {
+    emit(state.copyWith(selectedAgeRange: event.ageRange));
+  }
+
+  void _createYourChildProfile(
+    CreateYourChildProfileEvent event,
+    Emitter<AuthStates> emit,
+  ) {
+    if (event.childName.trim().isEmpty) {
+      showCommonDialog(
+        context: event.context,
+        child: errorDialog(event.context, "Please enter your\nchild’s name"),
+        barrierDismissible: true,
+        rightPadding: 10,
+        topPadding: 10,
+      );
+      return;
+    }
+
+    if (state.selectedAgeRange.isEmpty) {
+      showCommonDialog(
+        context: event.context,
+        child: errorDialog(
+          event.context,
+          "Please select your\nchild’s age range",
+        ),
+        barrierDismissible: true,
+        rightPadding: 10,
+        topPadding: 10,
+      );
+      return;
+    }
+    print('Proceed Next');
+  }
+}

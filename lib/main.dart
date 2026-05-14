@@ -2,16 +2,16 @@ import 'package:chirp_up_app/core/constants/app_colors.dart';
 import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/routes/route_generator.dart';
 import 'package:chirp_up_app/core/services/storage_service.dart';
+import 'package:chirp_up_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await StorageService.init();
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -28,24 +28,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ChirpUp',
-      debugShowCheckedModeBanner: false,
+    return MultiBlocProvider(
+      providers: [BlocProvider<AuthBloc>(create: (_) => AuthBloc())],
+      child: MaterialApp(
+        title: 'ChirpUp',
+        debugShowCheckedModeBanner: false,
 
-      initialRoute: AppRoutes.splash,
-      onGenerateRoute: RouteGenerator.generate,
+        initialRoute: AppRoutes.splash,
+        onGenerateRoute: RouteGenerator.generate,
 
-      theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: AppColors.whiteColor,
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        appBarTheme:  AppBarTheme(
-          backgroundColor: AppColors.whiteColor,
-          elevation: 0,
-          centerTitle: true,
-          surfaceTintColor: Colors.transparent,
-          scrolledUnderElevation: 0,
+        theme: ThemeData(
+          useMaterial3: true,
+          scaffoldBackgroundColor: AppColors.whiteColor,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          appBarTheme: AppBarTheme(
+            backgroundColor: AppColors.whiteColor,
+            elevation: 0,
+            centerTitle: true,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
+          ),
         ),
       ),
     );

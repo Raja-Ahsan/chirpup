@@ -38,7 +38,7 @@ class CommonButton extends StatelessWidget {
     this.borderRadius = 16,
     this.textWeight = FontWeight.w400,
     this.fontFamily,
-    this.shadowColor, 
+    this.shadowColor,
   });
 
   @override
@@ -97,20 +97,67 @@ class CommonButton extends StatelessWidget {
                                 // ===== TEXT STROKE EFFECT =====
                                 shadows: [
                                   Shadow(
+                                    blurRadius: 0,
                                     offset: Offset(-2, -2),
-                                    color:shadowColor ?? AppColors.textshadowGreen,
+                                    color:
+                                        shadowColor ??
+                                        AppColors.textshadowGreen,
                                   ),
+                                  // Top-Right
                                   Shadow(
+                                    blurRadius: 0,
                                     offset: Offset(2, -2),
-                                    color:shadowColor ?? AppColors.textshadowGreen,
+                                    color:
+                                        shadowColor ??
+                                        AppColors.textshadowGreen,
                                   ),
+                                  // Bottom-Right
                                   Shadow(
+                                    blurRadius: 0,
                                     offset: Offset(2, 2),
-                                    color:shadowColor ?? AppColors.textshadowGreen,
+                                    color:
+                                        shadowColor ??
+                                        AppColors.textshadowGreen,
                                   ),
+                                  // Bottom-Left
                                   Shadow(
+                                    blurRadius: 0,
                                     offset: Offset(-2, 2),
-                                    color: shadowColor ?? AppColors.textshadowGreen,
+                                    color:
+                                        shadowColor ??
+                                        AppColors.textshadowGreen,
+                                  ),
+                                  // Left
+                                  Shadow(
+                                    blurRadius: 0,
+                                    offset: Offset(-2, 0),
+                                    color:
+                                        shadowColor ??
+                                        AppColors.textshadowGreen,
+                                  ),
+                                  // Right
+                                  Shadow(
+                                    blurRadius: 0,
+                                    offset: Offset(2, 0),
+                                    color:
+                                        shadowColor ??
+                                        AppColors.textshadowGreen,
+                                  ),
+                                  // Top
+                                  Shadow(
+                                    blurRadius: 0,
+                                    offset: Offset(0, -2),
+                                    color:
+                                        shadowColor ??
+                                        AppColors.textshadowGreen,
+                                  ),
+                                  // Bottom
+                                  Shadow(
+                                    blurRadius: 0,
+                                    offset: Offset(0, 2),
+                                    color:
+                                        shadowColor ??
+                                        AppColors.textshadowGreen,
                                   ),
                                 ],
                               ),
@@ -155,7 +202,7 @@ class CommonButton extends StatelessWidget {
                       width: 11,
                       height: 4.5,
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha:0.3),
+                        color: Colors.white.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),

@@ -128,7 +128,7 @@ Widget otpDialog(BuildContext context) {
           Navigator.pop(context);
           showCommonDialog(
             context: context,
-            child: accountVerifiedDialog(),
+            child: accountVerifiedDialog(context),
             barrierDismissible: true,
           );
         },

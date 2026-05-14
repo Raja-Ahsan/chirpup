@@ -5,12 +5,17 @@ Future<T?> showCommonDialog<T>({
   required BuildContext context,
   required Widget child,
   bool barrierDismissible = false,
+  double? topPadding,
+  double? rightPadding,
+  
 }) {
   return showDialog<T>(
     context: context,
     barrierDismissible: barrierDismissible,
     barrierColor: Colors.black.withValues(alpha: 0.7),
     builder: (_) => CommonDialog(
+      topPadding: topPadding ,
+      rightPadding: rightPadding,
       child: child,
     ),
   );

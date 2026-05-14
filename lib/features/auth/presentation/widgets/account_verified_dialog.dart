@@ -1,9 +1,10 @@
 import 'package:chirp_up_app/core/constants/app_colors.dart';
+import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/widgets/common_button.dart';
 import 'package:chirp_up_app/core/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 
-Widget accountVerifiedDialog() {
+Widget accountVerifiedDialog(BuildContext context) {
   return Column(
     mainAxisSize: MainAxisSize.min,
     children: [
@@ -31,6 +32,7 @@ Widget accountVerifiedDialog() {
       CommonButton(
         title: 'continue',
         horizontalPadding: 60,
+        onPressed: ()=> Navigator.pushReplacementNamed(context, AppRoutes.createYourChildProfile),
       ),
     ],
   );
