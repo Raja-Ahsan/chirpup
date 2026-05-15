@@ -61,8 +61,8 @@ class HeadingText extends StatelessWidget {
         shadows: [
           Shadow(
             color: shadowColor ?? AppColors.textShadowBlackColor,
-            offset: const Offset(3, 3),
-            blurRadius: 0, 
+            offset: const Offset(1.8, 1.8),
+            blurRadius: 2, 
           ),
         ],
       ),

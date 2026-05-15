@@ -13,7 +13,7 @@ Widget errorDialog(BuildContext context, String dialogText) {
           IconButton(onPressed: ()=>Navigator.pop(context), icon: SvgPicture.asset('assets/svg/cross.svg')),
         ],
       ),
-      Image.asset('assets/png/warning.png'),
+      Image.asset('assets/png/warning.png', height: 57),
       SizedBox(height: 10),
       CustomText(
         text: 'ERROR',

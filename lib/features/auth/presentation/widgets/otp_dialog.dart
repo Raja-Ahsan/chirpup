@@ -11,7 +11,7 @@ Widget otpDialog(BuildContext context) {
     mainAxisSize: MainAxisSize.min,
     children: [
       SizedBox(height: 10),
-      Image.asset('assets/png/email_box.png'),
+      Image.asset('assets/png/email_box.png', height: 57),
       SizedBox(height: 15),
       CustomText(
         text: 'CHECK YOUR EMAIL',

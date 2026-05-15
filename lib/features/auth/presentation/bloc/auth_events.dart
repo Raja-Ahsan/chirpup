@@ -31,3 +31,21 @@ class CreateYourChildProfileEvent extends AuthEvents {
   @override
   List<Object?> get props => [childName];
 }
+
+class EnterPinEvent extends AuthEvents {
+  final BuildContext context;
+  final String pin;
+  const EnterPinEvent({required this.context, required this.pin});
+
+  @override
+  List<Object?> get props => [pin];
+}
+
+class ConfirmPinEvent extends AuthEvents {
+  final BuildContext context;
+  final String confirmPin;
+  const ConfirmPinEvent({required this.context, required this.confirmPin});
+
+  @override
+  List<Object?> get props => [confirmPin];
+}

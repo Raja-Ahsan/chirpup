@@ -9,7 +9,7 @@ Widget accountVerifiedDialog(BuildContext context) {
     mainAxisSize: MainAxisSize.min,
     children: [
       SizedBox(height: 10),
-      Image.asset('assets/png/email_box_verifed.png'),
+      Image.asset('assets/png/email_box_verified.png', height: 57),
       SizedBox(height: 5),
       CustomText(
         text: 'Account Verified',

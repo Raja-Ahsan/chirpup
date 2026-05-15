@@ -16,10 +16,10 @@ class CreateYourChildProfileView extends StatelessWidget {
   CreateYourChildProfileView({super.key});
 
   static const List<String> avatars = [
-    'assets/png/girl1_avator.png',
-    'assets/png/boy1_avator.png',
-    'assets/png/boy2_avator.png',
-    'assets/png/girl2_avator.png',
+    'assets/png/girl1_avatar.png',
+    'assets/png/boy1_avatar.png',
+    'assets/png/boy2_avatar.png',
+    'assets/png/girl2_avatar.png',
   ];
 
   static const List<String> ageRanges = [

@@ -1,7 +1,9 @@
+import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/utils/show_common_dialog.dart';
 import 'package:chirp_up_app/features/auth/presentation/bloc/auth_events.dart';
 import 'package:chirp_up_app/features/auth/presentation/bloc/auth_states.dart';
 import 'package:chirp_up_app/features/auth/presentation/widgets/error_dialog.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthBloc extends Bloc<AuthEvents, AuthStates> {
@@ -9,6 +11,8 @@ class AuthBloc extends Bloc<AuthEvents, AuthStates> {
     on<SelectAvatarEvent>(_selectAvatar);
     on<SelectAgeRangeEvent>(_selectAgeRange);
     on<CreateYourChildProfileEvent>(_createYourChildProfile);
+    on<EnterPinEvent>(_enterPin);
+    on<ConfirmPinEvent>(_confirmPin);
   }
 
   void _selectAvatar(SelectAvatarEvent event, Emitter<AuthStates> emit) {
@@ -47,6 +51,32 @@ class AuthBloc extends Bloc<AuthEvents, AuthStates> {
       );
       return;
     }
-    print('Proceed Next');
+    emit(state.copyWith(childName: event.childName));
+    Navigator.pushNamed(event.context, AppRoutes.kingdomIsReady);
+  }
+
+  void _enterPin(EnterPinEvent event, Emitter<AuthStates> emit) {
+    debugPrint('enter_pin: ${event.pin}');
+    emit(state.copyWith(enteredPin: event.pin));
+    Navigator.pushNamed(event.context, AppRoutes.setupYourPin, arguments: true);
+    // arguments: true = isConfirmMode, route same hai bas bool pass ho raha
+  }
+
+  void _confirmPin(ConfirmPinEvent event, Emitter<AuthStates> emit) {
+    debugPrint('confirm_pin: ${event.confirmPin}');
+
+    if (event.confirmPin != state.enteredPin) {
+      showCommonDialog(
+        context: event.context,
+        child: errorDialog(event.context, "Looks like the PINs don’t match.\nPlease try again."),
+        barrierDismissible: true,
+        rightPadding: 10,
+        topPadding: 10,
+      );
+      return;
+    }
+
+    // ✅ PIN match hua — agle route pe navigate karo
+    Navigator.pushNamed(event.context, AppRoutes.tapOnCastle);
   }
 }
