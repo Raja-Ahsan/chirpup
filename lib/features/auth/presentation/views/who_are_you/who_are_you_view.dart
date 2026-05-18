@@ -1,5 +1,6 @@
 import 'package:chirp_up_app/core/constants/app_colors.dart';
 import 'package:chirp_up_app/core/constants/app_sizes.dart';
+import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/widgets/custom_text.dart';
 import 'package:chirp_up_app/core/widgets/heading_text.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,9 @@ class WhoAreYouView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamedAndRemoveUntil(context,AppRoutes.parentDashboard, (route)=> false);
+                    },
                     child: Image.asset(
                       "assets/png/parent_boy.png",
                       height: screenHeight * 0.58,

@@ -19,4 +19,5 @@ class AppColors {
   static Color otpFieldBg = Color(0xffE5DBD6);
   static Color buttonPurple = Color(0xff645973);
   static Color otpFieldBlueBg = Color(0xff4D88DA);
+  static Color textShadowDarkBlue = Color(0xff003C81);
 }

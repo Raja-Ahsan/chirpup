@@ -3,6 +3,7 @@ import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/routes/route_generator.dart';
 import 'package:chirp_up_app/core/services/storage_service.dart';
 import 'package:chirp_up_app/features/auth/bloc/auth_bloc.dart';
+import 'package:chirp_up_app/features/parent/dashboard/bloc/parent_dashboard_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,7 +30,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [BlocProvider<AuthBloc>(create: (_) => AuthBloc())],
+      providers: [
+        BlocProvider<AuthBloc>(create: (_) => AuthBloc()),
+        BlocProvider<ParentDashboardBloc>(create: (_) => ParentDashboardBloc()),
+      ],
       child: MaterialApp(
         title: 'ChirpUp',
         debugShowCheckedModeBanner: false,

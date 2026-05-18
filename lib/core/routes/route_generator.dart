@@ -8,6 +8,7 @@ import 'package:chirp_up_app/features/auth/presentation/views/login/login_view.d
 import 'package:chirp_up_app/features/auth/presentation/views/setup_your_pin/setup_your_pin_view.dart';
 import 'package:chirp_up_app/features/auth/presentation/views/tap_on_castle/tap_on_castle_view.dart';
 import 'package:chirp_up_app/features/auth/presentation/views/who_are_you/who_are_you_view.dart';
+import 'package:chirp_up_app/features/parent/dashboard/presentation/views/parent_dashboard_view.dart';
 import 'package:chirp_up_app/features/splash/presentation/views/splash_view.dart';
 import 'package:flutter/material.dart';
 
@@ -35,6 +36,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => TapOnCastleView());
       case AppRoutes.whoAreYou:
         return MaterialPageRoute(builder: (_) => WhoAreYouView());
+      case AppRoutes.parentDashboard:
+        return MaterialPageRoute(builder: (_) => ParentDashboardView());
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(
