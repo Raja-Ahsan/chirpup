@@ -1,8 +1,8 @@
 
 import 'package:chirp_up_app/core/constants/app_colors.dart';
-import 'package:chirp_up_app/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:chirp_up_app/features/auth/presentation/bloc/auth_events.dart';
-import 'package:chirp_up_app/features/auth/presentation/bloc/auth_states.dart';
+import 'package:chirp_up_app/features/auth/bloc/auth_bloc.dart';
+import 'package:chirp_up_app/features/auth/bloc/auth_events.dart';
+import 'package:chirp_up_app/features/auth/bloc/auth_states.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

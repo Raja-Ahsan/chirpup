@@ -2,7 +2,7 @@ import 'package:chirp_up_app/core/constants/app_colors.dart';
 import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/routes/route_generator.dart';
 import 'package:chirp_up_app/core/services/storage_service.dart';
-import 'package:chirp_up_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:chirp_up_app/features/auth/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
