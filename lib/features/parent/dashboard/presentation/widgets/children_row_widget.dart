@@ -1,20 +1,21 @@
-
-import 'package:chirp_up_app/features/parent/dashboard/bloc/parent_dashboard_bloc.dart';
-import 'package:chirp_up_app/features/parent/dashboard/bloc/parent_dashboard_events.dart';
-import 'package:chirp_up_app/features/parent/dashboard/bloc/parent_dashboard_states.dart';
+import 'package:chirp_up_app/features/parent/dashboard/data/models/child_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChildrenRow extends StatelessWidget {
-  final ParentDashboardStates state;
+  final List<ChildModel> children;
+  final int selectedIdx;
   final double availableWidth;
+  final Function(int) onSelect;
 
-  const ChildrenRow({required this.state, required this.availableWidth});
+  const ChildrenRow({
+    required this.children,
+    required this.selectedIdx,
+    required this.availableWidth,
+    required this.onSelect,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final children = state.children;
-    final selectedIdx = state.selectedChildIndex;
     if (children.isEmpty) return const SizedBox();
 
     final double w = availableWidth;
@@ -24,10 +25,8 @@ class ChildrenRow extends StatelessWidget {
     final double selectedLeft = (w - selectedSize) / 2;
 
     final renderOrder = [
-      ...List.generate(
-        children.length,
-        (i) => i,
-      ).where((i) => i != selectedIdx),
+      ...List.generate(children.length, (i) => i)
+          .where((i) => i != selectedIdx),
       selectedIdx,
     ];
 
@@ -52,12 +51,10 @@ class ChildrenRow extends StatelessWidget {
           } else {
             size = unselectedSize;
             final double step = unselectedSize * 0.35;
-
             if (diff < 0) {
               left = selectedLeft + (diff * step);
             } else {
-              left =
-                  selectedLeft + selectedSize - unselectedSize + (diff * step);
+              left = selectedLeft + selectedSize - unselectedSize + (diff * step);
             }
             top = selectedSize - unselectedSize;
           }
@@ -79,17 +76,14 @@ class ChildrenRow extends StatelessWidget {
                     final int newIndex = index > selectedIdx
                         ? selectedIdx + 1
                         : selectedIdx - 1;
-
-                    context.read<ParentDashboardBloc>().add(
-                      SelectChildEvent(newIndex),
-                    );
+                    onSelect(newIndex); // ✅ callback call karo
                   }
                 },
                 child: AnimatedOpacity(
                   duration: const Duration(milliseconds: 250),
                   opacity: isSelected ? 1.0 : 0.45,
                   child: Image.asset(
-                    child.imagePath ?? '',
+                    child.imagePath,
                     fit: BoxFit.contain,
                   ),
                 ),

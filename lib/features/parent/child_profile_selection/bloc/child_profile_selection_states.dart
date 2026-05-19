@@ -1,20 +1,20 @@
 import 'package:chirp_up_app/features/parent/dashboard/data/models/child_model.dart';
 import 'package:equatable/equatable.dart';
 
-class ParentDashboardStates extends Equatable {
+class ChildProfileSelectionStates extends Equatable {
   final int selectedChildIndex;
   final List<ChildModel> children;
 
-  const ParentDashboardStates({
+  const ChildProfileSelectionStates({
     this.selectedChildIndex = 0,
     this.children = const [],
   });
 
-  ParentDashboardStates copyWith({
+  ChildProfileSelectionStates copyWith({
     int? selectedChildIndex,
     List<ChildModel>? children,
   }) {
-    return ParentDashboardStates(
+    return ChildProfileSelectionStates(
       selectedChildIndex: selectedChildIndex ?? this.selectedChildIndex,
       children: children ?? this.children,
     );

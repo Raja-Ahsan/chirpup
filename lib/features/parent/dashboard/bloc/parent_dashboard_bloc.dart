@@ -1,5 +1,6 @@
 import 'package:chirp_up_app/features/parent/dashboard/bloc/parent_dashboard_events.dart';
 import 'package:chirp_up_app/features/parent/dashboard/bloc/parent_dashboard_states.dart';
+import 'package:chirp_up_app/features/parent/dashboard/data/models/child_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ParentDashboardBloc
@@ -18,12 +19,12 @@ class ParentDashboardBloc
             ChildModel(
               name: 'Jason',
               ageRange: '7-8 Years',
-              imagePath: 'assets/png/boy_character_1.png',
+              imagePath: 'assets/png/girl_character_2.png',
             ),
             ChildModel(
               name: 'Alex',
               ageRange: '9-10 Years',
-              imagePath: 'assets/png/girl_character_2.png',
+              imagePath: 'assets/png/girl_character_1.png',
             ),
           ],
         ),

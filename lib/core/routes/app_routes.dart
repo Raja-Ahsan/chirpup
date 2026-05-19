@@ -9,4 +9,6 @@ class AppRoutes {
   static const tapOnCastle = '/tap_on_castle';
   static const whoAreYou = '/who_are_you';
   static const parentDashboard = '/parent_dashboard';
+  static const childProfileSelection = '/child_profile_selection';
+  static const enterPinCode = '/enter_pin_code';
 }

@@ -3,6 +3,7 @@ import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/routes/route_generator.dart';
 import 'package:chirp_up_app/core/services/storage_service.dart';
 import 'package:chirp_up_app/features/auth/bloc/auth_bloc.dart';
+import 'package:chirp_up_app/features/parent/child_profile_selection/bloc/child_profile_selection_bloc.dart';
 import 'package:chirp_up_app/features/parent/dashboard/bloc/parent_dashboard_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -33,6 +34,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<AuthBloc>(create: (_) => AuthBloc()),
         BlocProvider<ParentDashboardBloc>(create: (_) => ParentDashboardBloc()),
+        BlocProvider<ChildProfileSelectionBloc>(
+          create: (_) => ChildProfileSelectionBloc(),
+        ),
       ],
       child: MaterialApp(
         title: 'ChirpUp',

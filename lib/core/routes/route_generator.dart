@@ -8,6 +8,8 @@ import 'package:chirp_up_app/features/auth/presentation/views/login/login_view.d
 import 'package:chirp_up_app/features/auth/presentation/views/setup_your_pin/setup_your_pin_view.dart';
 import 'package:chirp_up_app/features/auth/presentation/views/tap_on_castle/tap_on_castle_view.dart';
 import 'package:chirp_up_app/features/auth/presentation/views/who_are_you/who_are_you_view.dart';
+import 'package:chirp_up_app/features/parent/child_profile_selection/presentation/views/child_profile_selection/child_profile_selection_view.dart';
+import 'package:chirp_up_app/features/parent/child_profile_selection/presentation/views/enter_pin_code/enter_pin_code_view.dart';
 import 'package:chirp_up_app/features/parent/dashboard/presentation/views/parent_dashboard_view.dart';
 import 'package:chirp_up_app/features/splash/presentation/views/splash_view.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +40,13 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => WhoAreYouView());
       case AppRoutes.parentDashboard:
         return MaterialPageRoute(builder: (_) => ParentDashboardView());
+      case AppRoutes.childProfileSelection:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => ChildProfileSelectionView(),
+        );
+      case AppRoutes.enterPinCode:
+        return MaterialPageRoute(builder: (_) => EnterPinCodeView());
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

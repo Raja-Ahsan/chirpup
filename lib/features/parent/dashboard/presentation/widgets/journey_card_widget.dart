@@ -22,8 +22,9 @@ class JourneyCard extends StatelessWidget {
         color: item.bgColor,
         borderRadius: BorderRadius.circular(24),
       ),
-      padding: EdgeInsets.only(right: 10),
+      padding: EdgeInsets.only(right: 0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           SizedBox(
             height: imageSize.clamp(60, 85),

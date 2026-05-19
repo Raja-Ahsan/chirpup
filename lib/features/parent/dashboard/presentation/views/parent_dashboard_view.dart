@@ -1,10 +1,14 @@
 import 'package:chirp_up_app/core/constants/app_colors.dart';
 import 'package:chirp_up_app/core/constants/app_sizes.dart';
+import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/widgets/common_button.dart';
 import 'package:chirp_up_app/core/widgets/custom_text.dart';
 import 'package:chirp_up_app/core/widgets/heading_text.dart';
+import 'package:chirp_up_app/features/parent/child_profile_selection/presentation/views/child_profile_selection/child_profile_selection_view.dart';
 import 'package:chirp_up_app/features/parent/dashboard/bloc/parent_dashboard_bloc.dart';
+import 'package:chirp_up_app/features/parent/dashboard/bloc/parent_dashboard_events.dart';
 import 'package:chirp_up_app/features/parent/dashboard/bloc/parent_dashboard_states.dart';
+import 'package:chirp_up_app/features/parent/dashboard/data/models/child_model.dart';
 import 'package:chirp_up_app/features/parent/dashboard/presentation/widgets/children_row_widget.dart';
 import 'package:chirp_up_app/features/parent/dashboard/presentation/widgets/journey_card_widget.dart';
 import 'package:chirp_up_app/features/parent/dashboard/presentation/widgets/level_bar_widget.dart';
@@ -45,7 +49,17 @@ class ParentDashboardView extends StatelessWidget {
                   padding: EdgeInsets.symmetric(
                     horizontal: AppSizes.horizontalPadding,
                   ),
-                  child: CommonButton(title: 'Switch to child Mode '),
+                  child: CommonButton(
+                    title: 'Switch to child Mode ',
+                    onPressed: () => Navigator.pushNamed(
+                      context,
+                      AppRoutes.childProfileSelection,
+                      arguments: ChildSelectionArgs(
+                        children: state.children,
+                        selectedIndex: state.selectedChildIndex,
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 16),
               ],
@@ -137,25 +151,44 @@ class _TopSection extends StatelessWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            ChildrenRow(
-                              state: state,
-                              availableWidth: childrenRowWidth,
+                            Padding(
+                              padding: EdgeInsets.only(left: levelBarWidth / 2),
+                              child: ChildrenRow(
+                                children: state.children,
+                                selectedIdx: state.selectedChildIndex,
+                                availableWidth: childrenRowWidth,
+                                onSelect: (index) {
+                                  context.read<ParentDashboardBloc>().add(
+                                    SelectChildEvent(index),
+                                  );
+                                },
+                              ),
                             ),
                             const SizedBox(height: 10),
                             if (selected != null) ...[
-                              HeadingText(
-                                text: selected!.name.toUpperCase(),
-                                fontSize: 28,
-                                color: AppColors.textYellow,
-                                textAlign: TextAlign.center,
-                                shadowColor: AppColors.textShadowDarkBlue,
-                                lineSpacing: 1,
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  left: levelBarWidth / 1,
+                                ),
+                                child: HeadingText(
+                                  text: selected!.name.toUpperCase(),
+                                  fontSize: 28,
+                                  color: AppColors.textYellow,
+                                  textAlign: TextAlign.center,
+                                  shadowColor: AppColors.textShadowDarkBlue,
+                                  lineSpacing: 1,
+                                ),
                               ),
-                              CustomText(
-                                text: selected!.ageRange.toUpperCase(),
-                                fontSize: 14,
-                                fontFamily: 'LuckiestGuy',
-                                textAlign: TextAlign.center,
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  left: levelBarWidth / 1,
+                                ),
+                                child: CustomText(
+                                  text: selected!.ageRange.toUpperCase(),
+                                  fontSize: 14,
+                                  fontFamily: 'LuckiestGuy',
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
                             ],
                           ],
@@ -245,7 +278,7 @@ class _WeeklyJourneySection extends StatelessWidget {
                 crossAxisCount: 2,
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
-                childAspectRatio: 2.0,
+                childAspectRatio: 1.9,
               ),
               itemBuilder: (context, index) {
                 final item = _items[index];
@@ -284,6 +317,7 @@ class _MoodSection extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           image: DecorationImage(
             image: AssetImage('assets/png/dashboard_mood_bg.png'),
+            fit: BoxFit.cover,
           ),
         ),
         width: double.infinity,

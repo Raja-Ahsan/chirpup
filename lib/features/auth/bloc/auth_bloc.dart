@@ -1,8 +1,8 @@
 import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/utils/show_common_dialog.dart';
+import 'package:chirp_up_app/core/widgets/error_dialog.dart';
 import 'package:chirp_up_app/features/auth/bloc/auth_events.dart';
 import 'package:chirp_up_app/features/auth/bloc/auth_states.dart';
-import 'package:chirp_up_app/features/auth/presentation/widgets/error_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
