@@ -8,15 +8,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthBloc extends Bloc<AuthEvents, AuthStates> {
   AuthBloc() : super(AuthStates()) {
-    on<SelectAvatarEvent>(_selectAvatar);
+    on<SelectCharacterEvent>(_selectCharacter);
     on<SelectAgeRangeEvent>(_selectAgeRange);
     on<CreateYourChildProfileEvent>(_createYourChildProfile);
     on<EnterPinEvent>(_enterPin);
     on<ConfirmPinEvent>(_confirmPin);
   }
 
-  void _selectAvatar(SelectAvatarEvent event, Emitter<AuthStates> emit) {
-    emit(state.copyWith(selectedAvatarIndex: event.index));
+  void _selectCharacter(SelectCharacterEvent event, Emitter<AuthStates> emit) {
+    emit(state.copyWith(selectedCharacterIndex: event.index));
   }
 
   void _selectAgeRange(SelectAgeRangeEvent event, Emitter<AuthStates> emit) {

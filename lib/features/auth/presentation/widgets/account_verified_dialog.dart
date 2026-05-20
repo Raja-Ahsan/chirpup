@@ -32,7 +32,7 @@ Widget accountVerifiedDialog(BuildContext context) {
       CommonButton(
         title: 'continue',
         horizontalPadding: 60,
-        onPressed: ()=> Navigator.pushReplacementNamed(context, AppRoutes.createYourChildProfile),
+        onPressed: ()=> Navigator.pushReplacementNamed(context, AppRoutes.pickYourMagicalFriend),
       ),
     ],
   );

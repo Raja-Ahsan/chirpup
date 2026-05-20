@@ -68,7 +68,6 @@ class KingdonIsReadyView extends StatelessWidget {
                               color: AppColors.whiteColor,
                               textAlign: TextAlign.center,
                             ),
-                            const SizedBox(height: 5),
                             CustomText(
                               text: 'A place where they can explore,\ncreate, and feel safe',
                               fontSize: 16,
@@ -82,13 +81,17 @@ class KingdonIsReadyView extends StatelessWidget {
                   ),
                 ),
 
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Image.asset(
-                    height: 260,
-                    "assets/gifs/full_boy.gif",
-                    fit: BoxFit.contain,
-                  ),
+                BlocBuilder<AuthBloc, AuthStates>(
+                  builder: (context, state) {
+                    return Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Image.asset(
+                        height: 260,
+                        state.selectedCharacter.imagePath,
+                        fit: BoxFit.contain,
+                      ),
+                    );
+                  }
                 ),
               ],
             ),

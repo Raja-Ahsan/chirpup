@@ -8,19 +8,12 @@ import 'package:chirp_up_app/features/auth/bloc/auth_bloc.dart';
 import 'package:chirp_up_app/features/auth/bloc/auth_events.dart';
 import 'package:chirp_up_app/features/auth/bloc/auth_states.dart';
 import 'package:chirp_up_app/features/auth/presentation/widgets/age_range_button_widget.dart';
-import 'package:chirp_up_app/features/auth/presentation/widgets/avatar_row_widget.dart';
+import 'package:chirp_up_app/features/auth/presentation/widgets/avatar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateYourChildProfileView extends StatelessWidget {
   CreateYourChildProfileView({super.key});
-
-  static const List<String> avatars = [
-    'assets/png/girl1_avatar.png',
-    'assets/png/boy1_avatar.png',
-    'assets/png/boy2_avatar.png',
-    'assets/png/girl2_avatar.png',
-  ];
 
   static const List<String> ageRanges = [
     '1-2 YEARS',
@@ -52,7 +45,7 @@ class CreateYourChildProfileView extends StatelessWidget {
                   padding: EdgeInsets.only(left: 10),
                   child: Column(
                     children: [
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 30),
                       Center(
                         child: HeadingText(
                           text: "CREATE YOUR\nCHILD'S PROFILE",
@@ -67,26 +60,36 @@ class CreateYourChildProfileView extends StatelessWidget {
                         child: CustomText(
                           fontSize: 14,
                           textAlign: TextAlign.center,
-                          text:
-                              "Let's set up a space made just for your child",
+                          text: "Let's set up a space made just for your child",
                         ),
                       ),
-                      const SizedBox(height: 40),
-                      AvatarRow(avatars: avatars),
-                      const SizedBox(height: 8),
-                      Center(
-                        child: CustomText(
-                          fontSize: 16,
-                          textAlign: TextAlign.center,
-                          weight: FontWeight.w600,
-                          text: 'Choose an Avatar',
-                        ),
+                      const SizedBox(height: 30),
+                      BlocBuilder<AuthBloc, AuthStates>(
+                        builder: (context, state) {
+                          return Column(
+                            children: [
+                              AvatarWidget(
+                                avatar: state.selectedCharacter.imagePath,
+                              ),
+                              const SizedBox(height: 15),
+                              Center(
+                                child: CustomText(
+                                  fontSize: 20,
+                                  textAlign: TextAlign.center,
+                                  fontFamily: 'LuckiestGuy',
+                                  lineSpacing: 0,
+                                  text: state.selectedCharacter.name,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                       const SizedBox(height: 40),
                     ],
                   ),
                 ),
-    
+
                 // ── MIDDLE: Scrollable Content ──
                 Expanded(
                   child: SingleChildScrollView(
@@ -96,7 +99,10 @@ class CreateYourChildProfileView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CustomTextField(hintText: 'enter your child\'s name',controller: childNameController),
+                        CustomTextField(
+                          hintText: 'enter your child\'s name',
+                          controller: childNameController,
+                        ),
                         const SizedBox(height: 24),
                         Row(
                           children: [
@@ -116,7 +122,7 @@ class CreateYourChildProfileView extends StatelessWidget {
                     ),
                   ),
                 ),
-    
+
                 // ── BOTTOM: Fixed Button ──
                 Padding(
                   padding: EdgeInsets.symmetric(
@@ -128,7 +134,12 @@ class CreateYourChildProfileView extends StatelessWidget {
                     bgColor: AppColors.blueColor,
                     shadowColor: AppColors.textShadowBlue,
                     onPressed: () {
-                      context.read<AuthBloc>().add(CreateYourChildProfileEvent(childName: childNameController.text, context: context));
+                      context.read<AuthBloc>().add(
+                        CreateYourChildProfileEvent(
+                          childName: childNameController.text,
+                          context: context,
+                        ),
+                      );
                     },
                   ),
                 ),

@@ -33,6 +33,7 @@ class WhoAreYouView extends StatelessWidget {
               bottom: 20,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GestureDetector(
                     onTap: () {
@@ -46,11 +47,11 @@ class WhoAreYouView extends StatelessWidget {
                   ),
 
                   GestureDetector(
-                    onTap: () {},
-                    child: Image.asset(
-                      "assets/png/boy_character_1.png",
-                      height: screenHeight * 0.48,
-                      width: screenWidth * 0.45,
+                      onTap: () {},
+                      child: Image.asset(
+                        "assets/png/prince_character.png",
+                        height: screenHeight * 0.48,
+                        width: screenWidth * 0.45,
                     ),
                   )
                 ],

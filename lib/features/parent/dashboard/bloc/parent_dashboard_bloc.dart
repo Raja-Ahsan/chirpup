@@ -12,19 +12,19 @@ class ParentDashboardBloc
           selectedChildIndex: 1,
           children: [
             ChildModel(
-              name: 'Emna',
-              ageRange: '5-6 Years',
-              imagePath: 'assets/png/girl_character_1.png',
-            ),
-            ChildModel(
               name: 'Jason',
               ageRange: '7-8 Years',
-              imagePath: 'assets/png/girl_character_2.png',
+              imagePath: 'assets/png/prince_character.png',
+            ),
+            ChildModel(
+              name: 'Ana',
+              ageRange: '5-6 Years',
+              imagePath: 'assets/png/princes_character.png',
             ),
             ChildModel(
               name: 'Alex',
               ageRange: '9-10 Years',
-              imagePath: 'assets/png/girl_character_1.png',
+              imagePath: 'assets/png/knight_character.png',
             ),
           ],
         ),

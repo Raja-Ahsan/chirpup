@@ -5,6 +5,7 @@ import 'package:chirp_up_app/features/auth/presentation/views/create_your_accoun
 import 'package:chirp_up_app/features/auth/presentation/views/create_your_child_profile/create_your_child_profile_view.dart';
 import 'package:chirp_up_app/features/auth/presentation/views/kingdom_ready/kingdon_is_ready_view.dart';
 import 'package:chirp_up_app/features/auth/presentation/views/login/login_view.dart';
+import 'package:chirp_up_app/features/auth/presentation/views/pick_your_magical_friend/pick_your_magical_friend_view.dart';
 import 'package:chirp_up_app/features/auth/presentation/views/setup_your_pin/setup_your_pin_view.dart';
 import 'package:chirp_up_app/features/auth/presentation/views/tap_on_castle/tap_on_castle_view.dart';
 import 'package:chirp_up_app/features/auth/presentation/views/who_are_you/who_are_you_view.dart';
@@ -47,6 +48,8 @@ class RouteGenerator {
         );
       case AppRoutes.enterPinCode:
         return MaterialPageRoute(builder: (_) => EnterPinCodeView());
+      case AppRoutes.pickYourMagicalFriend:
+        return MaterialPageRoute(builder: (_) => PickYourMagicalFriendView());
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

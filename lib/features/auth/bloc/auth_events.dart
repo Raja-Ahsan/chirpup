@@ -7,20 +7,20 @@ abstract class AuthEvents extends Equatable {
   List<Object?> get props => [];
 }
 
-class SelectAvatarEvent extends AuthEvents {
-  final int index;
-  const SelectAvatarEvent(this.index);
-
-  @override
-  List<Object?> get props => [index];
-}
-
 class SelectAgeRangeEvent extends AuthEvents {
   final String ageRange;
   const SelectAgeRangeEvent(this.ageRange);
 
   @override
   List<Object?> get props => [ageRange];
+}
+
+class SelectCharacterEvent extends AuthEvents {
+  final int index;
+  const SelectCharacterEvent(this.index);
+
+  @override
+  List<Object?> get props => [index];
 }
 
 class CreateYourChildProfileEvent extends AuthEvents {
