@@ -69,7 +69,7 @@ class CreateYourChildProfileView extends StatelessWidget {
                           return Column(
                             children: [
                               AvatarWidget(
-                                avatar: state.selectedCharacter.imagePath,
+                                avatar: state.selectedCharacter.avatarImage,
                               ),
                               const SizedBox(height: 15),
                               Center(

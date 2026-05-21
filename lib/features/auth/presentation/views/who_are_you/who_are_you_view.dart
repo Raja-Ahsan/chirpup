@@ -41,8 +41,7 @@ class WhoAreYouView extends StatelessWidget {
                     },
                     child: Image.asset(
                       "assets/png/parent_boy.png",
-                      height: screenHeight * 0.58,
-                      width: screenWidth * 0.65,
+                      height: screenHeight * 0.68,
                     ),
                   ),
 
@@ -51,7 +50,6 @@ class WhoAreYouView extends StatelessWidget {
                       child: Image.asset(
                         "assets/png/prince_character.png",
                         height: screenHeight * 0.48,
-                        width: screenWidth * 0.45,
                     ),
                   )
                 ],

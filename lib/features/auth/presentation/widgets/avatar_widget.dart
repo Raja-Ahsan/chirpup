@@ -31,7 +31,7 @@ class AvatarWidget extends StatelessWidget {
             children: [
               Image.asset(
                 avatar,
-                fit: BoxFit.scaleDown,
+                fit: BoxFit.cover,
               ),
               DecoratedBox(
                 decoration: BoxDecoration(

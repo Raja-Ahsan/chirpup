@@ -22,9 +22,9 @@ class CharactersRowWidget extends StatelessWidget {
     if (characters.isEmpty) return const SizedBox();
 
     final double w = availableWidth;
-    final double selectedSize = w * 1;
-    final double unselectedSize = w * 0.85;
-    final double totalHeight = selectedSize*0.92;
+    final double selectedSize = w * 0.8;
+    final double unselectedSize = w * 0.7;
+    final double totalHeight = selectedSize*0.9;
     final double selectedLeft = (w - selectedSize) / 2;
 
     final renderOrder = [
@@ -102,7 +102,7 @@ class CharactersRowWidget extends StatelessWidget {
             }).toList(),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 40),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 250),
           child: HeadingText(
