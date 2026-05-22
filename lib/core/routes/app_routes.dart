@@ -12,4 +12,6 @@ class AppRoutes {
   static const parentDashboard = '/parent_dashboard';
   static const childProfileSelection = '/child_profile_selection';
   static const enterPinCode = '/enter_pin_code';
+  static const moodSelection = '/mood_selection';
+  static const childDashboard = '/child_dashboard';
 }

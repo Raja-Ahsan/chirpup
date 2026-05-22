@@ -297,13 +297,13 @@ class _MoodSection extends StatelessWidget {
   const _MoodSection();
 
   static const _moods = [
-    MoodItem(day: 'SUN', imagePath: 'assets/png/sunny.png'),
-    MoodItem(day: 'MON', imagePath: 'assets/png/angry.png'),
-    MoodItem(day: 'TUE', imagePath: 'assets/png/happy.png'),
-    MoodItem(day: 'WED', imagePath: 'assets/png/sleepy.png'),
-    MoodItem(day: 'THU', imagePath: 'assets/png/cry.png'),
-    MoodItem(day: 'FRI', imagePath: 'assets/png/sunny.png'),
-    MoodItem(day: 'SAT', imagePath: 'assets/png/sleepy.png'),
+    MoodItem(day: 'SUN', imagePath: 'assets/png/happy_mood.png'),
+    MoodItem(day: 'MON', imagePath: 'assets/png/calm_mood.png'),
+    MoodItem(day: 'TUE', imagePath: 'assets/png/sleepy_mood.png'),
+    MoodItem(day: 'WED', imagePath: 'assets/png/angry_mood.png'),
+    MoodItem(day: 'THU', imagePath: 'assets/png/sad_mood.png'),
+    MoodItem(day: 'FRI', imagePath: 'assets/png/happy_mood.png'),
+    MoodItem(day: 'SAT', imagePath: 'assets/png/calm_mood.png'),
   ];
 
   @override

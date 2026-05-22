@@ -9,6 +9,8 @@ import 'package:chirp_up_app/features/auth/presentation/views/pick_your_magical_
 import 'package:chirp_up_app/features/auth/presentation/views/setup_your_pin/setup_your_pin_view.dart';
 import 'package:chirp_up_app/features/auth/presentation/views/tap_on_castle/tap_on_castle_view.dart';
 import 'package:chirp_up_app/features/auth/presentation/views/who_are_you/who_are_you_view.dart';
+import 'package:chirp_up_app/features/child/child_dashboard/presentation/views/child_dashboard_view.dart';
+import 'package:chirp_up_app/features/child/mood_selection/presentation/views/mood_selection_view.dart';
 import 'package:chirp_up_app/features/parent/child_profile_selection/presentation/views/child_profile_selection/child_profile_selection_view.dart';
 import 'package:chirp_up_app/features/parent/child_profile_selection/presentation/views/enter_pin_code/enter_pin_code_view.dart';
 import 'package:chirp_up_app/features/parent/dashboard/presentation/views/parent_dashboard_view.dart';
@@ -50,6 +52,10 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => EnterPinCodeView());
       case AppRoutes.pickYourMagicalFriend:
         return MaterialPageRoute(builder: (_) => PickYourMagicalFriendView());
+      case AppRoutes.moodSelection:
+        return MaterialPageRoute(builder: (_) => MoodSelectionView());
+      case AppRoutes.childDashboard:
+        return MaterialPageRoute(builder: (_) => ChildDashboardView());
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(
