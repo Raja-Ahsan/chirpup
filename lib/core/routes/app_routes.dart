@@ -14,4 +14,7 @@ class AppRoutes {
   static const enterPinCode = '/enter_pin_code';
   static const moodSelection = '/mood_selection';
   static const childDashboard = '/child_dashboard';
+  static const kingdomWorkShop = '/kingdom_workshop';
+  static const magicColoringOnboarding = '/magic_coloring_onboarding';
+  static const magicColoringOnboarding2 = '/magic_coloring_onboarding2';
 }

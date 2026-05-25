@@ -10,6 +10,9 @@ import 'package:chirp_up_app/features/auth/presentation/views/setup_your_pin/set
 import 'package:chirp_up_app/features/auth/presentation/views/tap_on_castle/tap_on_castle_view.dart';
 import 'package:chirp_up_app/features/auth/presentation/views/who_are_you/who_are_you_view.dart';
 import 'package:chirp_up_app/features/child/child_dashboard/presentation/views/child_dashboard_view.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/kingdom_workshop_view.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/magic_coloring_onboarding_2_view.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/magic_coloring_onboarding_view.dart';
 import 'package:chirp_up_app/features/child/mood_selection/presentation/views/mood_selection_view.dart';
 import 'package:chirp_up_app/features/parent/child_profile_selection/presentation/views/child_profile_selection/child_profile_selection_view.dart';
 import 'package:chirp_up_app/features/parent/child_profile_selection/presentation/views/enter_pin_code/enter_pin_code_view.dart';
@@ -56,6 +59,12 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => MoodSelectionView());
       case AppRoutes.childDashboard:
         return MaterialPageRoute(builder: (_) => ChildDashboardView());
+      case AppRoutes.magicColoringOnboarding:
+        return MaterialPageRoute(builder: (_) => MagicColoringOnboardingView());
+      case AppRoutes.kingdomWorkShop:
+        return MaterialPageRoute(builder: (_) => KingdomWorkshopView());
+      case AppRoutes.magicColoringOnboarding2:
+        return MaterialPageRoute(builder: (_) => MagicColoringOnboarding2View());
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

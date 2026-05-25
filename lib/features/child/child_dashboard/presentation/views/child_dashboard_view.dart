@@ -318,11 +318,14 @@ class ChildDashboardView extends StatelessWidget {
                                       fit: BoxFit.fill,
                                     ),
                                     const SizedBox(width: 10),
-                                    Image.asset(
-                                      'assets/png/kingdom_workshop_banner.png',
-                                      width: itemWidth,
-                                      height: itemHeight,
-                                      fit: BoxFit.fill,
+                                    InkWell(
+                                      onTap: ()=> Navigator.pushNamed(context, AppRoutes.kingdomWorkShop),
+                                      child: Image.asset(
+                                        'assets/png/kingdom_workshop_banner.png',
+                                        width: itemWidth,
+                                        height: itemHeight,
+                                        fit: BoxFit.fill,
+                                      ),
                                     ),
                                   ],
                                 ),
