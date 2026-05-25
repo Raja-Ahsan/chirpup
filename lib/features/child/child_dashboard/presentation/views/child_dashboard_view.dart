@@ -30,26 +30,6 @@ class ChildDashboardView extends StatelessWidget {
               ),
             ),
 
-            // ── Gradient blend ──
-            Positioned(
-              top: screenHeight * 0.5,
-              left: 0,
-              right: 0,
-              height: 100,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.white.withValues(alpha: 0.0),
-                      Colors.white.withValues(alpha: 1.0),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
             // ── Content ──
             SafeArea(
               child: Column(
@@ -207,7 +187,29 @@ class ChildDashboardView extends StatelessWidget {
                     ),
                   ),
 
-                  SizedBox(height: 20),
+                  Stack(
+                    children: [
+                      SizedBox(height: 35, width: double.infinity),
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          height: 40,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                const Color(0xffF5F8FC).withValues(alpha:0.0),
+                                const Color(0xffF5F8FC).withValues(alpha:1.0),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
 
                   // ── White content ──
                   Container(
@@ -354,6 +356,7 @@ class ChildDashboardView extends StatelessWidget {
                           title: 'Switch to parent Mode',
                           bgColor: AppColors.blueColor,
                           shadowColor: AppColors.textShadowBlue,
+                          borderColor: AppColors.textShadowBlue,
                           onPressed: () => Navigator.pushNamedAndRemoveUntil(
                             context,
                             AppRoutes.parentDashboard,

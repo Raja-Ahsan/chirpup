@@ -15,6 +15,7 @@ class TapOnCastleView extends StatefulWidget {
 class _TapOnCastleViewState extends State<TapOnCastleView>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  late Animation<double> _sunriseAnimation;
   late Animation<double> _fadeAnimation;
 
   @override
@@ -22,12 +23,22 @@ class _TapOnCastleViewState extends State<TapOnCastleView>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 2000),
     );
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
+
+    _sunriseAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.7, curve: Curves.easeOut),
+      ),
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.7, 1.0, curve: Curves.easeIn),
+      ),
+    );
   }
 
   @override
@@ -37,7 +48,8 @@ class _TapOnCastleViewState extends State<TapOnCastleView>
   }
 
   void _onCastleTap(BuildContext context) async {
-    print('Castle tap');
+    if (_controller.isAnimating || _controller.isCompleted) return;
+
     await _controller.forward();
 
     await Future.delayed(const Duration(milliseconds: 100));
@@ -58,7 +70,6 @@ class _TapOnCastleViewState extends State<TapOnCastleView>
         width: screenWidth,
         child: Stack(
           children: [
-            // Background
             Positioned.fill(
               child: Image.asset(
                 "assets/png/castle_bg.png",
@@ -68,22 +79,47 @@ class _TapOnCastleViewState extends State<TapOnCastleView>
               ),
             ),
 
-            // Castle
+            // ── YELLOW SUNRISE ANIMATION (behind castle) ────
             Positioned(
               bottom: 0,
               left: 0,
               right: 0,
-              child: GestureDetector(
-                onTap: () => _onCastleTap(context),
-                child: Image.asset(
-                  "assets/png/castle.png",
-                  fit: BoxFit.fitWidth,
-                  width: double.infinity,
-                ),
+              child: AnimatedBuilder(
+                animation: _sunriseAnimation,
+                builder: (context, _) {
+                  final maxRadius = screenHeight * 0.4;
+                  final currentRadius = _sunriseAnimation.value * maxRadius;
+                  final opacity = (_sunriseAnimation.value * 0.75).clamp(
+                    0.0,
+                    0.75,
+                  );
+
+                  return SizedBox(
+                    height: screenHeight,
+                    width: screenWidth,
+                    child: CustomPaint(
+                      painter: _SunrisePainter(
+                        radius: currentRadius,
+                        opacity: opacity,
+                        screenWidth: screenWidth,
+                        screenHeight: screenHeight,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Image.asset(
+                "assets/png/castle.png",
+                fit: BoxFit.fitWidth,
+                width: double.infinity,
               ),
             ),
 
-            // Text content
             SafeArea(
               child: Padding(
                 padding: EdgeInsets.symmetric(
@@ -146,4 +182,41 @@ class _TapOnCastleViewState extends State<TapOnCastleView>
       ),
     );
   }
+}
+
+class _SunrisePainter extends CustomPainter {
+  final double radius;
+  final double opacity;
+  final double screenWidth;
+  final double screenHeight;
+
+  _SunrisePainter({
+    required this.radius,
+    required this.opacity,
+    required this.screenWidth,
+    required this.screenHeight,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (radius <= 0) return;
+
+    final center = Offset(screenWidth / 2, screenHeight * 0.7);
+
+    final paint = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          const Color(0xFFF9C846).withValues(alpha: opacity),
+          const Color(0xFFF9C846).withValues(alpha: opacity),
+          const Color(0xFFF9C846).withValues(alpha: opacity * 0.05),
+          Colors.transparent,
+        ],
+        stops: const [0.0, 0.4, 0.7, 1.0],
+      ).createShader(Rect.fromCircle(center: center, radius: radius));
+    canvas.drawCircle(center, radius, paint);
+  }
+
+  @override
+  bool shouldRepaint(_SunrisePainter old) =>
+      old.radius != radius || old.opacity != opacity;
 }

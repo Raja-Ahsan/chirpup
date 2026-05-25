@@ -114,7 +114,7 @@ class _MoodDayItemState extends State<MoodDayItem>
                             fit: BoxFit.contain,
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(bottom: 0),
+                            padding: const EdgeInsets.only(bottom: 0, top: 3),
                             child: HeadingText(
                               text: 'Calm',
                               fontSize: 14,

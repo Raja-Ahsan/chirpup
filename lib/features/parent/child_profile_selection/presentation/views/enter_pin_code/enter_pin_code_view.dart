@@ -1,5 +1,6 @@
 import 'package:chirp_up_app/core/constants/app_colors.dart';
 import 'package:chirp_up_app/core/constants/app_sizes.dart';
+import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/utils/show_common_dialog.dart';
 import 'package:chirp_up_app/core/widgets/common_button.dart';
 import 'package:chirp_up_app/core/widgets/custom_text.dart';
@@ -168,6 +169,7 @@ class _EnterPinCodeViewState extends State<EnterPinCodeView> {
                             );
                             return;
                           }
+                          Navigator.pushReplacementNamed(context, AppRoutes.moodSelection);
                         },
                         horizontalPadding: 50,
                         bgColor: AppColors.textYellow,

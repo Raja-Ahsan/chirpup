@@ -86,10 +86,13 @@ class KingdonIsReadyView extends StatelessWidget {
                     final imageHeight = state.selectedCharacter.imagePath == 'assets/png/baby_dragon_character.png'? 150.0 : 240.0;
                     return Align(
                       alignment: Alignment.bottomCenter,
-                      child: Image.asset(
-                        height: imageHeight,
-                        state.selectedCharacter.imagePath,
-                        fit: BoxFit.contain,
+                      child: Container(
+                        margin: EdgeInsets.only(right: 70),
+                        child: Image.asset(
+                          height: imageHeight,
+                          state.selectedCharacter.imagePath,
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     );
                   }

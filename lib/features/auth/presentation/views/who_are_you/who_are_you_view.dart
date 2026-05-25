@@ -31,27 +31,44 @@ class WhoAreYouView extends StatelessWidget {
 
             Positioned(
               bottom: 20,
+              left: 0,
+              right: 0,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamedAndRemoveUntil(context,AppRoutes.parentDashboard, (route)=> false);
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        AppRoutes.parentDashboard,
+                        (route) => false,
+                      );
                     },
-                    child: Image.asset(
-                      "assets/png/parent_boy.png",
-                      height: screenHeight * 0.68,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: screenHeight * 0.68,
+                        maxWidth: screenWidth * 0.55,
+                      ),
+                      child: Image.asset(
+                        "assets/png/parent_boy.png",
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
-
                   GestureDetector(
-                      onTap: () {},
+                    onTap: () {},
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: screenHeight * 0.48,
+                        maxWidth: screenWidth * 0.40,
+                      ),
                       child: Image.asset(
                         "assets/png/prince_character.png",
-                        height: screenHeight * 0.48,
+                        fit: BoxFit.contain,
+                      ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

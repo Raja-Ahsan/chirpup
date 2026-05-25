@@ -128,16 +128,27 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
                                           const NeverScrollableScrollPhysics(),
                                       itemCount: state.moods.length,
                                       gridDelegate:
-                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                          SliverGridDelegateWithFixedCrossAxisCount(
                                             crossAxisCount: 2,
                                             crossAxisSpacing: 14,
                                             mainAxisSpacing: 2,
-                                            childAspectRatio: 1.08,
+                                            childAspectRatio:
+                                                MediaQuery.of(
+                                                  context,
+                                                ).size.width /
+                                                (MediaQuery.of(
+                                                      context,
+                                                    ).size.height *
+                                                    0.54),
                                           ),
                                       itemBuilder: (context, index) {
                                         final mood = state.moods[index];
                                         final bool isSelected =
                                             state.selectedMoodIndex == index;
+                                        final screenWidth = MediaQuery.of(
+                                          context,
+                                        ).size.width;
+                                        final boxHeight = screenWidth * 0.26;
 
                                         return GestureDetector(
                                           onTap: () => context
@@ -150,17 +161,20 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
                                                 duration: const Duration(
                                                   milliseconds: 200,
                                                 ),
+
                                                 width: double.infinity,
-                                                height: 100,
+                                                height: boxHeight,
                                                 decoration: BoxDecoration(
-                                                  color: mood.bgColor,
+                                                  color: isSelected
+                                                      ? mood.selectedBgColor
+                                                      : mood.bgColor,
                                                   borderRadius:
                                                       BorderRadius.circular(30),
                                                 ),
                                                 child: Center(
                                                   child: Image.asset(
                                                     mood.imagePath,
-                                                    height: 75,
+                                                    height: boxHeight * 0.72,
                                                     fit: BoxFit.contain,
                                                   ),
                                                 ),
@@ -170,9 +184,7 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
                                                 text: mood.label.toUpperCase(),
                                                 fontSize: 20,
                                                 textAlign: TextAlign.center,
-                                                color: isSelected
-                                                    ? AppColors.purple
-                                                    : const Color(0xff645973),
+                                                color: const Color(0xff645973),
                                                 shadowColor: Colors.white,
                                               ),
                                             ],

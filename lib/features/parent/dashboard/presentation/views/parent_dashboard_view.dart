@@ -44,13 +44,14 @@ class ParentDashboardView extends StatelessWidget {
                   ),
                   child: Image.asset('assets/png/dashboard_quote_banner.png'),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
                 Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: AppSizes.horizontalPadding,
                   ),
                   child: CommonButton(
                     title: 'Switch to child Mode ',
+                    borderColor: Color(0xff5A7923),
                     onPressed: () => Navigator.pushNamed(
                       context,
                       AppRoutes.childProfileSelection,
