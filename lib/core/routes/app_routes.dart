@@ -17,4 +17,7 @@ class AppRoutes {
   static const kingdomWorkShop = '/kingdom_workshop';
   static const magicColoringOnboarding = '/magic_coloring_onboarding';
   static const magicColoringOnboarding2 = '/magic_coloring_onboarding2';
+  static const chooseSketch = '/choose_sketch';
+  static const sketchColoring = '/sketch_coloring';
+  static const coloringComplete = '/coloring_complete';
 }

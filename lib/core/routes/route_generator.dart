@@ -11,8 +11,11 @@ import 'package:chirp_up_app/features/auth/presentation/views/tap_on_castle/tap_
 import 'package:chirp_up_app/features/auth/presentation/views/who_are_you/who_are_you_view.dart';
 import 'package:chirp_up_app/features/child/child_dashboard/presentation/views/child_dashboard_view.dart';
 import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/kingdom_workshop_view.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/choose_sketch_view.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/coloring_complete_view.dart';
 import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/magic_coloring_onboarding_2_view.dart';
 import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/magic_coloring_onboarding_view.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/sketch_coloring_view.dart';
 import 'package:chirp_up_app/features/child/mood_selection/presentation/views/mood_selection_view.dart';
 import 'package:chirp_up_app/features/parent/child_profile_selection/presentation/views/child_profile_selection/child_profile_selection_view.dart';
 import 'package:chirp_up_app/features/parent/child_profile_selection/presentation/views/enter_pin_code/enter_pin_code_view.dart';
@@ -64,7 +67,15 @@ class RouteGenerator {
       case AppRoutes.kingdomWorkShop:
         return MaterialPageRoute(builder: (_) => KingdomWorkshopView());
       case AppRoutes.magicColoringOnboarding2:
-        return MaterialPageRoute(builder: (_) => MagicColoringOnboarding2View());
+        return MaterialPageRoute(
+          builder: (_) => MagicColoringOnboarding2View(),
+        );
+      case AppRoutes.chooseSketch:
+        return MaterialPageRoute(builder: (_) => ChooseSketchView());
+      case AppRoutes.sketchColoring:
+        return MaterialPageRoute(builder: (_) => SketchColoringView());
+      case AppRoutes.coloringComplete:
+        return MaterialPageRoute(builder: (_) => ColoringCompleteView());
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(
