@@ -20,4 +20,6 @@ class AppRoutes {
   static const chooseSketch = '/choose_sketch';
   static const sketchColoring = '/sketch_coloring';
   static const coloringComplete = '/coloring_complete';
+  static const buildCastle = '/build_castle';
+  static const castleComplete = '/castle_complete';
 }

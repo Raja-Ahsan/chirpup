@@ -10,6 +10,8 @@ import 'package:chirp_up_app/features/auth/presentation/views/setup_your_pin/set
 import 'package:chirp_up_app/features/auth/presentation/views/tap_on_castle/tap_on_castle_view.dart';
 import 'package:chirp_up_app/features/auth/presentation/views/who_are_you/who_are_you_view.dart';
 import 'package:chirp_up_app/features/child/child_dashboard/presentation/views/child_dashboard_view.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/castle_builder/presentation/views/build_castle_view.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/castle_builder/presentation/views/castle_complete_view.dart';
 import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/kingdom_workshop_view.dart';
 import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/choose_sketch_view.dart';
 import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/coloring_complete_view.dart';
@@ -76,6 +78,10 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => SketchColoringView());
       case AppRoutes.coloringComplete:
         return MaterialPageRoute(builder: (_) => ColoringCompleteView());
+      case AppRoutes.buildCastle:
+        return MaterialPageRoute(builder: (_) => BuildCastleView());
+      case AppRoutes.castleComplete:
+        return MaterialPageRoute(builder: (_) => CastleCompleteView());
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

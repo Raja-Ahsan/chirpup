@@ -33,6 +33,10 @@ class KingdomWorkshopView extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               InkWell(
+                                onTap: () => Navigator.pushNamed(
+                                  context,
+                                  AppRoutes.buildCastle,
+                                ),
                                 child: Image.asset(
                                   'assets/png/castle_builder_bg.png',
                                   width: itemWidth,
