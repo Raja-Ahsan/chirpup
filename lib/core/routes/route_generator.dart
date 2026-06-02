@@ -9,6 +9,10 @@ import 'package:chirp_up_app/features/auth/presentation/views/pick_your_magical_
 import 'package:chirp_up_app/features/auth/presentation/views/setup_your_pin/setup_your_pin_view.dart';
 import 'package:chirp_up_app/features/auth/presentation/views/tap_on_castle/tap_on_castle_view.dart';
 import 'package:chirp_up_app/features/auth/presentation/views/who_are_you/who_are_you_view.dart';
+import 'package:chirp_up_app/features/child/breath_of_kingdom/presentation/views/breath_of_kingdom_game_complete_view.dart';
+import 'package:chirp_up_app/features/child/breath_of_kingdom/presentation/views/breath_of_kingdom_game_view.dart';
+import 'package:chirp_up_app/features/child/breath_of_kingdom/presentation/views/breath_of_kingdom_onboarding_view.dart';
+import 'package:chirp_up_app/features/child/breath_of_kingdom/presentation/views/select_character_for_breath_view.dart';
 import 'package:chirp_up_app/features/child/child_dashboard/presentation/views/child_dashboard_view.dart';
 import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/castle_builder/presentation/views/build_castle_view.dart';
 import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/castle_builder/presentation/views/castle_complete_view.dart';
@@ -82,6 +86,18 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => BuildCastleView());
       case AppRoutes.castleComplete:
         return MaterialPageRoute(builder: (_) => CastleCompleteView());
+      case AppRoutes.selectCharacterForBreath:
+        return MaterialPageRoute(
+          builder: (_) => SelectCharacterForBreathView(),
+        );
+      case AppRoutes.breathOfKingdomOnboarding:
+        return MaterialPageRoute(
+          builder: (_) => BreathOfKingdomOnboardingView(),
+        );
+      case AppRoutes.breathOfKingdomGame:
+        return MaterialPageRoute(builder: (_) => BreathOfKingdomGameView());
+      case AppRoutes.breathOfKingdomGameComplete:
+        return MaterialPageRoute(builder: (_) => BreathOfKingdomGameCompleteView());
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

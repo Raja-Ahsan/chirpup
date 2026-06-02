@@ -9,12 +9,14 @@ class CharactersRowWidget extends StatelessWidget {
   final int selectedIdx;
   final double availableWidth;
   final Function(int) onSelect;
+  final bool isFromBreathKingdom;
 
   const CharactersRowWidget({
     required this.characters,
     required this.selectedIdx,
     required this.availableWidth,
     required this.onSelect,
+    this.isFromBreathKingdom = false,
   });
 
   @override
@@ -60,13 +62,13 @@ class CharactersRowWidget extends StatelessWidget {
                 size = unselectedSize;
                 final double step = unselectedSize * 0.35;
                 if (diff < 0) {
-                  left = selectedLeft + (diff * step)-40;
+                  left = selectedLeft + (diff * step)-60;
                 } else {
                   left =
                       selectedLeft +
                       selectedSize -
                       unselectedSize +
-                      (diff * step)+40;
+                      (diff * step)+60;
                 }
                 top = (selectedSize - unselectedSize)/2;
               }
@@ -102,7 +104,7 @@ class CharactersRowWidget extends StatelessWidget {
             }).toList(),
           ),
         ),
-        const SizedBox(height: 40),
+        SizedBox(height: isFromBreathKingdom?  60 : 40),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 250),
           child: HeadingText(

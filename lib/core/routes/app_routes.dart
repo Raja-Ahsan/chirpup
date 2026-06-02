@@ -22,4 +22,8 @@ class AppRoutes {
   static const coloringComplete = '/coloring_complete';
   static const buildCastle = '/build_castle';
   static const castleComplete = '/castle_complete';
+  static const selectCharacterForBreath = '/select_character_for_breath';
+  static const breathOfKingdomOnboarding = '/breath_of_kingdom_onboarding';
+  static const breathOfKingdomGame = '/breath_of_kingdom_game';
+  static const breathOfKingdomGameComplete = '/breath_of_kingdom_game_complete';
 }

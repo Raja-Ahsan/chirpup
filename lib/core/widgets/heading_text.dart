@@ -56,7 +56,7 @@ class HeadingText extends StatelessWidget {
         decorationThickness: decorationThickness,
         decorationStyle: decorationStyle ?? TextDecorationStyle.solid,
         decorationColor: decorationColor ?? color,
-        letterSpacing: letterSpacing ?? 0,
+        letterSpacing: letterSpacing ?? -.5,
         height: lineSpacing,
         shadows: [
           Shadow(
