@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:chirp_up_app/core/constants/app_sizes.dart';
+import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/widgets/custom_text.dart';
 import 'package:chirp_up_app/core/widgets/heading_text.dart';
 import 'package:flutter/material.dart';
@@ -176,7 +177,7 @@ class _BreathOfKingdomGameViewState extends State<BreathOfKingdomGameView>
                         right: 0,
                         child: GestureDetector(
                           onTap: () {
-                            
+                            Navigator.pushReplacementNamed(context, AppRoutes.breathOfKingdomGameComplete);
                           },
                           child: Image.asset(
                             "assets/png/baby_dragon_character.png",

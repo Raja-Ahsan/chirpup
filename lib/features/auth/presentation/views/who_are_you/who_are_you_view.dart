@@ -57,7 +57,13 @@ class WhoAreYouView extends StatelessWidget {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        AppRoutes.childProfileSelection,
+                        (route) => false,
+                      );
+                    },
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
                         maxHeight: screenHeight * 0.48,

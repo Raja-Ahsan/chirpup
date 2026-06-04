@@ -8,34 +8,12 @@ import 'package:chirp_up_app/features/parent/child_profile_selection/bloc/child_
 import 'package:chirp_up_app/features/parent/child_profile_selection/bloc/child_profile_selection_events.dart';
 import 'package:chirp_up_app/features/parent/child_profile_selection/bloc/child_profile_selection_states.dart';
 import 'package:chirp_up_app/features/parent/child_profile_selection/presentation/widgets/horizontal_level_bar_widget.dart';
-import 'package:chirp_up_app/features/parent/dashboard/data/models/child_model.dart';
 import 'package:chirp_up_app/features/parent/dashboard/presentation/widgets/children_row_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ChildProfileSelectionView extends StatefulWidget {
+class ChildProfileSelectionView extends StatelessWidget {
   const ChildProfileSelectionView({super.key});
-
-  @override
-  State<ChildProfileSelectionView> createState() =>
-      _ChildProfileSelectionViewState();
-}
-
-class _ChildProfileSelectionViewState extends State<ChildProfileSelectionView> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final args =
-          ModalRoute.of(context)!.settings.arguments as ChildSelectionArgs?;
-      context.read<ChildProfileSelectionBloc>().add(
-        InitChildSelectionEvent(
-          children: args?.children ?? [],
-          selectedIndex: args?.selectedIndex ?? 0,
-        ),
-      );
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -144,14 +122,4 @@ class _ChildProfileSelectionViewState extends State<ChildProfileSelectionView> {
       },
     );
   }
-}
-
-class ChildSelectionArgs {
-  final List<ChildModel> children;
-  final int selectedIndex;
-
-  const ChildSelectionArgs({
-    required this.children,
-    required this.selectedIndex,
-  });
 }

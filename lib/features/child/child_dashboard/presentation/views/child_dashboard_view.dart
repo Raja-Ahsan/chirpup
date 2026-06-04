@@ -311,11 +311,14 @@ class ChildDashboardView extends StatelessWidget {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Image.asset(
-                                      'assets/png/breath_of_kingdom_banner.png',
-                                      width: itemWidth,
-                                      height: itemHeight,
-                                      fit: BoxFit.fill,
+                                    InkWell(
+                                      onTap: ()=> Navigator.pushNamed(context, AppRoutes.selectCharacterForBreath),
+                                      child: Image.asset(
+                                        'assets/png/breath_of_kingdom_banner.png',
+                                        width: itemWidth,
+                                        height: itemHeight,
+                                        fit: BoxFit.fill,
+                                      ),
                                     ),
                                     const SizedBox(width: 10),
                                     InkWell(

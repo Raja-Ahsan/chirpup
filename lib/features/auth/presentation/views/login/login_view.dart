@@ -74,7 +74,7 @@ class LoginView extends StatelessWidget {
                             ],
                           ),
                           SizedBox(height: 10),
-                          CommonButton(title: 'Enter'),
+                          CommonButton(title: 'Enter', onPressed: ()=> Navigator.pushReplacementNamed(context, AppRoutes.whoAreYou)),
                           SizedBox(height: 40),
                           Center(
                             child: CustomText(

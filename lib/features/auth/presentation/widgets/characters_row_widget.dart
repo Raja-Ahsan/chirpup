@@ -60,7 +60,7 @@ class CharactersRowWidget extends StatelessWidget {
                 size = selectedSize;
               } else {
                 size = unselectedSize;
-                final double step = unselectedSize * 0.35;
+                final double step = unselectedSize * 0.4;
                 if (diff < 0) {
                   left = selectedLeft + (diff * step)-60;
                 } else {

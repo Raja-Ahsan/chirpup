@@ -52,14 +52,7 @@ class ParentDashboardView extends StatelessWidget {
                   child: CommonButton(
                     title: 'Switch to child Mode ',
                     borderColor: Color(0xff5A7923),
-                    onPressed: () => Navigator.pushNamed(
-                      context,
-                      AppRoutes.childProfileSelection,
-                      arguments: ChildSelectionArgs(
-                        children: state.children,
-                        selectedIndex: state.selectedChildIndex,
-                      ),
-                    ),
+                    onPressed: () => Navigator.pushNamed(context, AppRoutes.childProfileSelection),
                   ),
                 ),
                 const SizedBox(height: 16),
