@@ -1,7 +1,7 @@
 import 'package:chirp_up_app/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
-class CommonButton extends StatelessWidget {
+class CommonButton extends StatefulWidget {
   final String title;
   final Function()? onPressed;
   final bool isTransparent;
@@ -42,31 +42,56 @@ class CommonButton extends StatelessWidget {
   });
 
   @override
+  State<CommonButton> createState() => _CommonButtonState();
+}
+
+class _CommonButtonState extends State<CommonButton> {
+  bool _isPressed = false;
+
+  @override
   Widget build(BuildContext context) {
-    final Color buttonBgColor = bgColor ?? AppColors.greenColor;
-    final Color buttonBorderColor = borderColor ?? Colors.white;
+    final Color buttonBgColor = widget.bgColor ?? AppColors.greenColor;
+    final Color buttonBorderColor = widget.borderColor ?? Colors.white;
 
     return GestureDetector(
-      onTap: isLoading || !isEnabled ? null : onPressed,
-      child: Container(
-        width: horizontalPadding > 0 ? null : double.infinity,
+      onTap: widget.isLoading || !widget.isEnabled ? null : widget.onPressed,
+      onTapDown: (_) {
+        if (!widget.isLoading && widget.isEnabled) {
+          setState(() => _isPressed = true);
+        }
+      },
+      onTapUp: (_) => setState(() => _isPressed = false),
+      onTapCancel: () => setState(() => _isPressed = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 80),
+        width: widget.horizontalPadding > 0 ? null : double.infinity,
         decoration: BoxDecoration(
-          color: isTransparent ? Colors.transparent : buttonBgColor,
-          borderRadius: BorderRadius.circular(borderRadius),
+          color: widget.isTransparent
+              ? Colors.transparent
+              : _isPressed
+                  ? Color.alphaBlend(
+                      Colors.black.withValues(alpha: 0.12),
+                      buttonBgColor,
+                    )
+                  : buttonBgColor,
+          borderRadius: BorderRadius.circular(widget.borderRadius),
           border: Border.all(color: buttonBorderColor, width: 2),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(borderRadius - 2),
+          borderRadius: BorderRadius.circular(widget.borderRadius - 2),
           child: Stack(
             alignment: Alignment.center,
             children: [
               // ===== MAIN CONTENT =====
               Padding(
                 padding: EdgeInsets.symmetric(
-                  vertical: verticalPadding,
-                  horizontal: horizontalPadding > 0 ? horizontalPadding : 16,
+                  vertical: widget.verticalPadding,
+                  horizontal:
+                      widget.horizontalPadding > 0
+                          ? widget.horizontalPadding
+                          : 16,
                 ),
-                child: isLoading
+                child: widget.isLoading
                     ? const Center(
                         child: SizedBox(
                           width: 23,
@@ -81,97 +106,99 @@ class CommonButton extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          if (icon != null) ...[
-                            icon!,
+                          if (widget.icon != null) ...[
+                            widget.icon!,
                             const SizedBox(width: 8),
                           ],
                           Flexible(
                             child: Text(
-                              title,
+                              widget.title,
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: fontSize,
-                                color: textColor,
-                                fontWeight: textWeight,
-                                fontFamily: fontFamily ?? 'LuckiestGuy',
+                                fontSize: widget.fontSize,
+                                color: widget.textColor,
+                                fontWeight: widget.textWeight,
+                                fontFamily:
+                                    widget.fontFamily ?? 'LuckiestGuy',
                                 // ===== TEXT STROKE EFFECT =====
                                 shadows: [
                                   Shadow(
                                     blurRadius: 0,
-                                    offset: Offset(-2, -2),
+                                    offset: const Offset(-2, -2),
                                     color:
-                                        shadowColor ??
+                                        widget.shadowColor ??
                                         AppColors.textshadowGreen,
                                   ),
                                   // Top-Right
                                   Shadow(
                                     blurRadius: 0,
-                                    offset: Offset(2, -2),
+                                    offset: const Offset(2, -2),
                                     color:
-                                        shadowColor ??
+                                        widget.shadowColor ??
                                         AppColors.textshadowGreen,
                                   ),
                                   // Bottom-Right
                                   Shadow(
                                     blurRadius: 0,
-                                    offset: Offset(2, 2),
+                                    offset: const Offset(2, 2),
                                     color:
-                                        shadowColor ??
+                                        widget.shadowColor ??
                                         AppColors.textshadowGreen,
                                   ),
                                   // Bottom-Left
                                   Shadow(
                                     blurRadius: 0,
-                                    offset: Offset(-2, 2),
+                                    offset: const Offset(-2, 2),
                                     color:
-                                        shadowColor ??
+                                        widget.shadowColor ??
                                         AppColors.textshadowGreen,
                                   ),
                                   // Left
                                   Shadow(
                                     blurRadius: 0,
-                                    offset: Offset(-2, 0),
+                                    offset: const Offset(-2, 0),
                                     color:
-                                        shadowColor ??
+                                        widget.shadowColor ??
                                         AppColors.textshadowGreen,
                                   ),
                                   // Right
                                   Shadow(
                                     blurRadius: 0,
-                                    offset: Offset(2, 0),
+                                    offset: const Offset(2, 0),
                                     color:
-                                        shadowColor ??
+                                        widget.shadowColor ??
                                         AppColors.textshadowGreen,
                                   ),
                                   // Top
                                   Shadow(
                                     blurRadius: 0,
-                                    offset: Offset(0, -2),
+                                    offset: const Offset(0, -2),
                                     color:
-                                        shadowColor ??
+                                        widget.shadowColor ??
                                         AppColors.textshadowGreen,
                                   ),
                                   // Bottom
                                   Shadow(
                                     blurRadius: 0,
-                                    offset: Offset(0, 2),
+                                    offset: const Offset(0, 2),
                                     color:
-                                        shadowColor ??
+                                        widget.shadowColor ??
                                         AppColors.textshadowGreen,
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                          if (trailingIcon != null) ...[
+                          if (widget.trailingIcon != null) ...[
                             const SizedBox(width: 8),
-                            trailingIcon!,
+                            widget.trailingIcon!,
                           ],
                         ],
                       ),
               ),
 
-              if (!isTransparent)
+              // ===== BOTTOM SHADOW EFFECT =====
+              if (!widget.isTransparent)
                 Positioned(
                   bottom: 0,
                   left: 0,
@@ -192,7 +219,7 @@ class CommonButton extends StatelessWidget {
                 ),
 
               // ===== TOP SHINE EFFECT =====
-              if (!isTransparent)
+              if (!widget.isTransparent)
                 Positioned(
                   top: 8,
                   left: 8,
@@ -200,7 +227,7 @@ class CommonButton extends StatelessWidget {
                     angle: -39.44 * (3.14159265 / 180),
                     child: Container(
                       width: 11,
-                      height: 4.5,
+                      height: 4.5, 
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(20),
