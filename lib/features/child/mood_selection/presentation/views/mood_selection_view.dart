@@ -139,7 +139,7 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
                                                 (MediaQuery.of(
                                                       context,
                                                     ).size.height *
-                                                    0.54),
+                                                    0.52),
                                           ),
                                       itemBuilder: (context, index) {
                                         final mood = state.moods[index];

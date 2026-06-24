@@ -68,7 +68,7 @@ class AddAnotherChildView extends StatelessWidget {
                         shadowColor: AppColors.textShadowBlue,
                         horizontalPadding: 40,
                         onPressed: (){
-                          Navigator.pushNamedAndRemoveUntil(context, AppRoutes.createYourChildProfile, (route)=> false);
+                          Navigator.pushNamedAndRemoveUntil(context, AppRoutes.pickYourMagicalFriend, (route)=> false);
                         },
                       ),
                     ],
