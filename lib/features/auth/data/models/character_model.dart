@@ -1,6 +1,6 @@
 
 class CharacterModel {
-  final int id;
+  final String id;
   final String name;
   final String speciality;
   final String imagePath;

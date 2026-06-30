@@ -123,25 +123,32 @@ class CreateYourChildProfileView extends StatelessWidget {
                   ),
                 ),
 
-                // ── BOTTOM: Fixed Button ──
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppSizes.horizontalPadding,
-                    vertical: AppSizes.verticalPadding,
-                  ),
-                  child: CommonButton(
-                    title: 'Continue',
-                    bgColor: AppColors.blueColor,
-                    shadowColor: AppColors.textShadowBlue,
-                    onPressed: () {
-                      context.read<AuthBloc>().add(
-                        CreateYourChildProfileEvent(
-                          childName: childNameController.text,
-                          context: context,
-                        ),
-                      );
-                    },
-                  ),
+                BlocBuilder<AuthBloc, AuthStates>(
+                  buildWhen: (prev, curr) => prev.isLoading != curr.isLoading,
+                  builder: (context, state) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AppSizes.horizontalPadding,
+                        vertical: AppSizes.verticalPadding,
+                      ),
+                      child: CommonButton(
+                        title: 'Continue',
+                        isLoading: state.isLoading,
+                        bgColor: AppColors.blueColor,
+                        shadowColor: AppColors.textShadowBlue,
+                        onPressed: state.isLoading
+                            ? null
+                            : () {
+                                context.read<AuthBloc>().add(
+                                  CreateYourChildProfileEvent(
+                                    childName: childNameController.text,
+                                    context: context,
+                                  ),
+                                );
+                              },
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

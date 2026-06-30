@@ -34,6 +34,8 @@ class ApiService {
     final token = StorageService.getToken();
     dynamic jsonResponse;
     try {
+      print(url);
+      print(data);
       final response = await http
           .post(
             Uri.parse(url),
@@ -45,6 +47,8 @@ class ApiService {
             },
           )
           .timeout(const Duration(seconds: 30));
+
+      print(response.body);    
 
       jsonResponse = await returnResponse(response);
     } on SocketException {
@@ -133,6 +137,7 @@ class ApiService {
       case 400:
       case 403:
       case 404:
+      case 409:
       case 422:
       case 429:
       case 500:

@@ -5,10 +5,17 @@ import 'package:chirp_up_app/core/widgets/common_button.dart';
 import 'package:chirp_up_app/core/widgets/custom_text.dart';
 import 'package:chirp_up_app/core/widgets/custom_textfield.dart';
 import 'package:chirp_up_app/core/widgets/heading_text.dart';
+import 'package:chirp_up_app/features/auth/bloc/auth_bloc.dart';
+import 'package:chirp_up_app/features/auth/bloc/auth_events.dart';
+import 'package:chirp_up_app/features/auth/bloc/auth_states.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginView extends StatelessWidget {
-  const LoginView({super.key});
+  LoginView({super.key});
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +61,15 @@ class LoginView extends StatelessWidget {
                             ),
                           ),
                           SizedBox(height: 40),
-                          CustomTextField(hintText: 'email'),
+                          CustomTextField(
+                            hintText: 'email',
+                            controller: _emailController,
+                          ),
                           SizedBox(height: 10),
-                          CustomTextField(hintText: 'password'),
+                          CustomTextField(
+                            hintText: 'password',
+                            controller: _passwordController,
+                          ),
 
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -74,7 +87,25 @@ class LoginView extends StatelessWidget {
                             ],
                           ),
                           SizedBox(height: 10),
-                          CommonButton(title: 'Enter', onPressed: ()=> Navigator.pushReplacementNamed(context, AppRoutes.whoAreYou)),
+                          BlocBuilder<AuthBloc, AuthStates>(
+                            buildWhen: (prev, curr) =>
+                                prev.isLoading != curr.isLoading,
+                            builder: (context, state) {
+                              return CommonButton(
+                                title: 'Enter',
+                                isLoading: state.isLoading,
+                                onPressed: () {
+                                  context.read<AuthBloc>().add(
+                                    LoginEvent(
+                                      context: context,
+                                      email: _emailController.text,
+                                      password: _passwordController.text,
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
                           SizedBox(height: 40),
                           Center(
                             child: CustomText(
@@ -92,7 +123,10 @@ class LoginView extends StatelessWidget {
                               shadowColor: AppColors.textShadowBlue,
                               horizontalPadding: 40,
                               fontSize: 16,
-                              onPressed: ()=> Navigator.pushReplacementNamed(context, AppRoutes.createYourAccount),
+                              onPressed: () => Navigator.pushReplacementNamed(
+                                context,
+                                AppRoutes.createYourAccount,
+                              ),
                             ),
                           ),
                         ],

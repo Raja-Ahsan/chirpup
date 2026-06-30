@@ -1,5 +1,6 @@
 import 'package:chirp_up_app/core/constants/app_sizes.dart';
 import 'package:chirp_up_app/core/routes/app_routes.dart';
+import 'package:chirp_up_app/core/services/storage_service.dart';
 import 'package:chirp_up_app/core/widgets/common_button.dart';
 import 'package:flutter/material.dart';
 
@@ -33,9 +34,23 @@ class SplashView extends StatelessWidget {
                     right: AppSizes.horizontalPadding,
                     bottom: AppSizes.verticalPadding,
                   ),
-                  child: CommonButton(title: 'Step Into the Kingdom', onPressed: (){
-                    Navigator.pushReplacementNamed(context, AppRoutes.login);
-                  },),
+                  child: CommonButton(
+                    title: 'Step Into the Kingdom',
+                    onPressed: () {
+                      final token = StorageService.getToken();
+                      if (token.isNotEmpty) {
+                        Navigator.pushReplacementNamed(
+                          context,
+                          AppRoutes.whoAreYou,
+                        );
+                      } else {
+                        Navigator.pushReplacementNamed(
+                          context,
+                          AppRoutes.login,
+                        );
+                      }
+                    },
+                  ),
                 ),
               ],
             ),

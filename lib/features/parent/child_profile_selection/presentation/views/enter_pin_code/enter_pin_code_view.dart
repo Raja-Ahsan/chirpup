@@ -164,8 +164,6 @@ class _EnterPinCodeViewState extends State<EnterPinCodeView> {
                                 "Please enter your full\nmagic code to continue.",
                               ),
                               barrierDismissible: true,
-                              rightPadding: 10,
-                              topPadding: 10,
                             );
                             return;
                           }

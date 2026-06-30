@@ -1,11 +1,11 @@
 import 'package:chirp_up_app/core/constants/app_colors.dart';
 import 'package:chirp_up_app/core/constants/app_sizes.dart';
-import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/widgets/common_button.dart';
 import 'package:chirp_up_app/core/widgets/custom_text.dart';
 import 'package:chirp_up_app/core/widgets/heading_text.dart';
 import 'package:chirp_up_app/features/auth/bloc/auth_bloc.dart';
 import 'package:chirp_up_app/features/auth/bloc/auth_events.dart';
+import 'package:chirp_up_app/features/auth/bloc/auth_states.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
@@ -47,18 +47,31 @@ class _SetupYourPinViewState extends State<SetupYourPinView> {
               child: Column(
                 children: [
                   if (!widget.isConfirmMode)
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, AppRoutes.tapOnCastle);
-                        },
-                        child: CustomText(
-                          text: 'skip',
-                          fontSize: 18,
-                          fontFamily: 'LuckiestGuy',
-                        ),
-                      ),
+                    BlocBuilder<AuthBloc, AuthStates>(
+                      buildWhen: (prev, curr) =>
+                          prev.isSkipPin != curr.isSkipPin,
+                      builder: (context, state) {
+                        return Align(
+                          alignment: Alignment.topRight,
+                          child: GestureDetector(
+                            onTap: state.isSkipPin
+                                ? null
+                                : () {
+                                    context.read<AuthBloc>().add(
+                                      SkipPinEvent(context: context),
+                                    );
+                                  },
+                            child: CustomText(
+                              text: 'skip',
+                              fontSize: 18,
+                              fontFamily: 'LuckiestGuy',
+                              color: state.isSkipPin
+                                  ? Colors.grey[300]
+                                  : Colors.white,
+                            ),
+                          ),
+                        );
+                      },
                     )
                   else
                     const SizedBox(height: 24),
@@ -166,19 +179,26 @@ class _SetupYourPinViewState extends State<SetupYourPinView> {
                   ),
 
                   const Spacer(),
-                  CommonButton(
-                    title: widget.isConfirmMode ? 'confirm' : 'continue',
-                    onPressed: () {
-                      final pin = _pinController.text;
-                      if (widget.isConfirmMode) {
-                        context.read<AuthBloc>().add(
-                          ConfirmPinEvent(context: context, confirmPin: pin),
-                        );
-                      } else {
-                        context.read<AuthBloc>().add(
-                          EnterPinEvent(context: context, pin: pin),
-                        );
-                      }
+                  BlocBuilder<AuthBloc, AuthStates>(
+                    buildWhen: (prev, curr) => prev.isLoading != curr.isLoading,
+                    builder: (context, state) {
+                      return CommonButton(
+                        title: widget.isConfirmMode ? 'confirm' : 'continue',
+                        isLoading: state.isLoading,
+                        onPressed: () {
+                          final pin = _pinController.text;
+
+                          if (widget.isConfirmMode) {
+                            context.read<AuthBloc>().add(
+                              SetupPinEvent(context: context, pin: pin),
+                            );
+                          } else {
+                            context.read<AuthBloc>().add(
+                              EnterPinEvent(context: context, pin: pin),
+                            );
+                          }
+                        },
+                      );
                     },
                   ),
                 ],

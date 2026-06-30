@@ -1,16 +1,23 @@
 import 'package:chirp_up_app/core/constants/app_colors.dart';
 import 'package:chirp_up_app/core/constants/app_sizes.dart';
 import 'package:chirp_up_app/core/routes/app_routes.dart';
-import 'package:chirp_up_app/core/utils/show_common_dialog.dart';
 import 'package:chirp_up_app/core/widgets/common_button.dart';
 import 'package:chirp_up_app/core/widgets/custom_text.dart';
 import 'package:chirp_up_app/core/widgets/custom_textfield.dart';
 import 'package:chirp_up_app/core/widgets/heading_text.dart';
-import 'package:chirp_up_app/features/auth/presentation/widgets/otp_dialog.dart';
+import 'package:chirp_up_app/features/auth/bloc/auth_bloc.dart';
+import 'package:chirp_up_app/features/auth/bloc/auth_events.dart';
+import 'package:chirp_up_app/features/auth/bloc/auth_states.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateYourAccountView extends StatelessWidget {
-  const CreateYourAccountView({super.key});
+  CreateYourAccountView({super.key});
+
+  final TextEditingController fullNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -57,24 +64,48 @@ class CreateYourAccountView extends StatelessWidget {
                             ),
                           ),
                           SizedBox(height: 40),
-                          CustomTextField(hintText: 'full name'),
+                          CustomTextField(
+                            hintText: 'full name',
+                            controller: fullNameController,
+                          ),
                           SizedBox(height: 10),
-                          CustomTextField(hintText: 'email'),
+                          CustomTextField(
+                            hintText: 'email',
+                            controller: emailController,
+                          ),
                           SizedBox(height: 10),
-                          CustomTextField(hintText: 'password'),
+                          CustomTextField(
+                            hintText: 'password',
+                            controller: passwordController,
+                          ),
                           SizedBox(height: 10),
-                          CustomTextField(hintText: 'confirm password'),
+                          CustomTextField(
+                            hintText: 'confirm password',
+                            controller: confirmPasswordController,
+                          ),
 
                           SizedBox(height: 30),
-                          CommonButton(
-                            title: 'Create Account',
-                            bgColor: AppColors.blueColor,
-                            shadowColor: AppColors.textShadowBlue,
-                            onPressed: () {
-                              showCommonDialog(
-                                context: context,
-                                child: otpDialog(context),
-                                barrierDismissible: true,
+                          BlocBuilder<AuthBloc, AuthStates>(
+                            buildWhen: (prev, curr) =>
+                                prev.isLoading != curr.isLoading,
+                            builder: (context, state) {
+                              return CommonButton(
+                                title: 'Create Account',
+                                isLoading: state.isLoading,
+                                bgColor: AppColors.blueColor,
+                                shadowColor: AppColors.textShadowBlue,
+                                onPressed: () {
+                                  context.read<AuthBloc>().add(
+                                    RegisterEvent(
+                                      context: context,
+                                      fullName: fullNameController.text,
+                                      email: emailController.text,
+                                      password: passwordController.text,
+                                      confirmPassword:
+                                          confirmPasswordController.text,
+                                    ),
+                                  );
+                                },
                               );
                             },
                           ),

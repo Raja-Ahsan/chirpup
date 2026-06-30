@@ -35,9 +35,9 @@ class RouteGenerator {
       case AppRoutes.splash:
         return MaterialPageRoute(builder: (_) => const SplashView());
       case AppRoutes.login:
-        return MaterialPageRoute(builder: (_) => const LoginView());
+        return MaterialPageRoute(builder: (_) => LoginView());
       case AppRoutes.createYourAccount:
-        return MaterialPageRoute(builder: (_) => const CreateYourAccountView());
+        return MaterialPageRoute(builder: (_) => CreateYourAccountView());
       case AppRoutes.createYourChildProfile:
         return MaterialPageRoute(builder: (_) => CreateYourChildProfileView());
       case AppRoutes.kingdomIsReady:
