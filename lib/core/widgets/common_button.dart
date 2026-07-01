@@ -82,27 +82,21 @@ class _CommonButtonState extends State<CommonButton> {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // ===== MAIN CONTENT =====
               Padding(
                 padding: EdgeInsets.symmetric(
                   vertical: widget.verticalPadding,
-                  horizontal:
-                      widget.horizontalPadding > 0
-                          ? widget.horizontalPadding
-                          : 16,
+                  horizontal: widget.horizontalPadding > 0
+                      ? widget.horizontalPadding
+                      : 16,
                 ),
-                child: widget.isLoading
-                    ? const Center(
-                        child: SizedBox(
-                          width: 23,
-                          height: 23,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        ),
-                      )
-                    : Row(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // ✅ Text always in layout — holds button size
+                    // Opacity 0 when loading — invisible but still takes space
+                    Opacity(
+                      opacity: widget.isLoading ? 0.0 : 1.0,
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -118,73 +112,16 @@ class _CommonButtonState extends State<CommonButton> {
                                 fontSize: widget.fontSize,
                                 color: widget.textColor,
                                 fontWeight: widget.textWeight,
-                                fontFamily:
-                                    widget.fontFamily ?? 'LuckiestGuy',
-                                // ===== TEXT STROKE EFFECT =====
+                                fontFamily: widget.fontFamily ?? 'LuckiestGuy',
                                 shadows: [
-                                  Shadow(
-                                    blurRadius: 0,
-                                    offset: const Offset(-2, -2),
-                                    color:
-                                        widget.shadowColor ??
-                                        AppColors.textshadowGreen,
-                                  ),
-                                  // Top-Right
-                                  Shadow(
-                                    blurRadius: 0,
-                                    offset: const Offset(2, -2),
-                                    color:
-                                        widget.shadowColor ??
-                                        AppColors.textshadowGreen,
-                                  ),
-                                  // Bottom-Right
-                                  Shadow(
-                                    blurRadius: 0,
-                                    offset: const Offset(2, 2),
-                                    color:
-                                        widget.shadowColor ??
-                                        AppColors.textshadowGreen,
-                                  ),
-                                  // Bottom-Left
-                                  Shadow(
-                                    blurRadius: 0,
-                                    offset: const Offset(-2, 2),
-                                    color:
-                                        widget.shadowColor ??
-                                        AppColors.textshadowGreen,
-                                  ),
-                                  // Left
-                                  Shadow(
-                                    blurRadius: 0,
-                                    offset: const Offset(-2, 0),
-                                    color:
-                                        widget.shadowColor ??
-                                        AppColors.textshadowGreen,
-                                  ),
-                                  // Right
-                                  Shadow(
-                                    blurRadius: 0,
-                                    offset: const Offset(2, 0),
-                                    color:
-                                        widget.shadowColor ??
-                                        AppColors.textshadowGreen,
-                                  ),
-                                  // Top
-                                  Shadow(
-                                    blurRadius: 0,
-                                    offset: const Offset(0, -2),
-                                    color:
-                                        widget.shadowColor ??
-                                        AppColors.textshadowGreen,
-                                  ),
-                                  // Bottom
-                                  Shadow(
-                                    blurRadius: 0,
-                                    offset: const Offset(0, 2),
-                                    color:
-                                        widget.shadowColor ??
-                                        AppColors.textshadowGreen,
-                                  ),
+                                  Shadow(blurRadius: 0, offset: const Offset(-2, -2), color: widget.shadowColor ?? AppColors.textshadowGreen),
+                                  Shadow(blurRadius: 0, offset: const Offset(2, -2), color: widget.shadowColor ?? AppColors.textshadowGreen),
+                                  Shadow(blurRadius: 0, offset: const Offset(2, 2), color: widget.shadowColor ?? AppColors.textshadowGreen),
+                                  Shadow(blurRadius: 0, offset: const Offset(-2, 2), color: widget.shadowColor ?? AppColors.textshadowGreen),
+                                  Shadow(blurRadius: 0, offset: const Offset(-2, 0), color: widget.shadowColor ?? AppColors.textshadowGreen),
+                                  Shadow(blurRadius: 0, offset: const Offset(2, 0), color: widget.shadowColor ?? AppColors.textshadowGreen),
+                                  Shadow(blurRadius: 0, offset: const Offset(0, -2), color: widget.shadowColor ?? AppColors.textshadowGreen),
+                                  Shadow(blurRadius: 0, offset: const Offset(0, 2), color: widget.shadowColor ?? AppColors.textshadowGreen),
                                 ],
                               ),
                             ),
@@ -195,39 +132,46 @@ class _CommonButtonState extends State<CommonButton> {
                           ],
                         ],
                       ),
+                    ),
+
+                    // ✅ Loader sits on top — no layout shift at all
+                    if (widget.isLoading)
+                      const SizedBox(
+                        width: 23,
+                        height: 23,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      ),
+                  ],
+                ),
               ),
 
-              // ===== BOTTOM SHADOW EFFECT =====
+              // Bottom shadow
               if (!widget.isTransparent)
                 Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
+                  bottom: 0, left: 0, right: 0,
                   child: Container(
                     height: 8,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
-                        colors: [
-                          Colors.black.withValues(alpha: 0.3),
-                          Colors.transparent,
-                        ],
+                        colors: [Colors.black.withValues(alpha: 0.3), Colors.transparent],
                       ),
                     ),
                   ),
                 ),
 
-              // ===== TOP SHINE EFFECT =====
+              // Top shine
               if (!widget.isTransparent)
                 Positioned(
-                  top: 8,
-                  left: 8,
+                  top: 8, left: 8,
                   child: Transform.rotate(
                     angle: -39.44 * (3.14159265 / 180),
                     child: Container(
-                      width: 11,
-                      height: 4.5, 
+                      width: 11, height: 4.5,
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(20),

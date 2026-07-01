@@ -10,7 +10,7 @@ Widget errorDialog(BuildContext context, String dialogText) {
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          IconButton(onPressed: ()=>Navigator.pop(context), icon: SvgPicture.asset('assets/svg/cross.svg')),
+          GestureDetector(onTap: ()=>Navigator.pop(context), child: SvgPicture.asset('assets/svg/cross.svg')),
         ],
       ),
       Image.asset('assets/png/warning.png', height: 57),
@@ -21,7 +21,6 @@ Widget errorDialog(BuildContext context, String dialogText) {
         color: AppColors.dialogHeadingColor,
         fontFamily: 'LuckiestGuy',
       ),
-      SizedBox(height: 5),
       CustomText(
         text: dialogText,
         fontSize: 14,
@@ -29,6 +28,7 @@ Widget errorDialog(BuildContext context, String dialogText) {
         textAlign: TextAlign.center,
         weight: FontWeight.w600,
       ),
+      SizedBox(height: 20)
     ],
   );
 }

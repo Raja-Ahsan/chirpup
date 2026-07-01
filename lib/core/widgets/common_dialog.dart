@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 
 class CommonDialog extends StatelessWidget {
   final Widget child;
-  final double? rightPadding;
-  final double? topPadding;
+  final double? horizontalPadding;
+  final double? verticalPadding;
 
   const CommonDialog({
     super.key,
     required this.child,
-    this.rightPadding,
-    this.topPadding,
+    this.horizontalPadding,
+    this.verticalPadding,
   });
 
   @override
@@ -33,11 +33,9 @@ class CommonDialog extends StatelessWidget {
                 ),
               ],
             ),
-            padding: EdgeInsets.fromLTRB(
-              24,
-              topPadding ?? 24,
-              rightPadding ?? 24,
-              28,
+            padding: EdgeInsets.symmetric(
+              horizontal: horizontalPadding ?? 24,
+              vertical: verticalPadding ?? 24,
             ),
             child: child,
           ),
