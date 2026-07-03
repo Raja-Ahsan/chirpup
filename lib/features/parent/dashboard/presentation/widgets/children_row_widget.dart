@@ -1,18 +1,22 @@
-import 'package:chirp_up_app/features/parent/dashboard/data/models/child_model.dart';
+import 'package:chirp_up_app/core/utils/helper_methods.dart';
+import 'package:chirp_up_app/features/parent/dashboard/data/models/all_children_model.dart';
 import 'package:flutter/material.dart';
 
 class ChildrenRow extends StatelessWidget {
-  final List<ChildModel> children;
+  final List<Child> children;
   final int selectedIdx;
   final double availableWidth;
   final Function(int) onSelect;
 
   const ChildrenRow({
+    super.key,
     required this.children,
     required this.selectedIdx,
     required this.availableWidth,
     required this.onSelect,
   });
+
+  bool _isDragon(String path) => path.contains('baby_dragon');
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +29,8 @@ class ChildrenRow extends StatelessWidget {
     final double selectedLeft = (w - selectedSize) / 2;
 
     final renderOrder = [
-      ...List.generate(
-        children.length,
-        (i) => i,
-      ).where((i) => i != selectedIdx),
+      ...List.generate(children.length, (i) => i)
+          .where((i) => i != selectedIdx),
       selectedIdx,
     ];
 
@@ -42,41 +44,45 @@ class ChildrenRow extends StatelessWidget {
           final bool isSelected = index == selectedIdx;
           final int diff = index - selectedIdx;
 
+          final imagePath = HelperMethods().imagePathFromCharacterId(
+            child.characterId,
+          );
+
+          final bool isDragon = _isDragon(imagePath);
+
           double left;
           double top;
           double size;
-          bool _isDragon(String path) => path.contains('baby_dragon');
 
           if (isSelected) {
-            size = _isDragon(child.imagePath)
-                ? selectedSize * 0.62
-                : selectedSize;
-            top = _isDragon(child.imagePath) ? (selectedSize - size) / 2 : 0;
-            left = _isDragon(child.imagePath)
-                ? selectedLeft + (selectedSize - size) / 2
-                : selectedLeft;
+            size = isDragon ? selectedSize * 0.62 : selectedSize;
+
+            // Bottom Align
+            top = selectedSize - size;
+
+            // Center Horizontally
+            left = selectedLeft + (selectedSize - size) / 2;
           } else {
-            size = _isDragon(child.imagePath)
-                ? unselectedSize * 0.62
-                : unselectedSize;
+            size = isDragon ? unselectedSize * 0.62 : unselectedSize;
+
             final double step = unselectedSize * 0.35;
+
             if (diff < 0) {
-              left =
-                  selectedLeft +
+              left = selectedLeft +
                   (diff * step) -
-                  (_isDragon(child.imagePath) ? -30 : 20);
+                  (isDragon ? -30 : 20);
             } else {
-              left =
-                  selectedLeft +
+              left = selectedLeft +
                   selectedSize -
                   unselectedSize +
                   (diff * step) +
-                  (_isDragon(child.imagePath) ? 40 : 10);
+                  (isDragon ? 40 : 10);
             }
-            top = _isDragon(child.imagePath)
-                ? selectedSize - unselectedSize * 0.9
-                : selectedSize - unselectedSize;
+
+            // Bottom Align
+            top = selectedSize - size;
           }
+
           return AnimatedPositioned(
             key: ValueKey('child_$index'),
             duration: const Duration(milliseconds: 300),
@@ -94,13 +100,16 @@ class ChildrenRow extends StatelessWidget {
                     final int newIndex = index > selectedIdx
                         ? selectedIdx + 1
                         : selectedIdx - 1;
-                    onSelect(newIndex); // ✅ callback call karo
+                    onSelect(newIndex);
                   }
                 },
                 child: AnimatedOpacity(
                   duration: const Duration(milliseconds: 250),
                   opacity: isSelected ? 1.0 : 0.45,
-                  child: Image.asset(child.imagePath, fit: BoxFit.contain),
+                  child: Image.asset(
+                    imagePath,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
             ),

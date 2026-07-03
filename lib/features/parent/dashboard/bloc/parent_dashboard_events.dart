@@ -6,10 +6,23 @@ abstract class ParentDashboardEvents extends Equatable {
   List<Object?> get props => [];
 }
 
+class FetchChildrenEvent extends ParentDashboardEvents {
+  const FetchChildrenEvent();
+}
+
 class SelectChildEvent extends ParentDashboardEvents {
   final int index;
-  const SelectChildEvent(this.index);
+  final String childId;
+  const SelectChildEvent(this.index, this.childId);
 
   @override
-  List<Object?> get props => [index];
+  List<Object?> get props => [index, childId];
+}
+
+class FetchChildWeeklyStatsEvent extends ParentDashboardEvents {
+  final String childId;
+  const FetchChildWeeklyStatsEvent(this.childId);
+
+  @override
+  List<Object?> get props => [childId];
 }

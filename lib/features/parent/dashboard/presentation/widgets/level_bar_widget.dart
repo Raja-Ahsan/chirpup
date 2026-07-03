@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class LevelBar extends StatelessWidget {
   final double percent;
-  final int level;
+  final num level;
 
   const LevelBar({required this.percent, required this.level});
 

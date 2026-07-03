@@ -22,6 +22,7 @@ class ApiService {
           )
           .timeout(const Duration(seconds: 30));
       jsonResponse = await returnResponse(response);
+      print(response.body);
     } on SocketException {
       throw NoInternetException('No Internet');
     } on TimeoutException {
@@ -135,6 +136,7 @@ class ApiService {
       case 200:
       case 201:
       case 400:
+      case 401:
       case 403:
       case 404:
       case 409:
@@ -143,17 +145,17 @@ class ApiService {
       case 500:
         return jsonDecode(response.body);
 
-      case 401:
-        if (!_isSessionExpiredHandled) {
-          _isSessionExpiredHandled = true;
+      // case 401:
+      //   if (!_isSessionExpiredHandled) {
+      //     _isSessionExpiredHandled = true;
 
-          await StorageService.removeToken();
-          Future.delayed(const Duration(milliseconds: 200), () {
-            // Get.offAll(() => LoginView());
-          });
-        }
+      //     await StorageService.removeToken();
+      //     Future.delayed(const Duration(milliseconds: 200), () {
+      //       // Get.offAll(() => LoginView());
+      //     });
+      //   }
 
-        throw UnAuthorisedException('Session expired');
+      //   throw UnAuthorisedException('Session expired');
 
       default:
         throw FetchDataException(
