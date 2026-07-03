@@ -4,6 +4,7 @@ import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/widgets/common_button.dart';
 import 'package:chirp_up_app/core/widgets/custom_text.dart';
 import 'package:chirp_up_app/core/widgets/heading_text.dart';
+import 'package:chirp_up_app/features/child/child_dashboard/presentation/views/child_dashboard_view.dart';
 import 'package:chirp_up_app/features/child/mood_selection/bloc/mood_selection_bloc.dart';
 import 'package:chirp_up_app/features/child/mood_selection/bloc/mood_selection_events.dart';
 import 'package:chirp_up_app/features/child/mood_selection/bloc/mood_selection_states.dart';
@@ -12,7 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MoodSelectionView extends StatefulWidget {
-  const MoodSelectionView({super.key});
+  final String? childId;
+  const MoodSelectionView({super.key, this.childId});
 
   @override
   State<MoodSelectionView> createState() => _MoodSelectionViewState();
@@ -22,6 +24,7 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
+
   @override
   void initState() {
     super.initState();
@@ -41,12 +44,23 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
     super.dispose();
   }
 
-  Future<void> _onEnterKingdom(BuildContext context) async {
+  // 👈 ye callback bloc ko diya jayega, success pe bloc isko await karega
+  Future<void> _playAnimationAndNavigate(BuildContext context) async {
     await _controller.forward();
     await Future.delayed(const Duration(milliseconds: 100));
     if (context.mounted) {
-      Navigator.pushReplacementNamed(context, AppRoutes.childDashboard);
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> ChildDashboardView(childId: widget.childId??'')));
     }
+  }
+
+  void _onEnterKingdom(BuildContext context) {
+    context.read<MoodSelectionBloc>().add(
+      SubmitMoodEvent(
+        context,
+        widget.childId ?? '',
+        () => _playAnimationAndNavigate(context),
+      ),
+    );
   }
 
   @override
@@ -122,73 +136,88 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
                                     padding: EdgeInsets.all(
                                       AppSizes.horizontalPadding,
                                     ),
-                                    child: GridView.builder(
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      itemCount: state.moods.length,
-                                      gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 2,
-                                            crossAxisSpacing: 14,
-                                            mainAxisSpacing: 2,
-                                            childAspectRatio:
-                                                MediaQuery.of(
-                                                  context,
-                                                ).size.width /
-                                                (MediaQuery.of(
-                                                      context,
-                                                    ).size.height *
-                                                    0.52),
-                                          ),
-                                      itemBuilder: (context, index) {
-                                        final mood = state.moods[index];
-                                        final bool isSelected =
-                                            state.selectedMoodIndex == index;
-                                        final screenWidth = MediaQuery.of(
-                                          context,
-                                        ).size.width;
-                                        final boxHeight = screenWidth * 0.26;
+                                    child: LayoutBuilder(
+                                      builder: (context, constraints) {
+                                        const crossAxisSpacing = 14.0;
+                                        final itemWidth =
+                                            (constraints.maxWidth -
+                                                crossAxisSpacing) /
+                                            2;
+                                        final boxHeight = itemWidth.clamp(
+                                          70.0,
+                                          90.0,
+                                        );
+                                        const labelBlockHeight = 34.0;
+                                        final itemHeight =
+                                            boxHeight + 8 + labelBlockHeight;
+                                        final aspectRatio =
+                                            itemWidth / itemHeight;
 
-                                        return GestureDetector(
-                                          onTap: () => context
-                                              .read<MoodSelectionBloc>()
-                                              .add(SelectMoodEvent(index)),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              AnimatedContainer(
-                                                duration: const Duration(
-                                                  milliseconds: 200,
-                                                ),
+                                        return GridView.builder(
+                                          shrinkWrap: true,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          itemCount: state.moods.length,
+                                          gridDelegate:
+                                              SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount: 2,
+                                                crossAxisSpacing:
+                                                    crossAxisSpacing,
+                                                mainAxisSpacing: 2,
+                                                childAspectRatio: aspectRatio,
+                                              ),
+                                          itemBuilder: (context, index) {
+                                            final mood = state.moods[index];
+                                            final bool isSelected =
+                                                state.selectedMoodIndex ==
+                                                index;
 
-                                                width: double.infinity,
-                                                height: boxHeight,
-                                                decoration: BoxDecoration(
-                                                  color: isSelected
-                                                      ? mood.selectedBgColor
-                                                      : mood.bgColor,
-                                                  borderRadius:
-                                                      BorderRadius.circular(30),
-                                                ),
-                                                child: Center(
-                                                  child: Image.asset(
-                                                    mood.imagePath,
-                                                    height: boxHeight * 0.72,
-                                                    fit: BoxFit.contain,
+                                            return GestureDetector(
+                                              onTap: () => context
+                                                  .read<MoodSelectionBloc>()
+                                                  .add(SelectMoodEvent(index)),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  AnimatedContainer(
+                                                    duration: const Duration(
+                                                      milliseconds: 200,
+                                                    ),
+                                                    width: double.infinity,
+                                                    height: boxHeight,
+                                                    decoration: BoxDecoration(
+                                                      color: isSelected
+                                                          ? mood.selectedBgColor
+                                                          : mood.bgColor,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            30,
+                                                          ),
+                                                    ),
+                                                    child: Center(
+                                                      child: Image.asset(
+                                                        mood.imagePath,
+                                                        height:
+                                                            boxHeight * 0.72,
+                                                        fit: BoxFit.contain,
+                                                      ),
+                                                    ),
                                                   ),
-                                                ),
+                                                  const SizedBox(height: 8),
+                                                  HeadingText(
+                                                    text: mood.label
+                                                        .toUpperCase(),
+                                                    fontSize: 20,
+                                                    textAlign: TextAlign.center,
+                                                    color: const Color(
+                                                      0xff645973,
+                                                    ),
+                                                    shadowColor: Colors.white,
+                                                  ),
+                                                ],
                                               ),
-                                              const SizedBox(height: 8),
-                                              HeadingText(
-                                                text: mood.label.toUpperCase(),
-                                                fontSize: 20,
-                                                textAlign: TextAlign.center,
-                                                color: const Color(0xff645973),
-                                                shadowColor: Colors.white,
-                                              ),
-                                            ],
-                                          ),
+                                            );
+                                          },
                                         );
                                       },
                                     ),
@@ -196,49 +225,73 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
 
                                   const SizedBox(height: 15),
 
+                                  if (state.suggestedGames.isEmpty) ...[
+                                    SizedBox(height: 25),
+                                    Center(
+                                      child: CustomText(
+                                        text:
+                                            'Please Select your Mood to\nSee Today\'s Adventure',
+                                        fontSize: 14,
+                                        weight: FontWeight.w700,
+                                        color: AppColors.dialogGreyTextColor,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    SizedBox(height: 25),
+                                  ]
                                   // ── Magical Adventures ──
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: const Color(0xffECF3F6),
+                                  else
+                                    Container(
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: const Color(0xffECF3F6),
+                                      ),
+                                      padding: EdgeInsets.all(
+                                        AppSizes.horizontalPadding,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(height: 5),
+                                          HeadingText(
+                                            text:
+                                                'Magical Adventures For Today',
+                                            fontSize: 20,
+                                            color: const Color(0xff645973),
+                                            shadowColor: Colors.white,
+                                          ),
+                                          const SizedBox(height: 10),
+                                          for (
+                                            int i = 0;
+                                            i < state.suggestedGames.length;
+                                            i++
+                                          ) ...[
+                                            AdventureCard(
+                                              label:
+                                                  state.suggestedGames[i].label,
+                                              imagePath: state
+                                                  .suggestedGames[i]
+                                                  .imagePath,
+                                              bgColor: state
+                                                  .suggestedGames[i]
+                                                  .bgColor,
+                                              textColor: state
+                                                  .suggestedGames[i]
+                                                  .textColor,
+                                              shadowColor: state
+                                                  .suggestedGames[i]
+                                                  .shadowColor,
+                                              onTap: () {},
+                                            ),
+                                            if (i !=
+                                                state.suggestedGames.length - 1)
+                                              const SizedBox(height: 12),
+                                          ],
+                                        ],
+                                      ),
                                     ),
-                                    padding: EdgeInsets.all(
-                                      AppSizes.horizontalPadding,
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(height: 5),
-                                        HeadingText(
-                                          text: 'Magical Adventures For Today',
-                                          fontSize: 20,
-                                          color: const Color(0xff645973),
-                                          shadowColor: Colors.white,
-                                        ),
-                                        const SizedBox(height: 10),
-                                        AdventureCard(
-                                          label: 'Breathing',
-                                          imagePath:
-                                              'assets/png/dashboard_dragon.png',
-                                          bgColor: const Color(0xffD6E4F1),
-                                          textColor: const Color(0xff3889E8),
-                                          shadowColor: Colors.white,
-                                          onTap: () {},
-                                        ),
-                                        const SizedBox(height: 12),
-                                        AdventureCard(
-                                          label: 'Creative',
-                                          imagePath:
-                                              'assets/png/dashboard_paintbox.png',
-                                          bgColor: const Color(0xffEFEAD4),
-                                          textColor: const Color(0xffFFBA03),
-                                          shadowColor: const Color(0xff45391A),
-                                          onTap: () {},
-                                        ),
-                                      ],
-                                    ),
-                                  ),
 
                                   const SizedBox(height: 15),
 
@@ -247,6 +300,7 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
                                     title: 'Enter Kingdom',
                                     onPressed: () => _onEnterKingdom(context),
                                     bgColor: AppColors.purple,
+                                    isLoading: state.isLoading,
                                     borderColor: const Color(0xff5B51AE),
                                     shadowColor: const Color(0xff5B51AE),
                                   ),

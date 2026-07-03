@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 
 class MoodDayItem extends StatefulWidget {
   final MoodItem mood;
-
   const MoodDayItem({required this.mood});
 
   @override
@@ -18,7 +17,6 @@ class _MoodDayItemState extends State<MoodDayItem>
   late final AnimationController _controller;
   late final Animation<double> _fadeAnim;
   late final Animation<double> _scaleAnim;
-
   bool _visible = false;
 
   @override
@@ -29,13 +27,11 @@ class _MoodDayItemState extends State<MoodDayItem>
       duration: const Duration(milliseconds: 200),
       reverseDuration: const Duration(milliseconds: 150),
     );
-
     _fadeAnim = CurvedAnimation(
       parent: _controller,
       curve: Curves.easeOut,
       reverseCurve: Curves.easeIn,
     );
-
     _scaleAnim = Tween<double>(begin: 0.6, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
@@ -84,16 +80,36 @@ class _MoodDayItemState extends State<MoodDayItem>
             clipBehavior: Clip.none,
             alignment: Alignment.topCenter,
             children: [
-              Container(
-                width: iconSize,
-                height: 48,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: const Color(0xff4299D9),
-                ),
-                padding: const EdgeInsets.all(6),
-                child: Image.asset(widget.mood.imagePath, fit: BoxFit.contain),
-              ),
+              // ✅ Mood icon — null ho to '-' show karo
+              widget.mood.imagePath != null
+                  ? Container(
+                      width: iconSize,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: const Color(0xff4299D9),
+                      ),
+                      padding: const EdgeInsets.all(6),
+                      child: Image.asset(
+                        widget.mood.imagePath!,
+                        fit: BoxFit.contain,
+                      ),
+                    )
+                  : Container(
+                      width: iconSize,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: const Color(0xff4299D9),
+                      ),
+                      alignment: Alignment.center,
+                      child: CustomText(
+                        text: '-',
+                        fontSize: 14,
+                        textAlign: TextAlign.center,
+                        fontFamily: 'LuckiestGuy',
+                      ),
+                    ),
 
               // ✅ Animated cloud tooltip
               if (_visible)
@@ -116,7 +132,8 @@ class _MoodDayItemState extends State<MoodDayItem>
                           Padding(
                             padding: const EdgeInsets.only(bottom: 0, top: 3),
                             child: HeadingText(
-                              text: 'Calm',
+                              // ✅ null ho to "None" dikhao
+                              text: widget.mood.moodLabel ?? 'None',
                               fontSize: 14,
                               weight: FontWeight.w400,
                               shadowColor: AppColors.textShadowDarkBlue,
@@ -130,9 +147,7 @@ class _MoodDayItemState extends State<MoodDayItem>
                 ),
             ],
           ),
-
           const SizedBox(height: 6),
-
           CustomText(
             text: widget.mood.day,
             fontSize: 14,
@@ -147,7 +162,31 @@ class _MoodDayItemState extends State<MoodDayItem>
 
 class MoodItem {
   final String day;
-  final String imagePath;
+  final String? imagePath;
+  final String? moodLabel;
 
-  const MoodItem({required this.day, required this.imagePath});
+  const MoodItem({required this.day, this.imagePath, this.moodLabel});
+}
+
+String? moodImagePath(String? mood) {
+  if (mood == null) return null;
+  switch (mood.toLowerCase()) {
+    case 'happy':
+      return 'assets/png/happy_mood.png';
+    case 'calm':
+      return 'assets/png/calm_mood.png';
+    case 'sleepy':
+      return 'assets/png/sleepy_mood.png';
+    case 'angry':
+      return 'assets/png/angry_mood.png';
+    case 'sad':
+      return 'assets/png/sad_mood.png';
+    default:
+      return null;
+  }
+}
+
+String moodLabel(String? mood) {
+  if (mood == null) return 'None';
+  return mood[0].toUpperCase() + mood.substring(1).toLowerCase();
 }

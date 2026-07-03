@@ -1,12 +1,11 @@
 import 'package:chirp_up_app/core/constants/app_colors.dart';
 import 'package:chirp_up_app/core/constants/app_sizes.dart';
-import 'package:chirp_up_app/core/routes/app_routes.dart';
-import 'package:chirp_up_app/core/utils/show_common_dialog.dart';
+import 'package:chirp_up_app/core/utils/helper_methods.dart';
 import 'package:chirp_up_app/core/widgets/common_button.dart';
 import 'package:chirp_up_app/core/widgets/custom_text.dart';
-import 'package:chirp_up_app/core/widgets/error_dialog.dart';
 import 'package:chirp_up_app/core/widgets/heading_text.dart';
 import 'package:chirp_up_app/features/parent/child_profile_selection/bloc/child_profile_selection_bloc.dart';
+import 'package:chirp_up_app/features/parent/child_profile_selection/bloc/child_profile_selection_events.dart';
 import 'package:chirp_up_app/features/parent/child_profile_selection/bloc/child_profile_selection_states.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,21 +31,17 @@ class _EnterPinCodeViewState extends State<EnterPinCodeView> {
   Widget build(BuildContext context) {
     return BlocBuilder<ChildProfileSelectionBloc, ChildProfileSelectionStates>(
       builder: (context, state) {
-        final selected = state.children.isEmpty
-            ? null
-            : state.children[state.selectedChildIndex];
+        final selected = state.selectedChild;
 
         return Scaffold(
           body: Stack(
             children: [
-              // ── Background ──
               Positioned.fill(
                 child: Image.asset(
                   "assets/png/child_selection_bg.png",
                   fit: BoxFit.cover,
                 ),
               ),
-
               SafeArea(
                 child: Padding(
                   padding: EdgeInsets.symmetric(
@@ -56,19 +51,21 @@ class _EnterPinCodeViewState extends State<EnterPinCodeView> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // ── Character Image ──
+                      // ── Character Image ─────────────────────────────────
                       if (selected != null)
                         Image.asset(
-                          selected.imagePath,
+                          HelperMethods().imagePathFromCharacterId(
+                            selected.characterId,
+                          ),
                           height: MediaQuery.of(context).size.height * 0.4,
                         ),
 
                       const SizedBox(height: 10),
 
-                      // ── Name ──
+                      // ── Name + Age ──────────────────────────────────────
                       if (selected != null) ...[
                         HeadingText(
-                          text: selected.name.toUpperCase(),
+                          text: (selected.name ?? '').toUpperCase(),
                           fontSize: 32,
                           color: AppColors.textYellow,
                           textAlign: TextAlign.center,
@@ -76,14 +73,15 @@ class _EnterPinCodeViewState extends State<EnterPinCodeView> {
                           lineSpacing: 1,
                         ),
                         CustomText(
-                          text: selected.ageRange.toUpperCase(),
+                          text: (selected.age ?? '').toUpperCase(),
                           fontSize: 14,
                           fontFamily: 'LuckiestGuy',
                           textAlign: TextAlign.center,
                         ),
                       ],
+
                       const Spacer(flex: 1),
-                      // ── PIN Title ──
+
                       CustomText(
                         text: 'Your 4-Digit\nKingdom Code',
                         fontSize: 24,
@@ -94,7 +92,7 @@ class _EnterPinCodeViewState extends State<EnterPinCodeView> {
 
                       const SizedBox(height: 15),
 
-                      // ── Pinput ──
+                      // ── Pinput ──────────────────────────────────────────
                       Center(
                         child: Pinput(
                           length: 4,
@@ -151,32 +149,40 @@ class _EnterPinCodeViewState extends State<EnterPinCodeView> {
                           onCompleted: (pin) {},
                         ),
                       ),
+
                       const Spacer(flex: 1),
-                      // ── Button ──
-                      CommonButton(
-                        title: 'Enter Kingdom',
-                        onPressed: () {
-                          if (_pinController.text.length < 4) {
-                            showCommonDialog(
-                              context: context,
-                              child: errorDialog(
-                                context,
-                                "Please enter your full\nmagic code to continue.",
-                              ),
-                              barrierDismissible: true,
-                            );
-                            return;
-                          }
-                          Navigator.pushReplacementNamed(context, AppRoutes.moodSelection);
+
+                      // ── Button ──────────────────────────────────────────
+                      BlocBuilder<
+                        ChildProfileSelectionBloc,
+                        ChildProfileSelectionStates
+                      >(
+                        buildWhen: (prev, curr) =>
+                            prev.isPinLoading != curr.isPinLoading,
+                        builder: (context, state) {
+                          return CommonButton(
+                            title: 'Enter Kingdom',
+                            isLoading: state.isPinLoading,
+                            horizontalPadding: 50,
+                            bgColor: AppColors.textYellow,
+                            shadowColor: const Color(0xff6E613E),
+                            onPressed: state.isPinLoading
+                                ? null
+                                : () {
+                                    context
+                                        .read<ChildProfileSelectionBloc>()
+                                        .add(
+                                          VerifyPinEvent(
+                                            context: context,
+                                            pin: _pinController.text,
+                                          ),
+                                        );
+                                  },
+                          );
                         },
-                        horizontalPadding: 50,
-                        bgColor: AppColors.textYellow,
-                        shadowColor: Color(0xff6E613E),
                       ),
 
                       const SizedBox(height: 10),
-
-                      // ── Subtitle ──
                       CustomText(
                         text: 'Every adventure starts with magic',
                         fontSize: 14,

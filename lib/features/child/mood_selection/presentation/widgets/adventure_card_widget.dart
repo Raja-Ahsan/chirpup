@@ -34,7 +34,8 @@ class AdventureCard extends StatelessWidget {
         child: Row(
           children: [
             SizedBox(
-              width: 125,
+              width: 145,
+              height: 120,
               child: Image.asset(
                 imagePath,
                 fit: BoxFit.cover,
@@ -50,7 +51,7 @@ class AdventureCard extends StatelessWidget {
                 color: textColor,
                 shadowColor: shadowColor,
                 textAlign: TextAlign.start,
-                letterSpacing: 0,
+                lineSpacing: -0,
               ),
             ),
           ],
