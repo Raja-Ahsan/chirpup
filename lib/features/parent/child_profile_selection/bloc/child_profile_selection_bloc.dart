@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:chirp_up_app/core/routes/app_routes.dart';
+import 'package:chirp_up_app/core/services/storage_service.dart';
 import 'package:chirp_up_app/core/utils/show_common_dialog.dart';
 import 'package:chirp_up_app/core/widgets/error_dialog.dart';
 import 'package:chirp_up_app/features/child/child_dashboard/presentation/views/child_dashboard_view.dart';
@@ -139,6 +140,7 @@ class ChildProfileSelectionBloc
     BuildContext context,
     String childId,
   ) async {
+    await StorageService.setChildId(childId);
     try {
       final response = await _repository.checkTodayMood(childId);
 

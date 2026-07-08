@@ -44,32 +44,41 @@ class _ParentDashboardViewState extends State<ParentDashboardView> {
             child: Column(
               children: [
                 _TopSection(state: state, selected: selected),
-                const SizedBox(height: 16),
-                _WeeklyJourneySection(state: state),
-                const SizedBox(height: 16),
-                _MoodSection(state: state),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppSizes.horizontalPadding,
+                SafeArea(
+                  top: false,
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 16),
+                      _WeeklyJourneySection(state: state),
+                      const SizedBox(height: 16),
+                      _MoodSection(state: state),
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppSizes.horizontalPadding,
+                        ),
+                        child: Image.asset(
+                          'assets/png/dashboard_quote_banner.png',
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppSizes.horizontalPadding,
+                        ),
+                        child: CommonButton(
+                          title: 'Switch to child Mode',
+                          borderColor: const Color(0xff5A7923),
+                          onPressed: () => Navigator.pushNamed(
+                            context,
+                            AppRoutes.childProfileSelection,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
                   ),
-                  child: Image.asset('assets/png/dashboard_quote_banner.png'),
                 ),
-                const SizedBox(height: 5),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppSizes.horizontalPadding,
-                  ),
-                  child: CommonButton(
-                    title: 'Switch to child Mode',
-                    borderColor: const Color(0xff5A7923),
-                    onPressed: () => Navigator.pushNamed(
-                      context,
-                      AppRoutes.childProfileSelection,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
               ],
             ),
           );
@@ -304,6 +313,7 @@ class _WeeklyJourneySection extends StatelessWidget {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: items.length,
+                    padding: const EdgeInsets.only(top: 12),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,

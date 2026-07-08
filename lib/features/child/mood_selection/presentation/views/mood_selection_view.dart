@@ -79,6 +79,7 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
                   ),
                 ),
                 SafeArea(
+                  bottom: false,
                   child: Column(
                     children: [
                       Padding(

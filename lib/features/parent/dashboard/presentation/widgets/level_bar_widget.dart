@@ -10,7 +10,7 @@ class LevelBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final barHeight = MediaQuery.of(context).size.height * 0.3;
+    final barHeight = MediaQuery.of(context).size.height * 0.28;
     final barWidth = 23.0;
 
     return Column(
