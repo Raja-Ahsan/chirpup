@@ -89,6 +89,7 @@ class WeeklyJourneyShimmer extends StatelessWidget {
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(top: 12),
           itemCount: 4,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,

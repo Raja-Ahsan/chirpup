@@ -21,6 +21,20 @@ class StorageService {
     await _prefs?.remove('token');
   }
 
+  // ================= CHILD ID =================
+
+  static Future setChildId(String childId) async {
+    await _prefs?.setString('selected_child_id', childId);
+  }
+
+  static String getChildId() {
+    return _prefs?.getString('selected_child_id') ?? '';
+  }
+
+  static Future removeChildId() async {
+    await _prefs?.remove('selected_child_id');
+  }
+
   // ================= CLEAR ALL =================
 
   static Future clearAll() async {
