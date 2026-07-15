@@ -35,6 +35,28 @@ class StorageService {
     await _prefs?.remove('selected_child_id');
   }
 
+  // ================= BOOL FLAGS =================
+
+  static Future setBool(String key, bool value) async {
+    await _prefs?.setBool(key, value);
+  }
+
+  static bool getBool(String key) {
+    return _prefs?.getBool(key) ?? false;
+  }
+
+  static Future removeBool(String key) async {
+    await _prefs?.remove(key);
+  }
+
+  static Future setString(String key, String value) async {
+  await _prefs?.setString(key, value);
+}
+
+static String? getString(String key) {
+  return _prefs?.getString(key);
+}
+
   // ================= CLEAR ALL =================
 
   static Future clearAll() async {

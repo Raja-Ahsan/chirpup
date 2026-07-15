@@ -17,10 +17,12 @@ import 'package:chirp_up_app/features/child/child_dashboard/presentation/views/c
 import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/castle_builder/presentation/views/build_castle_view.dart';
 import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/castle_builder/presentation/views/castle_complete_view.dart';
 import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/kingdom_workshop_view.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/character_studio_book_view.dart';
 import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/choose_sketch_view.dart';
 import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/coloring_complete_view.dart';
-import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/magic_coloring_onboarding_2_view.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/choose_magical_book_view.dart';
 import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/magic_coloring_onboarding_view.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/my_drawing_book_view.dart';
 import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/sketch_coloring_view.dart';
 import 'package:chirp_up_app/features/child/mood_selection/presentation/views/mood_selection_view.dart';
 import 'package:chirp_up_app/features/parent/child_profile_selection/presentation/views/child_profile_selection/child_profile_selection_view.dart';
@@ -72,14 +74,10 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => MagicColoringOnboardingView());
       case AppRoutes.kingdomWorkShop:
         return MaterialPageRoute(builder: (_) => KingdomWorkshopView());
-      case AppRoutes.magicColoringOnboarding2:
-        return MaterialPageRoute(
-          builder: (_) => MagicColoringOnboarding2View(),
-        );
+      case AppRoutes.chooseMagicalBook:
+        return MaterialPageRoute(builder: (_) => ChooseMagicalBookView());
       case AppRoutes.chooseSketch:
         return MaterialPageRoute(builder: (_) => ChooseSketchView());
-      case AppRoutes.sketchColoring:
-        return MaterialPageRoute(builder: (_) => SketchColoringView());
       case AppRoutes.coloringComplete:
         return MaterialPageRoute(builder: (_) => ColoringCompleteView());
       case AppRoutes.buildCastle:
@@ -97,7 +95,17 @@ class RouteGenerator {
       case AppRoutes.breathOfKingdomGame:
         return MaterialPageRoute(builder: (_) => BreathOfKingdomGameView());
       case AppRoutes.breathOfKingdomGameComplete:
-        return MaterialPageRoute(builder: (_) => BreathOfKingdomGameCompleteView());
+        return MaterialPageRoute(
+          builder: (_) => BreathOfKingdomGameCompleteView(),
+        );
+      case AppRoutes.myDrawingBook:
+        return MaterialPageRoute(
+          builder: (_) => MyDrawingBookView(),
+        );
+      case AppRoutes.characterStudioBook:
+        return MaterialPageRoute(
+          builder: (_) => CharacterStudioBookView(),
+        );
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

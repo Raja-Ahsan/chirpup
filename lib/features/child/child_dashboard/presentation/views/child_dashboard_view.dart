@@ -13,6 +13,7 @@ import 'package:chirp_up_app/features/child/child_dashboard/bloc/child_dashboard
 import 'package:chirp_up_app/features/child/child_dashboard/data/character_gifs_map.dart';
 import 'package:chirp_up_app/features/child/child_dashboard/presentation/widgets/mood_chip_widget.dart';
 import 'package:chirp_up_app/features/child/child_dashboard/presentation/widgets/shimmer_box_widget.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/kingdom_workshop_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
@@ -755,61 +756,72 @@ class _ChildDashboardViewState extends State<ChildDashboardView>
 
   // ── Games grid (real) ──
   Widget _buildGamesGrid(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final double itemWidth = (constraints.maxWidth - 10) / 2;
-        final double itemHeight = itemWidth * 1.3;
+    return BlocBuilder<ChildDashboardBloc, ChildDashboardStates>(
+      builder: (context, state) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final double itemWidth = (constraints.maxWidth - 10) / 2;
+            final double itemHeight = itemWidth * 1.3;
 
-        return Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            return Column(
               children: [
-                InkWell(
-                  onTap: () => Navigator.pushNamed(
-                    context,
-                    AppRoutes.breathOfKingdomOnboarding,
-                  ),
-                  child: Image.asset(
-                    'assets/png/breath_of_kingdom_banner.png',
-                    width: itemWidth,
-                    height: itemHeight,
-                    fit: BoxFit.fill,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      onTap: () => Navigator.pushNamed(
+                        context,
+                        AppRoutes.breathOfKingdomOnboarding,
+                      ),
+                      child: Image.asset(
+                        'assets/png/breath_of_kingdom_banner.png',
+                        width: itemWidth,
+                        height: itemHeight,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    InkWell(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => KingdomWorkshopView(
+                            childId: _resolvedChildId,
+                            characterId: state.dashboardInfo?.characterId ?? '',
+                          ),
+                        ),
+                      ),
+                      child: Image.asset(
+                        'assets/png/kingdom_workshop_banner.png',
+                        width: itemWidth,
+                        height: itemHeight,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 10),
-                InkWell(
-                  onTap: () =>
-                      Navigator.pushNamed(context, AppRoutes.kingdomWorkShop),
-                  child: Image.asset(
-                    'assets/png/kingdom_workshop_banner.png',
-                    width: itemWidth,
-                    height: itemHeight,
-                    fit: BoxFit.fill,
-                  ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/png/melody_mixer_banner.png',
+                      width: itemWidth,
+                      height: itemHeight,
+                      fit: BoxFit.fill,
+                    ),
+                    const SizedBox(width: 10),
+                    Image.asset(
+                      'assets/png/gratitude_garden_banner.png',
+                      width: itemWidth,
+                      height: itemHeight,
+                      fit: BoxFit.fill,
+                    ),
+                  ],
                 ),
               ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'assets/png/melody_mixer_banner.png',
-                  width: itemWidth,
-                  height: itemHeight,
-                  fit: BoxFit.fill,
-                ),
-                const SizedBox(width: 10),
-                Image.asset(
-                  'assets/png/gratitude_garden_banner.png',
-                  width: itemWidth,
-                  height: itemHeight,
-                  fit: BoxFit.fill,
-                ),
-              ],
-            ),
-          ],
+            );
+          },
         );
       },
     );

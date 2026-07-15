@@ -1,10 +1,27 @@
 import 'package:chirp_up_app/core/constants/app_colors.dart';
 import 'package:chirp_up_app/core/constants/app_sizes.dart';
-import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/widgets/common_button.dart';
 import 'package:chirp_up_app/core/widgets/custom_text.dart';
 import 'package:chirp_up_app/core/widgets/heading_text.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/bloc/magic_coloring_bloc.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/bloc/magic_coloring_events.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class OnboardingCharacterMap {
+  static const Map<String, String> _imageByCharacterId = {
+    'char_01': 'assets/png/magic_coloring_prince.png',
+    'char_02': 'assets/png/magic_coloring_princess.png',
+    'char_03': 'assets/png/magic_coloring_knight.png',
+    'char_04': 'assets/png/magic_coloring_baby_dragon.png',
+  };
+
+  static const String _fallback = 'assets/png/magic_coloring.png';
+
+  static String imageForCharacterId(String? characterId) {
+    return _imageByCharacterId[characterId] ?? _fallback;
+  }
+}
 
 class MagicColoringOnboardingView extends StatefulWidget {
   const MagicColoringOnboardingView({super.key});
@@ -19,15 +36,12 @@ class _MagicColoringOnboardingViewState
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
-  // Circle 1 (small)
   late Animation<double> _circle1Scale;
   late Animation<double> _circle1Opacity;
 
-  // Circle 2 (medium)
   late Animation<double> _circle2Scale;
   late Animation<double> _circle2Opacity;
 
-  // Cloud
   late Animation<double> _cloudScale;
   late Animation<double> _cloudOpacity;
 
@@ -40,7 +54,6 @@ class _MagicColoringOnboardingViewState
       duration: const Duration(milliseconds: 2000),
     );
 
-    // ── Circle 1: 0% → 25% ──
     _circle1Scale = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
@@ -54,7 +67,6 @@ class _MagicColoringOnboardingViewState
       ),
     );
 
-    // ── Circle 2: 20% → 50% ──
     _circle2Scale = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
@@ -68,7 +80,6 @@ class _MagicColoringOnboardingViewState
       ),
     );
 
-    // ── Cloud: 45% → 85% ──
     _cloudScale = Tween<double>(begin: 0.6, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
@@ -82,7 +93,6 @@ class _MagicColoringOnboardingViewState
       ),
     );
 
-    // Auto start
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _controller.forward();
     });
@@ -94,14 +104,24 @@ class _MagicColoringOnboardingViewState
     super.dispose();
   }
 
+  void _onStartColoring(BuildContext context) {
+    context.read<MagicColoringBloc>().add(const OnboardingCompleted());
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final characterId = context.select<MagicColoringBloc, String>(
+      (bloc) => bloc.state.characterId,
+    );
+    print("coloring onboarding charID: $characterId");
+    bool isBabyDragon = characterId == 'char_04'? true:false;
+    final characterImage =
+        OnboardingCharacterMap.imageForCharacterId(characterId);
 
     return Scaffold(
       body: Stack(
         children: [
-          // ── Background ──
           Positioned.fill(
             child: Image.asset(
               "assets/png/magic_coloring_bg.png",
@@ -129,10 +149,8 @@ class _MagicColoringOnboardingViewState
 
                   const SizedBox(height: 10),
 
-                  // ── Character + Speech Bubble area ──
                   Expanded(
                     child: LayoutBuilder(
-                      // ✅ LayoutBuilder wrap karo
                       builder: (context, constraints) {
                         final stackHeight = constraints.maxHeight;
                         final stackWidth = constraints.maxWidth;
@@ -144,22 +162,21 @@ class _MagicColoringOnboardingViewState
                         return Stack(
                           clipBehavior: Clip.none,
                           children: [
-                            // ── Character ──
+                            // ── Character (characterId ke hisab se) ──
                             Positioned(
                               bottom: 0,
                               left: 0,
                               right: 0,
                               child: Image.asset(
-                                "assets/png/magic_coloring.png",
+                                characterImage,
                                 height: characterHeight,
                                 fit: BoxFit.contain,
                               ),
                             ),
 
-                            // ── Circle 1 (small) ──
                             Positioned(
-                              bottom: characterHeight * 0.8,
-                              left: stackWidth * 0.43,
+                              bottom: isBabyDragon? characterHeight * 0.6 : characterHeight * 0.8,
+                              left: isBabyDragon? stackWidth * 0.33 : stackWidth * 0.43,
                               child: AnimatedBuilder(
                                 animation: _circle1Scale,
                                 builder: (context, _) => Opacity(
@@ -186,10 +203,9 @@ class _MagicColoringOnboardingViewState
                               ),
                             ),
 
-                            // ── Circle 2 (medium) ──
                             Positioned(
-                              bottom: characterHeight * 0.82,
-                              left: stackWidth * 0.52,
+                              bottom: isBabyDragon? characterHeight * 0.7 : characterHeight * 0.82,
+                              left: isBabyDragon? stackWidth * 0.35 : stackWidth * 0.52,
                               child: AnimatedBuilder(
                                 animation: _circle2Scale,
                                 builder: (context, _) => Opacity(
@@ -216,10 +232,9 @@ class _MagicColoringOnboardingViewState
                               ),
                             ),
 
-                            // ── Cloud ──
                             Positioned(
-                              bottom: characterHeight * 0.9,
-                              left: stackWidth * 0.42,
+                              bottom: isBabyDragon? characterHeight * 0.8 : characterHeight * 0.9,
+                              left: isBabyDragon? stackWidth * 0.15 : stackWidth * 0.42,
                               child: AnimatedBuilder(
                                 animation: _cloudScale,
                                 builder: (context, _) => Opacity(
@@ -259,14 +274,11 @@ class _MagicColoringOnboardingViewState
                       },
                     ),
                   ),
-                  SizedBox(height: 10),
-                  // ── Button ──
+                  const SizedBox(height: 10),
+
                   CommonButton(
                     title: 'Start Coloring',
-                    onPressed: () => Navigator.pushNamed(
-                      context,
-                      AppRoutes.magicColoringOnboarding2,
-                    ),
+                    onPressed: () => _onStartColoring(context),
                   ),
                 ],
               ),

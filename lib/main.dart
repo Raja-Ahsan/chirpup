@@ -1,9 +1,11 @@
 import 'package:chirp_up_app/core/constants/app_colors.dart';
 import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/routes/route_generator.dart';
+import 'package:chirp_up_app/core/services/api_service.dart';
 import 'package:chirp_up_app/core/services/storage_service.dart';
 import 'package:chirp_up_app/features/auth/bloc/auth_bloc.dart';
 import 'package:chirp_up_app/features/child/breath_of_kingdom/bloc/breath_of_kingdom_bloc.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/bloc/magic_coloring_bloc.dart';
 import 'package:chirp_up_app/features/parent/child_profile_selection/bloc/child_profile_selection_bloc.dart';
 import 'package:chirp_up_app/features/parent/dashboard/bloc/parent_dashboard_bloc.dart';
 import 'package:flutter/material.dart';
@@ -41,11 +43,14 @@ class MyApp extends StatelessWidget {
         BlocProvider<BreathOfKingdomBloc>(
           create: (_) => BreathOfKingdomBloc(),
         ),
+        BlocProvider<MagicColoringBloc>(
+          create: (_) => MagicColoringBloc(),
+        ),
       ],
       child: MaterialApp(
         title: 'ChirpUp',
         debugShowCheckedModeBanner: false,
-
+        navigatorKey: navigatorKey,
         initialRoute: AppRoutes.splash,
         onGenerateRoute: RouteGenerator.generate,
 

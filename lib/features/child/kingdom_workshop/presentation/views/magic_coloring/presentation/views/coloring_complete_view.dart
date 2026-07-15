@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:chirp_up_app/core/constants/app_colors.dart';
 import 'package:chirp_up_app/core/constants/app_sizes.dart';
 import 'package:chirp_up_app/core/routes/app_routes.dart';
@@ -7,10 +8,12 @@ import 'package:chirp_up_app/features/child/mood_selection/data/models/mood_item
 import 'package:flutter/material.dart';
 
 class ColoringCompleteView extends StatefulWidget {
+  final Uint8List? coloredImageBytes;
   final String sketchImagePath;
 
   const ColoringCompleteView({
     super.key,
+    this.coloredImageBytes,
     this.sketchImagePath = 'assets/png/castle_sketch_1.png',
   });
 
@@ -45,7 +48,17 @@ class _ColoringCompleteViewState extends State<ColoringCompleteView> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+
+    // 👇 naya — bytes available ho to Image.memory, warna fallback asset
+    final Widget coloredImageWidget = widget.coloredImageBytes != null
+        ? Image.memory(
+            widget.coloredImageBytes!,
+            fit: BoxFit.contain,
+          )
+        : Image.asset(
+            widget.sketchImagePath,
+            fit: BoxFit.contain,
+          );
 
     return Scaffold(
       body: Stack(
@@ -135,35 +148,32 @@ class _ColoringCompleteViewState extends State<ColoringCompleteView> {
                   ),
 
                   const SizedBox(height: 20),
-
                   Expanded(
                     child: SingleChildScrollView(
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           // ── Notebook / Canvas ──
                           Container(
-                            margin: EdgeInsets.symmetric(horizontal: 30),
+                            height: MediaQuery.of(context).size.height * 0.25,
+                            margin: const EdgeInsets.symmetric(horizontal: 40),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(16),
                               child: Stack(
                                 children: [
-                                  // Spiral top
-                                  Image.asset(
-                                    'assets/png/coloring_complete_calendar.png',
-                                    width: double.infinity,
-                                    fit: BoxFit.fill,
+                                  Positioned.fill(
+                                    child: Image.asset(
+                                      'assets/png/coloring_complete_calendar.png',
+                                      fit: BoxFit.fill,
+                                    ),
                                   ),
-                                  // Sketch image
-                                  Positioned(
-                                    bottom: 0,
-                                    top: 0,
-                                    left: 0,
-                                    right: 0,
+                                  Positioned.fill(
+                                    top: 10,
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 40),
-                                      child: Image.asset(
-                                        widget.sketchImagePath,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 50,
                                       ),
+                                      child: coloredImageWidget,
                                     ),
                                   ),
                                 ],
@@ -171,11 +181,10 @@ class _ColoringCompleteViewState extends State<ColoringCompleteView> {
                             ),
                           ),
 
-                          const SizedBox(height: 20),
-
-                          // ── Mood section ──
+                          // ── Mood Section ──
                           Container(
                             width: double.infinity,
+                            margin: const EdgeInsets.only(top: 20),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 16,
                               vertical: 20,
@@ -206,12 +215,11 @@ class _ColoringCompleteViewState extends State<ColoringCompleteView> {
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
-                                  children: List.generate(_moods.length, (
-                                    index,
-                                  ) {
+                                  children: List.generate(_moods.length, (index) {
                                     final mood = _moods[index];
                                     final bool isSelected =
                                         _selectedMoodIndex == index;
+
                                     return GestureDetector(
                                       onTap: () => setState(
                                         () => _selectedMoodIndex = index,
@@ -226,10 +234,11 @@ class _ColoringCompleteViewState extends State<ColoringCompleteView> {
                                             height: screenWidth * 0.20,
                                             decoration: BoxDecoration(
                                               color: isSelected
-                                                  ? (mood.selectedBgColor)
+                                                  ? mood.selectedBgColor
                                                   : mood.bgColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(19),
+                                              borderRadius: BorderRadius.circular(
+                                                19,
+                                              ),
                                             ),
                                             child: Center(
                                               child: Image.asset(
@@ -241,7 +250,7 @@ class _ColoringCompleteViewState extends State<ColoringCompleteView> {
                                           ),
                                           const SizedBox(height: 4),
                                           HeadingText(
-                                            text: (mood.label).toUpperCase(),
+                                            text: mood.label.toUpperCase(),
                                             fontSize: 13,
                                             color: AppColors.dialogHeadingColor,
                                             shadowColor: Colors.white,
@@ -269,7 +278,11 @@ class _ColoringCompleteViewState extends State<ColoringCompleteView> {
                   const SizedBox(height: 5),
                   CommonButton(
                     title: 'Return to Kingdom',
-                    onPressed: () => Navigator.pushNamedAndRemoveUntil(context, AppRoutes.childDashboard, (route)=> false),
+                    onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      AppRoutes.childDashboard,
+                      (route) => false,
+                    ),
                   ),
                 ],
               ),

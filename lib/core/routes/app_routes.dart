@@ -16,7 +16,7 @@ class AppRoutes {
   static const childDashboard = '/child_dashboard';
   static const kingdomWorkShop = '/kingdom_workshop';
   static const magicColoringOnboarding = '/magic_coloring_onboarding';
-  static const magicColoringOnboarding2 = '/magic_coloring_onboarding2';
+  static const chooseMagicalBook = '/choose_magical_book';
   static const chooseSketch = '/choose_sketch';
   static const sketchColoring = '/sketch_coloring';
   static const coloringComplete = '/coloring_complete';
@@ -26,4 +26,6 @@ class AppRoutes {
   static const breathOfKingdomOnboarding = '/breath_of_kingdom_onboarding';
   static const breathOfKingdomGame = '/breath_of_kingdom_game';
   static const breathOfKingdomGameComplete = '/breath_of_kingdom_game_complete';
+  static const myDrawingBook = '/my_drawing_book';
+  static const characterStudioBook = '/character_studio_book';
 }

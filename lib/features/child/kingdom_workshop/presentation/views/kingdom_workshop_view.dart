@@ -1,71 +1,87 @@
 import 'package:chirp_up_app/core/constants/app_colors.dart';
 import 'package:chirp_up_app/core/constants/app_sizes.dart';
 import 'package:chirp_up_app/core/routes/app_routes.dart';
+import 'package:chirp_up_app/core/utils/get_character_by_id_helper.dart';
 import 'package:chirp_up_app/core/widgets/custom_text.dart';
 import 'package:chirp_up_app/core/widgets/heading_text.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/magic_coloring_entry_view.dart';
 import 'package:flutter/material.dart';
 
 class KingdomWorkshopView extends StatelessWidget {
-  const KingdomWorkshopView({super.key});
+  final String? childId;
+  final String? characterId;
+  const KingdomWorkshopView({super.key, this.childId, this.characterId});
 
   @override
   Widget build(BuildContext context) {
+    print(childId);
+    print(characterId);
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _TopSection(),
+            _TopSection(characterId: characterId),
             Padding(
               padding: EdgeInsets.symmetric(
                 vertical: AppSizes.verticalPadding,
                 horizontal: AppSizes.horizontalPadding,
               ),
-              child: Column(
-                children: [
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      final double itemWidth = (constraints.maxWidth - 10) / 2;
-                      final double itemHeight = itemWidth * 1.4;
-                  
-                      return Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              InkWell(
-                                onTap: () => Navigator.pushNamed(
-                                  context,
-                                  AppRoutes.buildCastle,
+              child: SafeArea(
+                top: false,
+                child: Column(
+                  children: [
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final double itemWidth =
+                            (constraints.maxWidth - 10) / 2;
+                        final double itemHeight = itemWidth * 1.4;
+
+                        return Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                InkWell(
+                                  onTap: () => Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.buildCastle,
+                                  ),
+                                  child: Image.asset(
+                                    'assets/png/castle_builder_bg.png',
+                                    width: itemWidth,
+                                    height: itemHeight,
+                                    fit: BoxFit.fill,
+                                  ),
                                 ),
-                                child: Image.asset(
-                                  'assets/png/castle_builder_bg.png',
-                                  width: itemWidth,
-                                  height: itemHeight,
-                                  fit: BoxFit.fill,
+                                const SizedBox(width: 10),
+                                InkWell(
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          MagicColoringEntryView(
+                                            childId: childId ?? '',
+                                            characterId: characterId ?? '',
+                                          ),
+                                    ),
+                                  ),
+                                  child: Image.asset(
+                                    'assets/png/magic_coloring_bg_game.png',
+                                    width: itemWidth,
+                                    height: itemHeight,
+                                    fit: BoxFit.fill,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 10),
-                              InkWell(
-                                onTap: () => Navigator.pushNamed(
-                                  context,
-                                  AppRoutes.magicColoringOnboarding,
-                                ),
-                                child: Image.asset(
-                                  'assets/png/magic_coloring_bg_game.png',
-                                  width: itemWidth,
-                                  height: itemHeight,
-                                  fit: BoxFit.fill,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                  SizedBox(height: 15),
-                  Image.asset('assets/png/kingdom_workshop_banner_bg.png')
-                ],
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    SizedBox(height: 15),
+                    Image.asset('assets/png/kingdom_workshop_banner_bg.png'),
+                  ],
+                ),
               ),
             ),
           ],
@@ -76,6 +92,8 @@ class KingdomWorkshopView extends StatelessWidget {
 }
 
 class _TopSection extends StatefulWidget {
+  final String? characterId;
+  const _TopSection({this.characterId});
   @override
   State<_TopSection> createState() => _TopSectionState();
 }
@@ -220,18 +238,6 @@ class _TopSectionState extends State<_TopSection>
                         return Stack(
                           clipBehavior: Clip.none,
                           children: [
-                            // ── Character ──
-                            Positioned(
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
-                              child: Image.asset(
-                                "assets/png/prince_character.png",
-                                height: characterHeight,
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-
                             // ── Circle 1 ──
                             Positioned(
                               bottom: characterHeight * 0.78,
@@ -326,6 +332,19 @@ class _TopSectionState extends State<_TopSection>
                                     ),
                                   ),
                                 ),
+                              ),
+                            ),
+                            // ── Character ──
+                            Positioned(
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              child: Image.asset(
+                                CharacterStaticImageMap.imageForCharacterId(
+                                  widget.characterId,
+                                ),
+                                height: characterHeight,
+                                fit: BoxFit.contain,
                               ),
                             ),
                           ],

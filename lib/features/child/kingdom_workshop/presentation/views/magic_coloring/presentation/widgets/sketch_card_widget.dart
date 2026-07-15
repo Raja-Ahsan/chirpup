@@ -1,19 +1,20 @@
-
 import 'package:chirp_up_app/core/constants/app_colors.dart';
-import 'package:chirp_up_app/core/routes/app_routes.dart';
-import 'package:chirp_up_app/core/widgets/heading_text.dart';
-import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/data/models/sketch_model.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/data/models/sketch_template_model.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/sketch_coloring_view.dart';
 import 'package:flutter/material.dart';
 
 class SketchCard extends StatelessWidget {
-  final SketchItem sketch;
+  final SketchTemplateModel sketch;
 
-  const SketchCard({required this.sketch});
+  const SketchCard({super.key, required this.sketch});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: ()=> Navigator.pushReplacementNamed(context, AppRoutes.sketchColoring),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context)=> SketchColoringView(sketch: sketch))
+      ),
       child: Stack(
         children: [
           Container(
@@ -23,26 +24,26 @@ class SketchCard extends StatelessWidget {
             ),
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
             child: Center(
-              child: Image.asset(sketch.imagePath, fit: BoxFit.contain),
+              child: Image.asset(sketch.thumbnailUrl, fit: BoxFit.contain),
             ),
           ),
-      
-          if (sketch.isLocked && sketch.lockNumber != null)
+
+          if (sketch.isLocked)
             Positioned(
               top: 10,
               right: 10,
               child: Container(
                 width: 27,
                 height: 27,
-                decoration: BoxDecoration(
+                decoration:  BoxDecoration(
                   color: AppColors.textYellow,
                   shape: BoxShape.circle,
                 ),
-                child: Center(
-                  child: HeadingText(
-                    text: '${sketch.lockNumber}',
+                child: const Center(
+                  child: Icon(
+                    Icons.lock,
                     color: Colors.white,
-                    fontSize: 12,
+                    size: 14,
                   ),
                 ),
               ),

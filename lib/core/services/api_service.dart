@@ -1,167 +1,186 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:chirp_up_app/core/errors/app_exceptions.dart';
+import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/services/storage_service.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
+final GlobalKey<NavigatorState> navigatorKey =
+    GlobalKey<NavigatorState>();
 
 class ApiService {
   static bool _isSessionExpiredHandled = false;
 
   Future<dynamic> getApi(String url) async {
     final token = StorageService.getToken();
-    dynamic jsonResponse;
+
     try {
       final response = await http
           .get(
             Uri.parse(url),
             headers: {
-              'Accept': 'application/json',
-              'Authorization': 'Bearer $token',
+              "Accept": "application/json",
+              "Authorization": "Bearer $token",
             },
           )
           .timeout(const Duration(seconds: 30));
-      jsonResponse = await returnResponse(response);
+
       print(response.body);
+
+      return await returnResponse(response);
     } on SocketException {
-      throw NoInternetException('No Internet');
+      throw NoInternetException("No Internet");
     } on TimeoutException {
-      throw RequestTimeoutException('Request Time Out');
+      throw RequestTimeoutException("Request Time Out");
     }
-    return jsonResponse;
   }
 
-  Future<dynamic> postApi(String url, data) async {
+  Future<dynamic> postApi(String url, dynamic data) async {
     final token = StorageService.getToken();
-    dynamic jsonResponse;
+
     try {
       print(url);
       print(data);
+
       final response = await http
           .post(
             Uri.parse(url),
-            body: json.encode(data),
+            body: jsonEncode(data),
             headers: {
               "Content-Type": "application/json",
               "Accept": "application/json",
-              'Authorization': 'Bearer $token',
+              "Authorization": "Bearer $token",
             },
           )
           .timeout(const Duration(seconds: 30));
 
-      print(response.body);    
+      print(response.body);
 
-      jsonResponse = await returnResponse(response);
+      return await returnResponse(response);
     } on SocketException {
-      throw NoInternetException('No Internet');
+      throw NoInternetException("No Internet");
     } on TimeoutException {
-      throw RequestTimeoutException('Request Time Out');
+      throw RequestTimeoutException("Request Time Out");
     }
-    return jsonResponse;
   }
 
-  Future<dynamic> putApi(String url, data) async {
+  Future<dynamic> putApi(String url, dynamic data) async {
     final token = StorageService.getToken();
-    dynamic jsonResponse;
+
     try {
       final response = await http
           .put(
             Uri.parse(url),
-            body: json.encode(data),
+            body: jsonEncode(data),
             headers: {
               "Content-Type": "application/json",
               "Accept": "application/json",
-              'Authorization': 'Bearer $token',
+              "Authorization": "Bearer $token",
             },
           )
           .timeout(const Duration(seconds: 30));
 
-      jsonResponse = await returnResponse(response);
+      return await returnResponse(response);
     } on SocketException {
-      throw NoInternetException('No Internet');
+      throw NoInternetException("No Internet");
     } on TimeoutException {
-      throw RequestTimeoutException('Request Time Out');
+      throw RequestTimeoutException("Request Time Out");
     }
-    return jsonResponse;
   }
 
-  Future<dynamic> patchApi(String url, data) async {
+  Future<dynamic> patchApi(String url, dynamic data) async {
     final token = StorageService.getToken();
-    dynamic jsonResponse;
+
     try {
       final response = await http
           .patch(
             Uri.parse(url),
-            body: json.encode(data),
+            body: jsonEncode(data),
             headers: {
+              "Content-Type": "application/json",
               "Accept": "application/json",
-              'Authorization': 'Bearer $token',
+              "Authorization": "Bearer $token",
             },
           )
           .timeout(const Duration(seconds: 30));
 
-      jsonResponse = await returnResponse(response);
+      return await returnResponse(response);
     } on SocketException {
-      throw NoInternetException('No Internet');
+      throw NoInternetException("No Internet");
     } on TimeoutException {
-      throw RequestTimeoutException('Request Time Out');
+      throw RequestTimeoutException("Request Time Out");
     }
-    return jsonResponse;
   }
 
   Future<dynamic> deleteApi(String url) async {
     final token = StorageService.getToken();
-    dynamic jsonResponse;
+
     try {
       final response = await http
           .delete(
             Uri.parse(url),
             headers: {
-              'Accept': 'application/json',
-              'Authorization': 'Bearer $token',
+              "Accept": "application/json",
+              "Authorization": "Bearer $token",
             },
           )
           .timeout(const Duration(seconds: 30));
-      jsonResponse = await returnResponse(response);
+
+      return await returnResponse(response);
     } on SocketException {
-      throw NoInternetException('No Internet');
+      throw NoInternetException("No Internet");
     } on TimeoutException {
-      throw RequestTimeoutException('Request Time Out');
+      throw RequestTimeoutException("Request Time Out");
     }
-    return jsonResponse;
   }
 
   Future<dynamic> returnResponse(http.Response response) async {
+    final body = jsonDecode(response.body);
+
     switch (response.statusCode) {
       case 200:
       case 201:
       case 400:
-      case 401:
       case 403:
       case 404:
       case 409:
       case 422:
       case 429:
       case 500:
-        return jsonDecode(response.body);
+        return body;
 
-      // case 401:
-      //   if (!_isSessionExpiredHandled) {
-      //     _isSessionExpiredHandled = true;
+      case 401:
+        final errorMessage =
+            body["error"]?.toString().toLowerCase() ?? "";
 
-      //     await StorageService.removeToken();
-      //     Future.delayed(const Duration(milliseconds: 200), () {
-      //       // Get.offAll(() => LoginView());
-      //     });
-      //   }
-
-      //   throw UnAuthorisedException('Session expired');
+        if (errorMessage.contains("access token has expired")) {
+          await _handleSessionExpired();
+        }
+        return body;
 
       default:
         throw FetchDataException(
-          'Error occurred while communicating with server with StatusCode : ${response.statusCode}',
+          "Error occurred while communicating with server with StatusCode : ${response.statusCode}",
         );
     }
+  }
+
+  Future<void> _handleSessionExpired() async {
+    if (_isSessionExpiredHandled) return;
+
+    _isSessionExpiredHandled = true;
+
+    await StorageService.removeToken();
+
+    Future.delayed(const Duration(milliseconds: 200), () {
+      navigatorKey.currentState?.pushNamedAndRemoveUntil(
+        AppRoutes.login,
+        (route) => false,
+      );
+    });
   }
 
   static void resetSessionFlag() {

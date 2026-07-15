@@ -21,8 +21,8 @@ Widget confirmationDialog(
           ),
         ],
       ),
-      Image.asset('assets/png/warning.png', height: 57),
-      const SizedBox(height: 10),
+      Image.asset('assets/png/warning_yellow.png', height: 57),
+      const SizedBox(height: 20),
       CustomText(
         text: 'Are You Sure?',
         fontSize: 24,
