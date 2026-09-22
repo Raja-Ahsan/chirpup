@@ -1,9 +1,9 @@
 class CharacterGifMap {
-  static const Map<String, String> _gifByCharacterId = {
-    'char_01': 'assets/gifs/prince.gif',
-    'char_02': 'assets/gifs/princess.gif',
-    'char_03': 'assets/gifs/knight.gif',
-    'char_04': 'assets/gifs/baby_dragon.gif',
+  static const Map<String, String> _lottieByCharacterId = {
+    'char_01': 'assets/lotties/prince_idle_lottie.json',
+    'char_02': 'assets/lotties/princess_idle_lottie.json',
+    'char_03': 'assets/lotties/knight_lottie.json',
+    'char_04': 'assets/lotties/dragon_lottie.json',
   };
 
   static const Map<String, String> _quoteByCharacterId = {
@@ -13,11 +13,11 @@ class CharacterGifMap {
     'char_04': "I am playful,\nand that's\nokay\ntoo.",
   };
 
-  static const String _fallbackGif = 'assets/gifs/baby_dragon.gif';
+  static const String _fallbackLottie = 'assets/lotties/dragon_lottie.json';
   static const String _fallbackQuote = "I am me, and\nthat's pretty great.";
 
-  static String gifForCharacterId(String? characterId) {
-    return _gifByCharacterId[characterId] ?? _fallbackGif;
+  static String lottieForCharacterId(String? characterId) {
+    return _lottieByCharacterId[characterId] ?? _fallbackLottie;
   }
 
   static String quoteForCharacterId(String? characterId) {

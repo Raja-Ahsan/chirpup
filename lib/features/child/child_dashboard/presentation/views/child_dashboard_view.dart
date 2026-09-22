@@ -329,7 +329,7 @@ class _ChildDashboardViewState extends State<ChildDashboardView>
                                                       opacity:
                                                           _characterFadeAnimation,
                                                       child: Lottie.asset(
-                                                        'assets/lotties/knight.json',
+                                                        CharacterGifMap.lottieForCharacterId(state.dashboardInfo?.characterId??''),
                                                         repeat: true,
                                                         animate: true,
                                                         fit: BoxFit.contain,
