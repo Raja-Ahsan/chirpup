@@ -23,6 +23,8 @@ class CmsModulePermissionsSeeder extends Seeder
                 'game-management-module' => ['is_view' => 1, 'is_add' => 1, 'is_update' => 1, 'is_delete' => 1],
                 'admin.game-moods.index' => ['is_view' => 1, 'is_add' => 1, 'is_update' => 1, 'is_delete' => 1],
                 'admin.game-categories.index' => ['is_view' => 1, 'is_add' => 1, 'is_update' => 1, 'is_delete' => 1],
+                'admin.games.index' => ['is_view' => 1, 'is_add' => 1, 'is_update' => 1, 'is_delete' => 1],
+                'admin.game-types.index' => ['is_view' => 1, 'is_add' => 1, 'is_update' => 1, 'is_delete' => 1],
             ],
 
             'user' => [

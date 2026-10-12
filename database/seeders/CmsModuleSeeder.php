@@ -83,6 +83,28 @@ class CmsModuleSeeder extends Seeder
             ]
         );
 
+        CmsModule::updateOrCreate(
+            ['route_name' => 'admin.games.index'],
+            [
+                'name' => 'Games',
+                'icon' => 'fa-solid fa-puzzle-piece',
+                'sort_order' => 3,
+                'status' => 'active',
+                'parent_id' => $gameManagement->id,
+            ]
+        );
+
+        CmsModule::updateOrCreate(
+            ['route_name' => 'admin.game-types.index'],
+            [
+                'name' => 'Games Type',
+                'icon' => 'fa-solid fa-shapes',
+                'sort_order' => 4,
+                'status' => 'active',
+                'parent_id' => $gameManagement->id,
+            ]
+        );
+
         $allowed = [
             'admin.dashboard',
             'admin.users.index',
@@ -90,6 +112,8 @@ class CmsModuleSeeder extends Seeder
             'game-management-module',
             'admin.game-moods.index',
             'admin.game-categories.index',
+            'admin.games.index',
+            'admin.game-types.index',
         ];
 
         CmsModule::query()

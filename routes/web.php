@@ -2,8 +2,11 @@
 
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\CharacterController as AdminCharacterController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\GameCategoryController as AdminGameCategoryController;
+use App\Http\Controllers\Admin\GameController as AdminGameController;
 use App\Http\Controllers\Admin\GameMoodController as AdminGameMoodController;
+use App\Http\Controllers\Admin\GameTypeController as AdminGameTypeController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -31,9 +34,7 @@ Route::prefix('admin')->middleware('guest')->group(function () {
 
 // Admin panel (authenticated admin)
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
-    Route::get('/', function () {
-        return view('screens.admin.dashboard.index');
-    })->name('admin.dashboard');
+    Route::get('/', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
     Route::get('users', [AdminUserController::class, 'index'])->name('admin.users.index');
 
@@ -57,6 +58,20 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('game-categories/{gameCategory}/edit', [AdminGameCategoryController::class, 'edit'])->name('admin.game-categories.edit');
     Route::put('game-categories/{gameCategory}', [AdminGameCategoryController::class, 'update'])->name('admin.game-categories.update');
     Route::delete('game-categories/{gameCategory}', [AdminGameCategoryController::class, 'destroy'])->name('admin.game-categories.destroy');
+
+    Route::get('games', [AdminGameController::class, 'index'])->name('admin.games.index');
+    Route::get('games/create', [AdminGameController::class, 'create'])->name('admin.games.create');
+    Route::post('games', [AdminGameController::class, 'store'])->name('admin.games.store');
+    Route::get('games/{game}/edit', [AdminGameController::class, 'edit'])->name('admin.games.edit');
+    Route::put('games/{game}', [AdminGameController::class, 'update'])->name('admin.games.update');
+    Route::delete('games/{game}', [AdminGameController::class, 'destroy'])->name('admin.games.destroy');
+
+    Route::get('game-types', [AdminGameTypeController::class, 'index'])->name('admin.game-types.index');
+    Route::get('game-types/create', [AdminGameTypeController::class, 'create'])->name('admin.game-types.create');
+    Route::post('game-types', [AdminGameTypeController::class, 'store'])->name('admin.game-types.store');
+    Route::get('game-types/{gameType}/edit', [AdminGameTypeController::class, 'edit'])->name('admin.game-types.edit');
+    Route::put('game-types/{gameType}', [AdminGameTypeController::class, 'update'])->name('admin.game-types.update');
+    Route::delete('game-types/{gameType}', [AdminGameTypeController::class, 'destroy'])->name('admin.game-types.destroy');
 
     Route::post('logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 });

@@ -6,13 +6,13 @@
 
 @section('content')
     <section class="cu-card cu-form-card cu-form-card--wide">
-        <form method="POST" action="{{ route('admin.game-moods.update', $mood) }}" enctype="multipart/form-data" class="cu-form">
+        <form method="POST" action="{{ route('admin.game-moods.update', $mood) }}" enctype="multipart/form-data" class="cu-form" novalidate>
             @csrf
             @method('PUT')
 
             <div class="cu-field">
-                <label for="name">Name</label>
-                <input id="name" type="text" name="name" value="{{ old('name', $mood->name) }}" required>
+                <label for="name">Name <span class="cu-required">*</span></label>
+                <input id="name" type="text" name="name" value="{{ old('name', $mood->name) }}">
                 @error('name') <p class="cu-field__error">{{ $message }}</p> @enderror
             </div>
 
@@ -44,8 +44,8 @@
             </div>
 
             <div class="cu-field">
-                <label for="status">Status</label>
-                <select id="status" name="status" required>
+                <label for="status">Status <span class="cu-required">*</span></label>
+                <select id="status" name="status">
                     <option value="active" @selected(old('status', $mood->status) === 'active')>Active</option>
                     <option value="inactive" @selected(old('status', $mood->status) === 'inactive')>Inactive</option>
                 </select>

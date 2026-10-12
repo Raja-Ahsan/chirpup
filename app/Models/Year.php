@@ -20,4 +20,14 @@ class Year extends Model
     {
         return $this->hasMany(Child::class);
     }
+
+    public function games(): HasMany
+    {
+        return $this->hasMany(Game::class);
+    }
+
+    public function gameTypes(): HasMany
+    {
+        return $this->hasMany(GameType::class);
+    }
 }

@@ -1,0 +1,49 @@
+@push('styles')
+    <link
+        href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css"
+        rel="stylesheet"
+    >
+@endpush
+
+@push('scripts')
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
+    <script>
+      (function () {
+        $('#description').summernote({
+          height: 240,
+          placeholder: 'Write game description...',
+          toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'italic', 'underline', 'clear']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['insert', ['link']],
+            ['view', ['fullscreen', 'codeview']]
+          ]
+        });
+
+        function bindPreview(inputId, previewId, placeholderId) {
+          var input = document.getElementById(inputId);
+          var preview = document.getElementById(previewId);
+          var placeholder = document.getElementById(placeholderId);
+          if (!input || !preview) return;
+
+          input.addEventListener('change', function () {
+            var file = input.files && input.files[0];
+            if (!file) return;
+
+            var reader = new FileReader();
+            reader.onload = function (event) {
+              preview.src = event.target.result;
+              preview.hidden = false;
+              if (placeholder) placeholder.hidden = true;
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+
+        bindPreview('image', 'imagePreview', 'imagePlaceholder');
+        bindPreview('cover_book_image_file', 'coverBookPreview', 'coverBookPlaceholder');
+      })();
+    </script>
+@endpush

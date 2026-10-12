@@ -7,7 +7,6 @@
         <a class="cu-sidebar__brand" href="{{ route('admin.dashboard') }}">
             <img src="{{ asset('assets/admin/images/brand/chirpup-logo.png') }}" alt="ChirpUp" />
         </a>
-        <p class="cu-sidebar__tagline">Admin Console</p>
     </div>
 
     <nav class="cu-sidebar__nav" aria-label="Admin navigation">

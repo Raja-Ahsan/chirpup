@@ -6,98 +6,120 @@
 
 @section('content')
     <div class="cu-grid cu-grid--stats">
-        <section class="cu-card">
-            <p class="cu-stat__label">Revenue</p>
-            <p class="cu-stat__value">$45,195</p>
-            <p class="cu-stat__trend is-up">+12.4% this month</p>
-        </section>
-
-        <section class="cu-card">
-            <p class="cu-stat__label">Customers</p>
-            <p class="cu-stat__value">845</p>
-            <p class="cu-stat__trend is-up">+38 new</p>
-        </section>
-
-        <section class="cu-card">
-            <p class="cu-stat__label">Orders</p>
-            <p class="cu-stat__value">1,284</p>
-            <p class="cu-stat__trend is-down">-4.1% today</p>
-        </section>
-
-        <section class="cu-card">
-            <p class="cu-stat__label">Invoices</p>
-            <p class="cu-stat__value">10,905</p>
-            <p class="cu-stat__trend is-up">+2.8% this week</p>
-        </section>
+        @foreach ($stats as $stat)
+            @if (! empty($stat['route']))
+                <a href="{{ route($stat['route']) }}" class="cu-card cu-stat-card">
+                    <div class="cu-stat-card__head">
+                        <p class="cu-stat__label">{{ $stat['label'] }}</p>
+                        <i class="{{ $stat['icon'] }}" aria-hidden="true"></i>
+                    </div>
+                    <p class="cu-stat__value">{{ number_format($stat['value']) }}</p>
+                    <p class="cu-stat__trend is-up">{{ $stat['meta'] }}</p>
+                </a>
+            @else
+                <section class="cu-card cu-stat-card">
+                    <div class="cu-stat-card__head">
+                        <p class="cu-stat__label">{{ $stat['label'] }}</p>
+                        <i class="{{ $stat['icon'] }}" aria-hidden="true"></i>
+                    </div>
+                    <p class="cu-stat__value">{{ number_format($stat['value']) }}</p>
+                    <p class="cu-stat__trend is-up">{{ $stat['meta'] }}</p>
+                </section>
+            @endif
+        @endforeach
     </div>
 
     <div class="cu-grid cu-grid--secondary">
-        <section class="cu-card">
-            <h3>Top customers</h3>
-            <table class="cu-table">
-                <thead>
-                    <tr>
-                        <th>Customer</th>
-                        <th>Purchases</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Jane Cooper</td>
-                        <td>65</td>
-                        <td>$970</td>
-                    </tr>
-                    <tr>
-                        <td>Wade Warren</td>
-                        <td>42</td>
-                        <td>$300</td>
-                    </tr>
-                    <tr>
-                        <td>Guy Hawkins</td>
-                        <td>38</td>
-                        <td>$900</td>
-                    </tr>
-                    <tr>
-                        <td>Devin Jake</td>
-                        <td>12</td>
-                        <td>$500</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section class="cu-card">
-            <h3>Monthly target</h3>
-            <p class="cu-stat__value">89%</p>
-            <div class="cu-progress" aria-hidden="true">
-                <span style="width: 89%"></span>
+        <section class="cu-card cu-panel-card">
+            <div class="cu-panel-card__head">
+                <h3>Recent users</h3>
             </div>
-            <p class="cu-note">Revenue is trending well. Today's earnings are up to $3,653.</p>
+            <div class="cu-table-wrap">
+                <table class="cu-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($recentUsers as $user)
+                            <tr>
+                                <td>{{ $user->name }}</td>
+                                <td>{{ $user->email }}</td>
+                                <td>{{ $user->created_at?->format('M j, Y') }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="cu-empty">No users yet.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </section>
 
-        <section class="cu-card">
-            <h3>Activity</h3>
-            <table class="cu-table">
-                <tbody>
-                    <tr>
-                        <td>New customer signup</td>
-                        <td>7:00 AM</td>
-                    </tr>
-                    <tr>
-                        <td>Invoice #589356 paid</td>
-                        <td>5:12 AM</td>
-                    </tr>
-                    <tr>
-                        <td>Product stock updated</td>
-                        <td>Yesterday</td>
-                    </tr>
-                    <tr>
-                        <td>Blog draft published</td>
-                        <td>Yesterday</td>
-                    </tr>
-                </tbody>
-            </table>
+        <section class="cu-card cu-panel-card">
+            <div class="cu-panel-card__head">
+                <h3>Games by year</h3>
+            </div>
+            <div class="cu-table-wrap">
+                <table class="cu-table">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Active games</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($gamesByYear as $year)
+                            <tr>
+                                <td>{{ $year->title }}</td>
+                                <td>{{ $year->games_count }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="2" class="cu-empty">No years found.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            <p class="cu-note">
+                {{ number_format($activeGameTypes) }} active game types · {{ number_format($sketchCount) }} sketches
+            </p>
+        </section>
+
+        <section class="cu-card cu-panel-card">
+            <div class="cu-panel-card__head">
+                <h3>Recent game types</h3>
+                <a href="{{ route('admin.game-types.index') }}" class="cu-btn cu-btn--ghost" style="padding:0.35rem 0.7rem;font-size:0.8rem;">View all</a>
+            </div>
+            <div class="cu-table-wrap">
+                <table class="cu-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Year</th>
+                            <th>Sketches</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($recentGameTypes as $gameType)
+                            <tr>
+                                <td>{{ $gameType->name }}</td>
+                                <td>{{ $gameType->year?->title ?? '—' }}</td>
+                                <td>{{ $gameType->sketches_count }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="cu-empty">No game types yet.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </section>
     </div>
 @endsection

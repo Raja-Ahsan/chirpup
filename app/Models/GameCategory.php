@@ -76,6 +76,11 @@ class GameCategory extends Model
         return $this->hasMany(GameCategoryMood::class);
     }
 
+    public function games(): HasMany
+    {
+        return $this->hasMany(Game::class);
+    }
+
     public function moods(): BelongsToMany
     {
         return $this->belongsToMany(GameMood::class, 'game_categories_mood', 'game_category_id', 'mood_id')

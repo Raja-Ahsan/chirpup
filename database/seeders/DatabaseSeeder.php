@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
             CharacterSeeder::class,
             GameMoodSeeder::class,
             GameCategorySeeder::class,
+            GameSeeder::class,
+            GameTypeSeeder::class,
         ]);
     }
 }
