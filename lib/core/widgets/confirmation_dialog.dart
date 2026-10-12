@@ -8,11 +8,14 @@ Widget confirmationDialog(
   BuildContext context,
   String dialogText, {
   required VoidCallback onConfirm,
+  String? headingText,
+  Color? buttonBgColor,
+  bool showCloseButton = true,
 }) {
   return Column(
     mainAxisSize: MainAxisSize.min,
     children: [
-      Row(
+     showCloseButton? Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           GestureDetector(
@@ -20,11 +23,11 @@ Widget confirmationDialog(
             child: SvgPicture.asset('assets/svg/cross.svg'),
           ),
         ],
-      ),
+      ):SizedBox(),
       Image.asset('assets/png/warning_yellow.png', height: 57),
       const SizedBox(height: 20),
       CustomText(
-        text: 'Are You Sure?',
+        text: headingText ??'Are You Sure?',
         fontSize: 24,
         color: AppColors.dialogHeadingColor,
         fontFamily: 'LuckiestGuy',
@@ -40,26 +43,27 @@ Widget confirmationDialog(
       Row(
         children: [
           Expanded(
-        child: CommonButton(
-          title: 'No',
-          onPressed: () => Navigator.pop(context),
-          bgColor: Color(0xffC7C7C7),
-          shadowColor: Color(0xff787878),
-        ),
-      ),
-      SizedBox(width: 10),
-      Expanded(
-        child: CommonButton(
-          title: 'Yes',
-          onPressed: () {
-            Navigator.pop(context);
-            onConfirm();
-          },
-        ),
-      ),
+            child: CommonButton(
+              title: 'No',
+              onPressed: () => Navigator.pop(context),
+              bgColor: Color(0xffC7C7C7),
+              shadowColor: Color(0xff787878),
+            ),
+          ),
+          SizedBox(width: 10),
+          Expanded(
+            child: CommonButton(
+              title: 'Yes',
+              bgColor: buttonBgColor?? AppColors.greenColor ,
+              onPressed: () {
+                Navigator.pop(context);
+                onConfirm();
+              },
+            ),
+          ),
         ],
-      ),
-      const SizedBox(height: 20),
+      ), 
+      const SizedBox(height: 10),
     ],
   );
 }

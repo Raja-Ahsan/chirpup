@@ -5,12 +5,14 @@ class CommonDialog extends StatelessWidget {
   final Widget child;
   final double? horizontalPadding;
   final double? verticalPadding;
+  final double? borderRadius;
 
   const CommonDialog({
     super.key,
     required this.child,
     this.horizontalPadding,
     this.verticalPadding,
+    this.borderRadius
   });
 
   @override
@@ -24,7 +26,7 @@ class CommonDialog extends StatelessWidget {
             width: double.infinity,
             decoration: BoxDecoration(
               color: AppColors.dialogColor,
-              borderRadius: BorderRadius.circular(40),
+              borderRadius: BorderRadius.circular(borderRadius??40),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.25),

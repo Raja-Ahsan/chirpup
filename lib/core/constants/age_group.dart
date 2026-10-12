@@ -1,0 +1,1 @@
+enum AgeGroup { age1to2, age3to4, age5to6, age7to8, age9plus }

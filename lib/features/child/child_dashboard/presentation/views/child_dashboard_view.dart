@@ -14,6 +14,26 @@ import 'package:chirp_up_app/features/child/child_dashboard/data/character_gifs_
 import 'package:chirp_up_app/features/child/child_dashboard/presentation/widgets/mood_chip_widget.dart';
 import 'package:chirp_up_app/features/child/child_dashboard/presentation/widgets/shimmer_box_widget.dart';
 import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/kingdom_workshop_view.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/data/config/age_1to2_config.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/data/config/age_3to4_config.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/data/config/age_5to6_config.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/data/config/age_7to8_config.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/data/config/age_9plus_config.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/data/models/melody_mixer_enums.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/data/models/playlist_song_model.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/presentation/views/create/melody_create_generate_view.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/presentation/views/create/melody_play_room_view.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/presentation/views/create/mood_select_grid_view.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/presentation/views/playlist/melody_playlist_view.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/presentation/views/quest/melody_quest_room_view.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/presentation/views/quest/quest_intro_view.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/presentation/views/quest/quest_result_view.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/presentation/views/quest/quest_reward_view.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/presentation/views/shared/hub_view.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/presentation/views/shared/melody_celebration_view.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/presentation/views/shared/melody_create_intro_view.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/presentation/views/shared/melody_intro_view.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/presentation/views/shared/melody_mood_select_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
@@ -329,7 +349,12 @@ class _ChildDashboardViewState extends State<ChildDashboardView>
                                                       opacity:
                                                           _characterFadeAnimation,
                                                       child: Lottie.asset(
-                                                        CharacterGifMap.lottieForCharacterId(state.dashboardInfo?.characterId??''),
+                                                        CharacterGifMap.lottieForCharacterId(
+                                                          state
+                                                                  .dashboardInfo
+                                                                  ?.characterId ??
+                                                              '',
+                                                        ),
                                                         repeat: true,
                                                         animate: true,
                                                         fit: BoxFit.contain,
@@ -804,11 +829,451 @@ class _ChildDashboardViewState extends State<ChildDashboardView>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      'assets/png/melody_mixer_banner.png',
-                      width: itemWidth,
-                      height: itemHeight,
-                      fit: BoxFit.fill,
+                    InkWell(
+                      // onTap: () => Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (ctx) => MelodyIntroView(
+                      //       backgroundAsset:
+                      //           'assets/png/melody_mixer/backgrounds/music_hall.png',
+                      //       characterId: state.dashboardInfo?.characterId ?? '',
+                      //       onReturnToKingdom: () => Navigator.pop(ctx),
+                      //       onTapAnywhere: () {
+                      //         Navigator.push(
+                      //           ctx,
+                      //           MaterialPageRoute(
+                      //             builder: (_) => MelodyPlayRoomView(
+                      //               backgroundAsset:
+                      //                   'assets/png/melody_mixer/backgrounds/music_hall.png',
+                      //               instruments: age1to2MusicHallInstruments,
+                      //               onBack: () {
+                      //                 Navigator.pushReplacement(
+                      //                   ctx,
+                      //                   MaterialPageRoute(
+                      //                     builder: (_) => MelodyCelebrationView(
+                      //                       backgroundAsset:
+                      //                           'assets/png/melody_mixer/backgrounds/winning_background.png',
+                      //                       podiumAsset:
+                      //                           'assets/png/melody_mixer/ui/winning_stage.png',
+                      //                        headingText:'Yay!' ,
+                      //                        headingSubText: 'Beautiful\nsounds!',
+                      //                       characterId: state.dashboardInfo?.characterId ?? '',
+                      //                      onExit: () =>
+                      //                           Navigator.pushAndRemoveUntil(
+                      //                             ctx,
+                      //                             MaterialPageRoute(
+                      //                               builder: (_) =>
+                      //                                   ChildDashboardView(
+                      //                                     childId:
+                      //                                         widget.childId,
+                      //                                   ),
+                      //                             ),
+                      //                             (route) => false,
+                      //                           ),
+                      //                     ),
+                      //                   ),
+                      //                 );
+                      //               },
+                      //             ),
+                      //           ),
+                      //         );
+                      //       },
+                      //     ),
+                      //   ),
+                      // ),
+                      // onTap: () {
+                      //   Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //       builder: (context) => MelodyMoodSelectView(
+                      //         backgroundAsset:
+                      //             'assets/png/melody_mixer/backgrounds/mood_select_bg.png',
+                      //         characterId:
+                      //             state.dashboardInfo?.characterId ?? '',
+                      //         moods: age3to4Config.moods,
+                      //         onMoodSelected: (mood) {
+                      //           Navigator.push(
+                      //             context,
+                      //             MaterialPageRoute(
+                      //               builder: (_) => MelodyIntroView(
+                      //                 backgroundAsset: mood.roomBackgroundAsset,
+                      //                 characterId:
+                      //                     state.dashboardInfo?.characterId ??
+                      //                     '',
+                      //                 onReturnToKingdom: () =>
+                      //                     Navigator.pop(context),
+                      //                 onBack: () => Navigator.pop(context),
+                      //                 onTapAnywhere: () {
+                      //                   // 👇 guide play room (star wala)
+                      //                   Navigator.push(
+                      //                     context,
+                      //                     MaterialPageRoute(
+                      //                       builder: (_) => MelodyPlayRoomView(
+                      //                         instruments: mood.instruments,
+                      //                         badgeColor: mood.badgeColor,
+                      //                         backgroundAsset:
+                      //                             mood.roomBackgroundAsset,
+                      //                         showGuide: true,
+                      //                         moodBadgeLabel: mood.label,
+                      //                         moodBadgeIcon: mood.iconAsset,
+                      //                         onBack: () {
+                      //                           Navigator.pushReplacement(
+                      //                             context,
+                      //                             MaterialPageRoute(
+                      //                               builder: (_) => MelodyCelebrationView(
+                      //                                 backgroundAsset:
+                      //                                     'assets/png/melody_mixer/backgrounds/winning_background.png',
+                      //                                 podiumAsset:
+                      //                                     'assets/png/melody_mixer/ui/winning_stage.png',
+                      //                                 headingText:'Hooray!' ,
+                      //                                 headingSubText: 'You created\njoyful sounds!',
+                      //                                 characterId:
+                      //                                     state
+                      //                                         .dashboardInfo
+                      //                                         ?.characterId ??
+                      //                                     '',
+                      //                                 onExit: () =>
+                      //                                     Navigator.pushAndRemoveUntil(
+                      //                                       context,
+                      //                                       MaterialPageRoute(
+                      //                                         builder: (_) =>
+                      //                                             ChildDashboardView(
+                      //                                               childId: widget
+                      //                                                   .childId,
+                      //                                             ),
+                      //                                       ),
+                      //                                       (route) => false,
+                      //                                     ),
+                      //                               ),
+                      //                             ),
+                      //                           );
+                      //                         },
+                      //                       ),
+                      //                     ),
+                      //                   );
+                      //                 },
+                      //               ),
+                      //             ),
+                      //           );
+                      //         },
+                      //       ),
+                      //     ),
+                      //   );
+                      // },
+//                       onTap: () {
+//                         Navigator.push(
+//                           context,
+//                           MaterialPageRoute(
+//                             builder: (context) => MelodyHubView(
+//                             showPlaylistButton: true,
+//                               backgroundAsset:
+//                                   'assets/png/melody_mixer/backgrounds/hub_room.png',
+//                               characterId:
+//                                   state.dashboardInfo?.characterId ?? '',
+//                               cards: age5to6HubCards,
+//                               onReturnToKingdom: () => Navigator.pop(context),
+//                               onPlaylistIconTap: () {
+//   Navigator.push(context, MaterialPageRoute(
+//     builder: (_) => MelodyPlaylistView(
+//       moods: age5to6Config.moods,
+//       initialMoodId: 'calm',
+//       songs: const [   // static abhi — API baad mein
+//         PlaylistSong(id: '1', title: 'Calm Song 3', duration: '00:10', group: 'today', progress: 0.5),
+//         PlaylistSong(id: '2', title: 'Calm Song 2', duration: '00:09', group: 'today', progress: 0.25),
+//         PlaylistSong(id: '3', title: 'Calm Song 1', duration: '00:16', group: 'yesterday', progress: 0.5),
+//       ],
+//       onBack: () => Navigator.pop(context),
+//       onSearch: () {},
+//       onStartNewSong: () {
+//         // create flow — mood select se shuru
+//       },
+//       onMoodChanged: (mood) {
+//         // mood badla → us mood ke songs load (API baad mein)
+//       },
+//     ),
+//   ));
+// },
+//                               onCardTap: (card) {
+//                                 switch (card.flow) {
+//                                   case MixerFlowId.createSong:
+//                                     Navigator.push(
+//                                       context,
+//                                       MaterialPageRoute(
+//                                         builder: (_) => MelodyMoodSelectView(
+//                                           backgroundAsset:
+//                                               'assets/png/melody_mixer/backgrounds/mood_select_bg.png',
+//                                           characterId: state.dashboardInfo?.characterId??'',
+//                                           moods: age5to6Config.moods,
+//                                           onBack: () => Navigator.pop(context),
+//                                           onMoodSelected: (mood) {
+//                                              Navigator.push(context, MaterialPageRoute(
+//               builder: (_) => MelodyPlayRoomView(
+//                 backgroundAsset: mood.roomBackgroundAsset,
+//                 showSongsOnExit: true, 
+//                 instruments: mood.instruments, 
+//                 moodBadgeLabel: mood.label,
+//                 moodBadgeIcon: mood.iconAsset,
+//                 badgeColor: mood.badgeColor,
+//                 showGuide: false, 
+//                 showRecordButton: true, 
+//                 onRecordTap: () {
+//                 },
+//                 onBack: () => Navigator.of(context)..pop()..pop(),
+//               ),
+//             ));
+//                                           },
+//                                         ),
+//                                       ),
+//                                     );
+//                                     break;
+
+//                                   case MixerFlowId.quest:
+//                                     Navigator.push(context, MaterialPageRoute(
+//     builder: (_) => MelodyQuestIntroView(
+//       quest: dummyDragonQuest,          // 👈 abhi static; API se aayega
+//       onBack: () => Navigator.pop(context),
+//      continueQuiz: () {
+//   Navigator.push(context, MaterialPageRoute(
+//     builder: (_) => MelodyQuestRoomView(
+//       quest: dummyDragonQuest,
+//       onBack: () => Navigator.pop(context),
+//       onReadyToCreate: () {
+//         // 👇 making magic ke baad → result screen (room replace)
+//         Navigator.pushReplacement(context, MaterialPageRoute(
+//           builder: (_) => MelodyQuestResultView(
+//             quest: dummyDragonQuest,
+//             backgroundAsset: dummyDragonQuest.questResultBackground,
+//             onContinue: () {
+//               Navigator.pushReplacement(context, MaterialPageRoute(
+//     builder: (_) => MelodyQuestRewardView(
+//       quest: dummyDragonQuest,
+//       backgroundAsset: 'assets/png/melody_mixer/backgrounds/winning_background.png', // jo pehle dala tha
+//       dragonLottieAsset: 'assets/lotties/dragon_winning_lottie.json',
+//       stars: 3,
+//       coins: 15,
+//       energy: 0.9,              // quest se jo bani (abhi static)
+//       songDuration: '00:10',
+//       onSaveToPlaylist: () {
+//       },
+//       onReturnToMusicHall: () {
+//         // seedha hub (music hall) — quest ki saari screens stack se hatao
+        
+//   Navigator.of(context)..pop()..pop();   // reward + intro pop → hub
+
+//         // ya agar hub named nahi, to hub tak jo bhi tumhara tareeqa ho
+//       },
+//     ),
+//   ));
+//             },
+//           ),
+//         ));
+//       },
+//     ),
+//   ));
+// },
+//     ),
+//   ));
+//                                     break;
+
+//                                   default:
+//                                     break;
+//                                 }
+//                               },
+//                         )));
+//                       },
+onTap: (){
+  Navigator.push(context, MaterialPageRoute(builder: (context)=> MelodyHubView(
+  backgroundAsset: 'assets/png/melody_mixer/backgrounds/hub_room.png',
+  characterId: state.dashboardInfo?.characterId??'',
+  cards: age7to8HubCards,          // 👈 teen cards (7-8)
+  onReturnToKingdom: () => Navigator.pop(context),
+  onPlaylistIconTap: () {
+    // playlist screen
+  },
+  onCardTap: (card) {
+    switch (card.flow) {
+      case MixerFlowId.createSong:
+  Navigator.push(context, MaterialPageRoute(
+    builder: (ctx) => MelodyCreateIntroView(
+      backgroundAsset: 'assets/png/melody_mixer/backgrounds/melody_create_bg.png',  // ye bg
+      characterId: state.dashboardInfo?.characterId,
+      onBack: () => Navigator.pop(ctx),
+        onStartCreating: () {
+  Navigator.push(ctx, MaterialPageRoute(
+    builder: (_) => MelodyMoodSelectGridView(
+      backgroundAsset: 'assets/png/melody_mixer/backgrounds/mood_select_bg.png',
+      moods: age7to8Config.moods,
+      onBack: () => Navigator.pop(ctx),
+      onContinue: (mood) {
+        // record wala play room (5-6 jaisa)
+        Navigator.push(ctx, MaterialPageRoute(
+          builder: (_) => MelodyPlayRoomView(
+            backgroundAsset: mood.roomBackgroundAsset,
+            instruments: mood.instruments,
+            moodBadgeLabel: mood.label,
+            moodBadgeIcon: mood.iconAsset,
+            badgeColor: mood.badgeColor,
+            showRecordButton: true,
+            showSongsOnExit: true,
+            onBack: () => Navigator.of(ctx)..pop()..pop(),
+          ),
+        ));
+      },
+    ),
+  ));
+      },
+    ),
+  ));
+  break;
+
+
+
+
+
+        
+        break;
+case MixerFlowId.quest:
+  Navigator.push(context, MaterialPageRoute(
+    builder: (_) => MelodyQuestIntroView(
+      quest: dummyBraveQuest,                 // 👈 7-8 ka quest
+      onBack: () => Navigator.pop(context),
+      continueQuiz: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> MelodyQuestRoomView(
+  quest: dummyBraveQuest,
+  tapBeforeRender: true,   // 👈 7-8
+  onBack: () => Navigator.pop(context),
+  onReadyToCreate: () {
+  Navigator.pushReplacement(context, MaterialPageRoute(
+    builder: (resultCtx) => MelodyQuestResultView(   // 👈 is builder ka context
+      quest: dummyBraveQuest,
+      backgroundAsset: dummyBraveQuest.questResultBackground,
+      onContinue: () {
+        Navigator.pushReplacement(resultCtx, MaterialPageRoute(  // 👈 resultCtx, dashboard wala nahi
+          builder: (rewardCtx) => MelodyQuestRewardView(
+            quest: dummyBraveQuest,
+            backgroundAsset: 'assets/png/melody_mixer/backgrounds/winning_background.png',
+            dragonLottieAsset: 'assets/lotties/dragon_winning_lottie.json',
+            stars: 3,
+            coins: 15,
+            energy: 0.8,
+            songDuration: '00:10',
+            onSaveToPlaylist: () {},
+            onReturnToMusicHall: () {
+              Navigator.of(rewardCtx)..pop()..pop();
+            },
+          ),
+        ));
+      },
+    ),
+  ));
+},
+),));
+      },
+    ),
+  ));
+  break;
+      case MixerFlowId.playlist:
+         Navigator.push(context, MaterialPageRoute(
+    builder: (_) => MelodyPlaylistView(
+      moods: age7to8Config.moods,        // 👈 7-8 ke moods (Magical waghera)
+      initialMoodId: 'magical',          // 👈 jo pehle selected ho
+      songs: const [                     // static abhi — API baad mein
+        PlaylistSong(id: '1', title: 'Magical Song 2', duration: '00:10', group: 'today', progress: 0.9),
+        PlaylistSong(id: '2', title: 'My Magical Song', duration: '00:09', group: 'today', progress: 0.3),
+        PlaylistSong(id: '3', title: 'Magical Song 1', duration: '00:16', group: 'yesterday', progress: 0.9),
+      ],
+      onBack: () => Navigator.pop(context),
+      onSearch: () {},
+      onStartNewSong: () {
+        // create flow se shuru (create intro ya mood select)
+      },
+      onMoodChanged: (mood) {
+        // mood badla → us mood ke songs load (API baad mein)
+      },
+    ),
+  ));
+        break;
+      default:
+        break;
+    }
+  },
+),));
+},
+
+// onTap: () {
+//   Navigator.push(
+//     context,
+//     MaterialPageRoute(
+//       settings: const RouteSettings(name: 'melody_hub'),
+//       builder: (ctx) => MelodyHubView(
+//         backgroundAsset: 'assets/png/melody_mixer/backgrounds/9plus_hub_room.png',
+//         characterId: state.dashboardInfo?.characterId ?? '',
+//         cards: age9plusHubCards,
+//         showBlackLayout: true,
+//         welcomeName: state.dashboardInfo?.name,
+//         onReturnToKingdom: () => Navigator.pop(ctx),
+//         onPlaylistIconTap: () {
+//         },
+//         onCardTap: (card) {
+//           switch (card.flow) {
+//             case MixerFlowId.createSong:
+//               // 9+ create → create intro → mood grid → generate (agli screens)
+//               Navigator.push(ctx, MaterialPageRoute(
+//                 builder: (_) => MelodyMoodSelectGridView(
+//                    backgroundAsset: 'assets/png/melody_mixer/backgrounds/mood_select_bg.png',
+//       moods: age9plusConfig.moods,
+//       onBack: () => Navigator.pop(ctx),
+//      onContinue: (mood) {
+//   Navigator.push(ctx, MaterialPageRoute(
+//     builder: (_) => MelodyCreateGenerateView(
+//       backgroundAsset: mood.roomBackgroundAsset,
+//       instruments: mood.instruments,
+//       moodBadgeLabel: mood.label,
+//       moodBadgeIcon: mood.iconAsset,
+//       badgeColor: mood.badgeColor,
+//       onBack: () => Navigator.pop(ctx),
+//     ),
+//   ));
+// },
+//                 ),
+//               ));
+//               break;
+
+//             case MixerFlowId.playlist:
+//               // // same as playlist icon
+//               // Navigator.push(ctx, MaterialPageRoute(
+//               //   builder: (_) => MelodyPlaylistView(
+//               //     moods: age9plusConfig.moods,
+//               //     initialMoodId: age9plusConfig.moods.first.id,
+//               //     songs: const [],
+//               //     onBack: () => Navigator.pop(ctx),
+//               //     onSearch: () {},
+//               //     onStartNewSong: () {},
+//               //     onMoodChanged: (mood) {},
+//               //   ),
+//               // ));
+//               // break;
+
+//             case MixerFlowId.reflect:
+//               // reflect/journal screen (9+ naya) — abhi khali
+//               break;
+
+//             default:
+//               break;
+//           }
+//         },
+//       ),
+//     ),
+//   );
+// },
+
+
+                      child: Image.asset(
+                        'assets/png/melody_mixer_banner.png',
+                        width: itemWidth,
+                        height: itemHeight,
+                        fit: BoxFit.fill,
+                      ),
                     ),
                     const SizedBox(width: 10),
                     Image.asset(

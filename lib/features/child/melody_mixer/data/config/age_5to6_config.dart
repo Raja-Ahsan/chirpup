@@ -1,0 +1,206 @@
+import 'package:chirp_up_app/features/child/melody_mixer/data/models/quest_config_model.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/data/models/quiz_instrument_model.dart';
+import 'package:flutter/material.dart';
+import 'package:chirp_up_app/core/constants/age_group.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/data/models/hum_card_model.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/data/models/melody_mixer_enums.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/data/models/melody_mixer_config_model.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/data/models/mood_config_model.dart';
+import 'package:chirp_up_app/features/child/melody_mixer/data/models/instrument_placement_model.dart';
+
+// ── Hub cards (5-6) ──
+const age5to6HubCards = [
+  HubCard(
+    flow: MixerFlowId.createSong,
+    title: 'Create Your\nOwn Song',
+    iconAsset: 'assets/png/melody_mixer/ui/create_music_button.png',
+  ),
+  HubCard(
+    flow: MixerFlowId.quest,
+    title: 'Music Quest',
+    iconAsset: 'assets/png/melody_mixer/ui/music_quest_button.png',
+  ),
+];
+
+// ── Har mood ke instruments (positions/assets tum tweak karna) ──
+const _happyInstruments = [
+ InstrumentPlacement(
+    id: 'maracas',
+    assetPath: 'assets/png/melody_mixer/instruments/maracas.png',
+    left: 0.04, top: 0.4, widthFactor: 0.5,
+  ),
+  InstrumentPlacement(
+    id: 'xylophone',
+    assetPath: 'assets/png/melody_mixer/instruments/xylophone_2.png',
+    left: 0.35, top: 0.55, widthFactor: 0.58,
+  ),
+  InstrumentPlacement(
+    id: 'trumpet',
+    assetPath: 'assets/png/melody_mixer/instruments/trumpet.png',
+    left: 0.08, top: 0.7, widthFactor: 0.68,
+  ),
+];
+
+const _calmInstruments = [
+  InstrumentPlacement(
+    id: 'keyboard',
+    assetPath: 'assets/png/melody_mixer/instruments/keyboard.png',
+    left: 0.07, top: 0.53, widthFactor: 0.45,
+  ),
+  InstrumentPlacement(
+    id: 'chime_bars',
+    assetPath: 'assets/png/melody_mixer/instruments/chime_bars.png',
+    right: 0.04, top: 0.41, widthFactor: 0.41,
+  ),
+  InstrumentPlacement(
+    id: 'hand_bells',
+    assetPath: 'assets/png/melody_mixer/instruments/hand_bells.png',
+    left: 0.48, top: 0.66, widthFactor: 0.34,
+  ),
+];
+
+const _sadInstruments = [
+  InstrumentPlacement(
+    id: 'keyboard',
+    assetPath: 'assets/png/melody_mixer/instruments/keyboard.png',
+    left: 0.08, top: 0.55, widthFactor: 0.42,
+  ),
+  InstrumentPlacement(
+    id: 'chime_bars',
+    assetPath: 'assets/png/melody_mixer/instruments/chime_bars.png',
+    right: 0.06, top: 0.48, widthFactor: 0.40,
+  ),
+  InstrumentPlacement(
+    id: 'hand_bells',
+    assetPath: 'assets/png/melody_mixer/instruments/hand_bells.png',
+    left: 0.38, top: 0.72, widthFactor: 0.34,
+  ),
+];
+
+const _excitedInstruments = [
+  InstrumentPlacement(
+    id: 'maracas',
+    assetPath: 'assets/png/melody_mixer/instruments/maracas.png',
+    left: 0.02, top: 0.34, widthFactor: 0.36,
+  ),
+  InstrumentPlacement(
+    id: 'xylophone',
+    assetPath: 'assets/png/melody_mixer/instruments/xylophone.png',
+    left: 0.40, top: 0.52, widthFactor: 0.55,
+  ),
+  InstrumentPlacement(
+    id: 'trumpet',
+    assetPath: 'assets/png/melody_mixer/instruments/trumpet.png',
+    left: 0.06, top: 0.72, widthFactor: 0.66,
+  ),
+];
+
+// ── Moods (5-6) ──
+const _age5to6Moods = [
+  MoodConfig(
+    id: 'happy',
+    label: 'Happy',
+    iconAsset: 'assets/png/melody_mixer/ui/happy.png',
+    cardColor: Color(0xFFF6EBCB),
+    badgeColor: Color(0xFFF4C64A),
+    roomBackgroundAsset: 'assets/png/melody_mixer/backgrounds/happy_room.png',
+    instruments: _happyInstruments,
+  ),
+  MoodConfig(
+    id: 'calm',
+    label: 'Calm',
+    iconAsset: 'assets/png/melody_mixer/ui/calm.png',
+    cardColor: Color(0xFFDDE7F1),
+    badgeColor: Color(0xFF75ADFF),
+    roomBackgroundAsset: 'assets/png/melody_mixer/backgrounds/calm_room.png',
+    instruments: _calmInstruments,
+  ),
+  MoodConfig(
+    id: 'sad',
+    label: 'Sad',
+    iconAsset: 'assets/png/melody_mixer/ui/sad.png',
+    cardColor: Color(0xFFDEE1E7),
+    badgeColor: Color(0xFFC9CFD9),
+    roomBackgroundAsset: 'assets/png/melody_mixer/backgrounds/sad_room.png',
+    instruments: _sadInstruments,
+  ),
+  MoodConfig(
+    id: 'excited',
+    label: 'Excited',
+    iconAsset: 'assets/png/melody_mixer/ui/excited.png',
+    cardColor: Color(0xFFEADFE8),
+    badgeColor: Color(0xFFE3C7E0),
+    roomBackgroundAsset: 'assets/png/melody_mixer/backgrounds/excited_room.png',
+    instruments: _excitedInstruments,
+  ),
+];
+
+const dummyDragonQuest = QuestConfig(
+  id: 'quest_dragon_happy',
+  characterName: 'Baby Dragon',
+  resultTitle: 'Your music helped\nDragon feel happy!',
+  questIntroBackground: 'assets/png/melody_mixer/backgrounds/quest_intro_bg.png',
+  questResultBackground: 'assets/png/melody_mixer/backgrounds/quest_complete_bg.png',
+  backgroundAsset: 'assets/png/melody_mixer/backgrounds/quest_room_bg.png',
+  targetMoodId: 'happy',
+  energyLabel: 'JOY ENERGY',
+  maxInstruments: 3,
+  instruments: [
+  QuestInstrument(
+    id: 'drum', isMain: true,
+    trayAsset: 'assets/png/melody_mixer/quest/quest_drum.png',
+    roomAsset: 'assets/png/melody_mixer/instruments/bass_drum.png',
+    left: 0.12, top: 0.63, widthFactor: 0.35,
+  ),
+  QuestInstrument(
+    id: 'trumpet', isMain: true,
+    trayAsset: 'assets/png/melody_mixer/quest/quest_trumpet.png',
+    roomAsset: 'assets/png/melody_mixer/instruments/trumpet.png',
+    left: 0.48, top: 0.62, widthFactor: 0.35,
+  ),
+  QuestInstrument(
+    id: 'xylophone',
+    trayAsset: 'assets/png/melody_mixer/quest/quest_chime_bars.png',
+    roomAsset: 'assets/png/melody_mixer/instruments/chime_bars.png',
+    left: 0.44, top: 0.42, widthFactor: 0.30,   // chimes — center, stand pe
+  ),
+  QuestInstrument(
+    id: 'flute',
+    trayAsset: 'assets/png/melody_mixer/quest/quest_flute.png',
+    roomAsset: 'assets/png/melody_mixer/instruments/flute.png',
+    left: 0.46, top: 0.68, widthFactor: 0.26,   // flute — front center
+  ),
+  QuestInstrument(
+    id: 'hand_bells',
+    trayAsset: 'assets/png/melody_mixer/quest/quest_hand_bells.png',
+    roomAsset: 'assets/png/melody_mixer/instruments/hand_bells.png',
+    left: 0.64, top: 0.56, widthFactor: 0.24,   // bells — chimes ke right
+  ),
+  QuestInstrument(
+    id: 'keyboard',
+    trayAsset: 'assets/png/melody_mixer/quest/quest_keyboard.png',
+    roomAsset: 'assets/png/melody_mixer/instruments/keyboard.png',
+    left: 0.13, top: 0.49, widthFactor: 0.35,   // green piano — left
+  ),
+],
+);
+// ── Config ──
+const age5to6Config = MelodyMixerConfig(
+  ageGroup: AgeGroup.age5to6,
+  entry: MixerEntry.hub,
+  flow: [
+    MixerStage.hub,
+    MixerStage.moodSelect,
+    MixerStage.play,
+    MixerStage.review,
+    MixerStage.celebration,
+  ],
+  interaction: InteractionMode.freePlay,
+  moodSelectionEnabled: true,
+  recordingEnabled: true,
+  persistence: true, 
+  questsEnabled: true, 
+  reflectionEnabled: false,
+  defaultBackgroundAsset: 'assets/png/melody_mixer/backgrounds/mood_select_bg.png',
+  moods: _age5to6Moods,
+);

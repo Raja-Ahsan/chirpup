@@ -26,6 +26,7 @@ dependencies:
   shimmer: ^3.0.0
   lottie: ^3.3.3
   image: ^4.9.1
+  flutter_soloud: ^4.1.7
 
 dev_dependencies:
   flutter_test:
@@ -39,10 +40,15 @@ flutter:
 
   assets:
     - assets/fonts/
+    - assets/audio/melody_mixer/
     - assets/png/
     - assets/svg/
     - assets/gifs/
     - assets/lotties/
+    - assets/png/melody_mixer/backgrounds/
+    - assets/png/melody_mixer/instruments/
+    - assets/png/melody_mixer/ui/
+    - assets/png/melody_mixer/quest/
 
   fonts:
     - family: Nunito

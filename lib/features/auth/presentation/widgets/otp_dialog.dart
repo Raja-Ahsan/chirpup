@@ -58,7 +58,7 @@ Widget otpDialog(BuildContext context, {required String email}) {
           const SizedBox(height: 12),
           Center(
             child: Pinput(
-              length: 4,
+              length: 6,
               defaultPinTheme: PinTheme(
                 width: 59,
                 height: 69,
