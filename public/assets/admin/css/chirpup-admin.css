@@ -1,0 +1,156 @@
+/* ChirpUp admin light ambiance */
+:root {
+  --cu-admin-bg: #f7fbf8;
+  --cu-admin-green: #2f8f45;
+  --cu-admin-gold: #f0a429;
+}
+
+body.light,
+body:not(.dark-only) {
+  background: var(--cu-admin-bg) !important;
+}
+
+body.dark-only {
+  background: var(--cu-admin-bg) !important;
+}
+
+.page-body {
+  position: relative;
+  background: transparent !important;
+}
+
+.page-body-wrapper {
+  background: transparent !important;
+}
+
+.page-wrapper {
+  background: transparent !important;
+}
+
+.cu-ambiance {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(240, 164, 41, 0.16), transparent 28%),
+    radial-gradient(circle at 88% 14%, rgba(47, 143, 69, 0.1), transparent 30%),
+    radial-gradient(circle at 70% 88%, rgba(47, 143, 69, 0.08), transparent 34%),
+    linear-gradient(165deg, #ffffff 0%, #f7fbf8 48%, #eef8f1 100%);
+}
+
+.cu-ambiance__sun {
+  position: absolute;
+  top: -4rem;
+  right: 8%;
+  width: 16rem;
+  height: 16rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 214, 120, 0.55) 0%, rgba(255, 214, 120, 0.18) 42%, transparent 70%);
+  animation: cuSunPulse 7s ease-in-out infinite;
+}
+
+.cu-ambiance__ray {
+  position: absolute;
+  top: 0;
+  right: 12%;
+  width: 2px;
+  height: 12rem;
+  transform-origin: top center;
+  background: linear-gradient(180deg, rgba(255, 214, 120, 0.45), transparent);
+  animation: cuRayPulse 5.5s ease-in-out infinite;
+}
+
+.cu-ambiance__ray--1 { transform: rotate(-28deg); animation-delay: 0s; }
+.cu-ambiance__ray--2 { transform: rotate(-8deg); right: 14%; animation-delay: 0.4s; }
+.cu-ambiance__ray--3 { transform: rotate(12deg); right: 10%; animation-delay: 0.8s; }
+.cu-ambiance__ray--4 { transform: rotate(30deg); right: 8%; animation-delay: 1.2s; }
+
+.cu-ambiance__star {
+  position: absolute;
+  width: 0.55rem;
+  height: 0.55rem;
+  background: #f4d56a;
+  clip-path: polygon(50% 0%, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0% 50%, 38% 38%);
+  filter: drop-shadow(0 0 5px rgba(240, 164, 41, 0.7));
+  animation: cuTwinkle 2.6s ease-in-out infinite;
+  opacity: 0.75;
+}
+
+.cu-ambiance__star.is-sm {
+  width: 0.35rem;
+  height: 0.35rem;
+}
+
+.cu-ambiance__star.is-lg {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+.cu-ambiance__star:nth-child(1) { top: 8%; left: 18%; animation-delay: 0s; }
+.cu-ambiance__star:nth-child(2) { top: 14%; left: 32%; animation-delay: 0.4s; }
+.cu-ambiance__star:nth-child(3) { top: 6%; left: 48%; animation-delay: 0.9s; }
+.cu-ambiance__star:nth-child(4) { top: 18%; left: 62%; animation-delay: 1.3s; }
+.cu-ambiance__star:nth-child(5) { top: 10%; left: 76%; animation-delay: 0.2s; }
+.cu-ambiance__star:nth-child(6) { top: 22%; left: 12%; animation-delay: 1.7s; }
+.cu-ambiance__star:nth-child(7) { top: 28%; left: 40%; animation-delay: 0.6s; }
+.cu-ambiance__star:nth-child(8) { top: 16%; left: 88%; animation-delay: 1.1s; }
+.cu-ambiance__star:nth-child(9) { top: 36%; left: 70%; animation-delay: 2s; }
+.cu-ambiance__star:nth-child(10) { top: 42%; left: 24%; animation-delay: 0.8s; }
+.cu-ambiance__star:nth-child(11) { top: 52%; left: 8%; animation-delay: 1.5s; }
+.cu-ambiance__star:nth-child(12) { top: 60%; left: 92%; animation-delay: 0.3s; }
+.cu-ambiance__star:nth-child(13) { top: 72%; left: 55%; animation-delay: 1.9s; }
+.cu-ambiance__star:nth-child(14) { top: 80%; left: 30%; animation-delay: 1.2s; }
+.cu-ambiance__star:nth-child(15) { top: 88%; left: 78%; animation-delay: 0.5s; }
+.cu-ambiance__star:nth-child(16) { top: 12%; left: 55%; animation-delay: 2.2s; }
+
+.page-wrapper > .page-header,
+.page-wrapper > .page-body-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+.page-header {
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(213, 227, 217, 0.9);
+}
+
+.sidebar-wrapper {
+  background: #ffffff !important;
+  border-right: 1px solid rgba(213, 227, 217, 0.9);
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border: 1px solid rgba(213, 227, 217, 0.75);
+  box-shadow: 0 10px 28px rgba(31, 107, 50, 0.05);
+}
+
+.default-dashboard .profile-box {
+  background: linear-gradient(135deg, #2f8f45 0%, #1f6b32 55%, #3aa0c8 100%) !important;
+}
+
+@keyframes cuSunPulse {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 0.95; transform: scale(1.08); }
+}
+
+@keyframes cuRayPulse {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes cuTwinkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.7) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.2) rotate(16deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cu-ambiance__sun,
+  .cu-ambiance__ray,
+  .cu-ambiance__star {
+    animation: none !important;
+  }
+}

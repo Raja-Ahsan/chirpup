@@ -22,5 +22,20 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+# Ignore bulky Cuba admin theme assets, but keep ChirpUp panel files tracked for deploy
 public/assets/admin/*
-public/assets/admin/.gitikeep
+!public/assets/admin/css/
+!public/assets/admin/css/chirpup-panel.css
+!public/assets/admin/css/chirpup-admin.css
+!public/assets/admin/images/
+!public/assets/admin/images/favicon.png
+!public/assets/admin/images/brand/
+!public/assets/admin/images/brand/chirpup-logo.png
+!public/assets/admin/images/brand/chirpup-characters-bg.png
+!public/assets/admin/images/brand/chirpup-login-bg.png
+!public/assets/admin/images/brand/chirpup-splash.png
+!public/assets/admin/images/brand/chirpup-splash-panel.png
+!public/assets/admin/images/brand/chirpup-characters.png
+!public/assets/admin/images/brand/chirpup-characters-panel.png
+!public/assets/admin/.gitkeep
+
