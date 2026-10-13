@@ -96,7 +96,16 @@ class CharactersRowWidget extends StatelessWidget {
                     child: AnimatedOpacity(
                       duration: const Duration(milliseconds: 250),
                       opacity: isSelected ? 1.0 : 0.45,
-                      child: Image.asset(child.imagePath, fit: BoxFit.contain),
+                      child: Image.network(
+                        child.imagePath,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(
+                              Icons.broken_image,
+                              color: Colors.white,
+                              size: 40,
+                            ),
+                      ),
                     ),
                   ),
                 ),

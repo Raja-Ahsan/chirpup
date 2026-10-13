@@ -1,5 +1,6 @@
 import 'package:chirp_up_app/core/constants/app_colors.dart';
 import 'package:chirp_up_app/core/constants/app_sizes.dart';
+import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/widgets/common_button.dart';
 import 'package:chirp_up_app/core/widgets/custom_text.dart';
 import 'package:chirp_up_app/core/widgets/heading_text.dart';
@@ -57,8 +58,10 @@ class _SetupYourPinViewState extends State<SetupYourPinView> {
                             onTap: state.isSkipPin
                                 ? null
                                 : () {
-                                    context.read<AuthBloc>().add(
-                                      SkipPinEvent(context: context),
+                                    Navigator.pushNamedAndRemoveUntil(
+                                      context,
+                                      AppRoutes.tapOnCastle,
+                                      (route) => false,
                                     );
                                   },
                             child: CustomText(

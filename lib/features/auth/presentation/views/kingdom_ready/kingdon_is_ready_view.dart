@@ -83,14 +83,14 @@ class KingdonIsReadyView extends StatelessWidget {
 
                 BlocBuilder<AuthBloc, AuthStates>(
                   builder: (context, state) {
-                    final imageHeight = state.selectedCharacter.imagePath == 'assets/png/baby_dragon_character.png'? 150.0 : 240.0;
+                    final imageHeight = state.selectedCharacter?.imagePath == 'https://chirpup.sitestaginglink.com/assets/characters/character_babydragon.png'? 150.0 : 240.0;
                     return Align(
                       alignment: Alignment.bottomCenter,
                       child: Container(
                         margin: EdgeInsets.only(right: 70),
-                        child: Image.asset(
+                        child: Image.network(
                           height: imageHeight,
-                          state.selectedCharacter.imagePath,
+                          state.selectedCharacter?.imagePath??'',
                           fit: BoxFit.contain,
                         ),
                       ),

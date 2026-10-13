@@ -6,6 +6,8 @@ import 'package:chirp_up_app/core/utils/show_common_dialog.dart';
 import 'package:chirp_up_app/core/widgets/error_dialog.dart';
 import 'package:chirp_up_app/features/auth/bloc/auth_events.dart';
 import 'package:chirp_up_app/features/auth/bloc/auth_states.dart';
+import 'package:chirp_up_app/features/auth/data/models/character_model.dart';
+import 'package:chirp_up_app/features/auth/data/models/year_model.dart';
 import 'package:chirp_up_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:chirp_up_app/features/auth/presentation/widgets/account_verified_dialog.dart';
 import 'package:chirp_up_app/features/auth/presentation/widgets/otp_dialog.dart';
@@ -15,24 +17,81 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class AuthBloc extends Bloc<AuthEvents, AuthStates> {
   final AuthRepository _authRepository = AuthRepository();
   AuthBloc() : super(AuthStates()) {
+    on<CharactersRequested>(_getCharacters);
     on<SelectCharacterEvent>(_selectCharacter);
+    on<YearsRequested>(_getYears);
     on<SelectAgeRangeEvent>(_selectAgeRange);
     on<CreateYourChildProfileEvent>(_createYourChildProfile);
     on<EnterPinEvent>(_enterPin);
     on<SetupPinEvent>(_setupPin);
-    on<SkipPinEvent>(_skipPin);
     on<RegisterEvent>(_register);
     on<VerifyOtpEvent>(_verifyOtp);
     on<ResendOtpEvent>(_resendOtp);
     on<LoginEvent>(_login);
   }
 
+  Future<void> _getCharacters(
+  CharactersRequested event,
+  Emitter<AuthStates> emit,
+) async {
+  emit(state.copyWith(isCharactersLoading: true));
+  try {
+    final response = await _authRepository.getCharacters();
+
+    if (response['code'] == 200 || response['code'] == 201) {
+      final List<dynamic> rawList =
+          (response['data']?['characters'] as List?) ?? [];
+      final characters = rawList
+          .map((e) => CharacterModel.fromJson(e as Map<String, dynamic>))
+          .where((c) => c.status == 'active')
+          .toList();
+
+      emit(state.copyWith(
+        characters: characters,
+        selectedCharacterIndex: 0,
+        isCharactersLoading: false,
+      ));
+    } else {
+      emit(state.copyWith(isCharactersLoading: false));
+    }
+  } catch (e) {
+    emit(state.copyWith(isCharactersLoading: false));
+  }
+}
+
   void _selectCharacter(SelectCharacterEvent event, Emitter<AuthStates> emit) {
     emit(state.copyWith(selectedCharacterIndex: event.index));
   }
 
+  Future<void> _getYears(
+  YearsRequested event,
+  Emitter<AuthStates> emit,
+) async {
+  emit(state.copyWith(isYearsLoading: true));
+  try {
+    final response = await _authRepository.getYears();
+
+    if (response['code'] == 200 || response['code'] == 201) {
+      final List<dynamic> rawList =
+          (response['data']?['years'] as List?) ?? [];
+      final years = rawList
+          .map((e) => YearModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      emit(state.copyWith(
+        years: years,
+        isYearsLoading: false,
+      ));
+    } else {
+      emit(state.copyWith(isYearsLoading: false));
+    }
+  } catch (e) {
+    emit(state.copyWith(isYearsLoading: false));
+  }
+}
+
   void _selectAgeRange(SelectAgeRangeEvent event, Emitter<AuthStates> emit) {
-    emit(state.copyWith(selectedAgeRange: event.ageRange));
+    emit(state.copyWith(selectedYearIndex: int.tryParse(event.yearIndex)));
   }
 
   Future<void> _createYourChildProfile(
@@ -48,7 +107,7 @@ class AuthBloc extends Bloc<AuthEvents, AuthStates> {
       return;
     }
 
-    if (state.selectedAgeRange.isEmpty) {
+    if (state.selectedYear == null) {
       showCommonDialog(
         context: event.context,
         child: errorDialog(
@@ -64,13 +123,18 @@ class AuthBloc extends Bloc<AuthEvents, AuthStates> {
 
     try {
       final response = await _authRepository.createChildProfile({
-        "characterId": state.selectedCharacter.id,
+        "character_id": state.selectedCharacter?.id,
         "name": event.childName.trim(),
-        "age": state.selectedAgeRange,
+        "year_id": state.selectedYear?.id,
       });
 
-      if (response['statusCode'] == 200 || response['statusCode'] == 201) {
-        emit(state.copyWith(childName: event.childName.trim(),selectedAgeRange: '',));
+      if (response['code'] == 200 || response['code'] == 201) {
+        emit(
+          state.copyWith(
+            childName: event.childName.trim(),
+            clearSelectedYear: true,
+          ),
+        );
         Navigator.pushNamed(event.context, AppRoutes.kingdomIsReady);
       } else {
         showCommonDialog(
@@ -122,9 +186,9 @@ class AuthBloc extends Bloc<AuthEvents, AuthStates> {
 
     emit(state.copyWith(isLoading: true));
     try {
-      final response = await _authRepository.setupPin({"pin": event.pin});
+      final response = await _authRepository.setupPin({"user_pin": event.pin});
 
-      if (response['statusCode'] == 200 || response['statusCode'] == 201) {
+      if (response['code'] == 200 || response['code'] == 201) {
         Navigator.pushNamedAndRemoveUntil(
           event.context,
           AppRoutes.tapOnCastle,
@@ -148,38 +212,6 @@ class AuthBloc extends Bloc<AuthEvents, AuthStates> {
       );
     } finally {
       emit(state.copyWith(isLoading: false));
-    }
-  }
-
-  Future<void> _skipPin(SkipPinEvent event, Emitter<AuthStates> emit) async {
-    emit(state.copyWith(isSkipPin: true));
-    try {
-      final response = await _authRepository.skipPin();
-
-      if (response['statusCode'] == 200 || response['statusCode'] == 201) {
-        Navigator.pushNamedAndRemoveUntil(
-          event.context,
-          AppRoutes.tapOnCastle,
-          (route) => false,
-        );
-      } else {
-        showCommonDialog(
-          context: event.context,
-          child: errorDialog(
-            event.context,
-            response['error'] ?? response['message'] ?? "Could not skip PIN.",
-          ),
-          barrierDismissible: true,
-        );
-      }
-    } catch (e) {
-      showCommonDialog(
-        context: event.context,
-        child: errorDialog(event.context, e.toString()),
-        barrierDismissible: true,
-      );
-    } finally {
-      emit(state.copyWith(isSkipPin: false));
     }
   }
 
@@ -231,14 +263,15 @@ class AuthBloc extends Bloc<AuthEvents, AuthStates> {
     emit(state.copyWith(isLoading: true));
     try {
       final body = {
-        "fullName": event.fullName,
+        "name": event.fullName,
         "email": event.email,
         "password": event.password,
+        "confirm_password": event.confirmPassword
       };
 
       final response = await _authRepository.registerUser(body);
 
-      if (response['statusCode'] == 200 || response['statusCode'] == 201) {
+      if (response['code'] == 200 || response['code'] == 201) {
         showCommonDialog(
           context: event.context,
           child: otpDialog(event.context, email: event.email),
@@ -249,7 +282,7 @@ class AuthBloc extends Bloc<AuthEvents, AuthStates> {
           context: event.context,
           child: errorDialog(
             event.context,
-            response['error'] ?? "Account not created.",
+            response['message'] ?? "Account not created.",
           ),
           barrierDismissible: true,
         );
@@ -286,11 +319,11 @@ class AuthBloc extends Bloc<AuthEvents, AuthStates> {
     try {
       final response = await _authRepository.verifyOtp({
         "email": event.email,
-        "otp": int.parse(event.otp),
+        "otp":event.otp,
       });
 
-      if (response['statusCode'] == 200 || response['statusCode'] == 201) {
-        final accessToken = response['accessToken'];
+      if (response['code'] == 200 || response['code'] == 201) {
+        final accessToken = response['data']['token'];
         if (accessToken != null && accessToken.toString().isNotEmpty) {
           await StorageService.setToken(accessToken.toString());
         }
@@ -331,7 +364,7 @@ class AuthBloc extends Bloc<AuthEvents, AuthStates> {
       emit(state.copyWith(isResendOTP: true));
       final response = await _authRepository.resendOtp({"email": event.email});
 
-      if (response['statusCode'] == 200 || response['statusCode'] == 201) {
+      if (response['code'] == 200 || response['code'] == 201) {
         FlushBarHelper.flushBarSuccessMessage(
           response['message'].toString(),
           event.context,
@@ -388,7 +421,7 @@ class AuthBloc extends Bloc<AuthEvents, AuthStates> {
         "password": event.password,
       });
 
-      if (response['statusCode'] == 200 || response['statusCode'] == 201) {
+      if (response['code'] == 200 || response['code'] == 201) {
         final accessToken = response['accessToken'];
         if (accessToken != null && accessToken.toString().isNotEmpty) {
           await StorageService.setToken(accessToken.toString());

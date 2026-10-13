@@ -7,12 +7,20 @@ abstract class AuthEvents extends Equatable {
   List<Object?> get props => [];
 }
 
+class CharactersRequested extends AuthEvents {
+  const CharactersRequested();
+}
+
+class YearsRequested extends AuthEvents {
+  const YearsRequested();
+}
+
 class SelectAgeRangeEvent extends AuthEvents {
-  final String ageRange;
-  const SelectAgeRangeEvent(this.ageRange);
+  final String yearIndex;
+  const SelectAgeRangeEvent(this.yearIndex);
 
   @override
-  List<Object?> get props => [ageRange];
+  List<Object?> get props => [yearIndex];
 }
 
 class SelectCharacterEvent extends AuthEvents {
@@ -51,14 +59,6 @@ class SetupPinEvent extends AuthEvents {
 
   @override
   List<Object?> get props => [pin];
-}
-
-class SkipPinEvent extends AuthEvents {
-  final BuildContext context;
-  const SkipPinEvent({required this.context});
-
-  @override
-  List<Object?> get props => [];
 }
 
 class RegisterEvent extends AuthEvents {

@@ -9,21 +9,35 @@ import 'package:chirp_up_app/features/auth/bloc/auth_events.dart';
 import 'package:chirp_up_app/features/auth/bloc/auth_states.dart';
 import 'package:chirp_up_app/features/auth/presentation/widgets/age_range_button_widget.dart';
 import 'package:chirp_up_app/features/auth/presentation/widgets/avatar_widget.dart';
+import 'package:chirp_up_app/features/auth/presentation/widgets/shimmer_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class CreateYourChildProfileView extends StatelessWidget {
-  CreateYourChildProfileView({super.key});
+class CreateYourChildProfileView extends StatefulWidget {
+  const CreateYourChildProfileView({super.key});
 
-  static const List<String> ageRanges = [
-    '1-2 YEARS',
-    '3-4 YEARS',
-    '5-6 YEARS',
-    '7-8 YEARS',
-    '9+ YEARS',
-  ];
+  @override
+  State<CreateYourChildProfileView> createState() =>
+      _CreateYourChildProfileViewState();
+}
 
+class _CreateYourChildProfileViewState
+    extends State<CreateYourChildProfileView> {
   final TextEditingController childNameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuthBloc>().add(YearsRequested());
+    });
+  }
+
+  @override
+  void dispose() {
+    childNameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +83,7 @@ class CreateYourChildProfileView extends StatelessWidget {
                           return Column(
                             children: [
                               AvatarWidget(
-                                avatar: state.selectedCharacter.avatarImage,
+                                avatar: state.selectedCharacter?.avatarImage ?? '',
                               ),
                               const SizedBox(height: 15),
                               Center(
@@ -78,7 +92,7 @@ class CreateYourChildProfileView extends StatelessWidget {
                                   textAlign: TextAlign.center,
                                   fontFamily: 'LuckiestGuy',
                                   lineSpacing: 0,
-                                  text: state.selectedCharacter.name,
+                                  text: state.selectedCharacter?.name ?? '',
                                 ),
                               ),
                             ],
@@ -116,7 +130,7 @@ class CreateYourChildProfileView extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 14),
-                        _AgeRangeGrid(ageRanges: ageRanges),
+                        const _AgeRangeGrid(),
                         const SizedBox(height: 20),
                       ],
                     ),
@@ -159,36 +173,52 @@ class CreateYourChildProfileView extends StatelessWidget {
   }
 }
 
-//  AGE RANGE GRID WIDGET
+//  AGE RANGE GRID WIDGET — ab dynamic hai, static list poori tarah hata di
 class _AgeRangeGrid extends StatelessWidget {
-  final List<String> ageRanges;
-  const _AgeRangeGrid({required this.ageRanges});
+  const _AgeRangeGrid();
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthStates>(
       builder: (context, state) {
+        if (state.isYearsLoading) {
+           return buildShimmerGrid();
+        }
+
+        if (state.years.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 50),
+            child: Center(
+              child: CustomText(
+                text: 'Could not load age ranges.',
+                fontSize: 14,
+              ),
+            ),
+          );
+        }
+
+        final years = state.years;
         final List<Widget> rows = [];
 
-        for (int i = 0; i < ageRanges.length; i += 2) {
-          final bool hasSecond = i + 1 < ageRanges.length;
+        for (int i = 0; i < years.length; i += 2) {
+          final bool hasSecond = i + 1 < years.length;
           rows.add(
             Row(
               children: [
                 AgeButton(
-                  label: ageRanges[i],
-                  isSelected: state.selectedAgeRange == ageRanges[i],
+                  label: years[i].title.toUpperCase(),
+                  isSelected: state.selectedYearIndex == i,
                   onTap: () => context.read<AuthBloc>().add(
-                    SelectAgeRangeEvent(ageRanges[i]),
+                    SelectAgeRangeEvent(i.toString()),
                   ),
                 ),
                 const SizedBox(width: 12),
                 hasSecond
                     ? AgeButton(
-                        label: ageRanges[i + 1],
-                        isSelected: state.selectedAgeRange == ageRanges[i + 1],
+                        label: years[i + 1].title.toUpperCase(),
+                        isSelected: state.selectedYearIndex == i + 1,
                         onTap: () => context.read<AuthBloc>().add(
-                          SelectAgeRangeEvent(ageRanges[i + 1]),
+                          SelectAgeRangeEvent((i + 1).toString()),
                         ),
                       )
                     : const Expanded(child: SizedBox()),

@@ -4,6 +4,16 @@ import 'package:chirp_up_app/core/services/api_service.dart';
 class AuthRepository {
   final ApiService _apiService = ApiService();
 
+  Future<dynamic> getCharacters() async {
+    return await _apiService.getApi(
+      ApiConstants.baseUrl + ApiConstants.getCharacters,
+    );
+  }
+
+  Future<dynamic> getYears() async {
+    return await _apiService.getApi(ApiConstants.baseUrl + ApiConstants.getYears);
+  }
+
   Future<dynamic> registerUser(Map data) async {
     final response = await _apiService.postApi(
       ApiConstants.baseUrl + ApiConstants.createAccount,
@@ -36,14 +46,6 @@ class AuthRepository {
     return response;
   }
 
-  Future<dynamic> skipPin() async {
-    final response = await _apiService.postApi(
-      ApiConstants.baseUrl + ApiConstants.parentPinSkip,
-      {"enabled": false},
-    );
-    return response;
-  }
-
   Future<dynamic> setupPin(Map data) async {
     final response = await _apiService.postApi(
       ApiConstants.baseUrl + ApiConstants.parentPin,
@@ -53,10 +55,10 @@ class AuthRepository {
   }
 
   Future<dynamic> login(Map data) async {
-  final response = await _apiService.postApi(
-    ApiConstants.baseUrl + ApiConstants.login,
-    data,
-  );
-  return response;
-}
+    final response = await _apiService.postApi(
+      ApiConstants.baseUrl + ApiConstants.login,
+      data,
+    );
+    return response;
+  }
 }

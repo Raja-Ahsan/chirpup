@@ -1,51 +1,29 @@
 import 'package:chirp_up_app/features/auth/data/models/character_model.dart';
+import 'package:chirp_up_app/features/auth/data/models/year_model.dart';
 import 'package:equatable/equatable.dart';
-
-const List<CharacterModel> kDefaultCharacters = [
-  CharacterModel(
-    id: "char_01",
-    name: 'The Curious\nPrince Explorer',
-    speciality: 'Brave and\nadventurous',
-    imagePath: 'assets/png/prince_character.png',
-    avatarImage: 'assets/png/prince_avatar.png'
-  ),
-  CharacterModel(
-    id: "char_02",
-    name: 'The Kind\nPrincess',
-    speciality: 'Kind and\nthoughtful',
-    imagePath: 'assets/png/princes_character.png',
-    avatarImage: 'assets/png/princess_avatar.png'
-  ),
-  CharacterModel(
-    id: "char_03",
-    name: 'The Brave\nKnight',
-    speciality: 'Strong and\ncourageous',
-    imagePath: 'assets/png/knight_character.png',
-    avatarImage: 'assets/png/knight_avatar.png'
-  ),
-  CharacterModel(
-    id: "char_04",
-    name: 'The Friendly\nDragon',
-    speciality: 'Playful and\nnaughty',
-    imagePath: 'assets/png/baby_dragon_character.png',
-    avatarImage: 'assets/png/baby_dragon_avatar.png'
-  ),
-];
 
 class AuthStates extends Equatable {
   final List<CharacterModel> characters;
   final int selectedCharacterIndex;
-  final String selectedAgeRange;
+  final bool isCharactersLoading;
+
+  final List<YearModel> years;
+  final int? selectedYearIndex;
+  final bool isYearsLoading;
+
   final String childName;
-  final String enteredPin; 
+  final String enteredPin;
   final bool isLoading;
   final bool isResendOTP;
   final bool isSkipPin;
 
   const AuthStates({
-    this.characters = kDefaultCharacters,
+    this.characters = const [],
     this.selectedCharacterIndex = 0,
-    this.selectedAgeRange = '',
+    this.isCharactersLoading = true,
+    this.years = const [],
+    this.selectedYearIndex,
+    this.isYearsLoading = true,
     this.childName = '',
     this.enteredPin = '',
     this.isLoading = false,
@@ -53,14 +31,42 @@ class AuthStates extends Equatable {
     this.isSkipPin = false,
   });
 
-  // Convenience getter
-  CharacterModel get selectedCharacter => characters[selectedCharacterIndex];
+  CharacterModel? get selectedCharacter =>
+      (characters.isNotEmpty && selectedCharacterIndex < characters.length)
+          ? characters[selectedCharacterIndex]
+          : null;
 
-  AuthStates copyWith({List<CharacterModel>? characters,int? selectedCharacterIndex, String? selectedAgeRange, String? childName, String? enteredPin, bool? isLoading,bool? isResendOTP, bool? isSkipPin}) {
+  YearModel? get selectedYear =>
+      (selectedYearIndex != null &&
+          selectedYearIndex! >= 0 &&
+          selectedYearIndex! < years.length)
+          ? years[selectedYearIndex!]
+          : null;
+
+  AuthStates copyWith({
+    List<CharacterModel>? characters,
+    int? selectedCharacterIndex,
+    bool? isCharactersLoading,
+    List<YearModel>? years,
+    int? selectedYearIndex,
+    bool clearSelectedYear = false,
+    bool? isYearsLoading,
+    String? childName,
+    String? enteredPin,
+    bool? isLoading,
+    bool? isResendOTP,
+    bool? isSkipPin,
+  }) {
     return AuthStates(
       characters: characters ?? this.characters,
-      selectedCharacterIndex: selectedCharacterIndex ?? this.selectedCharacterIndex,
-      selectedAgeRange: selectedAgeRange ?? this.selectedAgeRange,
+      selectedCharacterIndex:
+          selectedCharacterIndex ?? this.selectedCharacterIndex,
+      isCharactersLoading: isCharactersLoading ?? this.isCharactersLoading,
+      years: years ?? this.years,
+      selectedYearIndex: clearSelectedYear
+          ? null
+          : (selectedYearIndex ?? this.selectedYearIndex),
+      isYearsLoading: isYearsLoading ?? this.isYearsLoading,
       childName: childName ?? this.childName,
       enteredPin: enteredPin ?? this.enteredPin,
       isLoading: isLoading ?? this.isLoading,
@@ -70,5 +76,17 @@ class AuthStates extends Equatable {
   }
 
   @override
-  List<Object?> get props => [characters,selectedCharacterIndex, selectedAgeRange, childName, enteredPin, isLoading, isResendOTP,isSkipPin];
+  List<Object?> get props => [
+    characters,
+    selectedCharacterIndex,
+    isCharactersLoading,
+    years,
+    selectedYearIndex,
+    isYearsLoading,
+    childName,
+    enteredPin,
+    isLoading,
+    isResendOTP,
+    isSkipPin,
+  ];
 }
