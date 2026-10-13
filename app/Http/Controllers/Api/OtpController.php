@@ -21,10 +21,14 @@ class OtpController extends Controller
         $user = User::query()->where('email', $email)->firstOrFail();
 
         if ($user->email_verified_at) {
+            $token = $user->createToken('api')->plainTextToken;
+
             return response()->json([
                 'success' => true,
                 'message' => 'Email is already verified.',
                 'data' => [
+                    'token' => $token,
+                    'token_type' => 'Bearer',
                     'user' => [
                         'id' => $user->id,
                         'name' => $user->name,
@@ -42,10 +46,14 @@ class OtpController extends Controller
             'email_verified_at' => now(),
         ])->save();
 
+        $token = $user->createToken('api')->plainTextToken;
+
         return response()->json([
             'success' => true,
-            'message' => 'Email verified successfully. You can now log in.',
+            'message' => 'Email verified successfully.',
             'data' => [
+                'token' => $token,
+                'token_type' => 'Bearer',
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,
