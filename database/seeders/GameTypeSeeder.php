@@ -65,8 +65,16 @@ class GameTypeSeeder extends Seeder
             $game = Game::query()
                 ->where('name', 'Magic Coloring')
                 ->where('game_category_id', $categoryId)
-                ->whereHas('years', fn ($query) => $query->where('years.id', $yearId))
+                ->whereHas('gameBookYears', fn ($query) => $query->where('year_id', $yearId))
                 ->first();
+
+            if (! $game) {
+                // Fall back to the game itself when Game Book & Year is not seeded yet.
+                $game = Game::query()
+                    ->where('name', 'Magic Coloring')
+                    ->where('game_category_id', $categoryId)
+                    ->first();
+            }
 
             if (! $game) {
                 $this->command?->warn("Magic Coloring game missing for year_id={$yearId}");
