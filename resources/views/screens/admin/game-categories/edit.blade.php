@@ -28,7 +28,7 @@
                     >
                     <span class="cu-image-area__placeholder" id="imagePlaceholder" @if ($category->image_url) hidden @endif>
                         <i class="fa-regular fa-image" aria-hidden="true"></i>
-                        <strong>Click to upload category image</strong>
+                        <strong>Click to upload game category image</strong>
                         <small>PNG, JPG, or WEBP up to 4MB</small>
                     </span>
                     <input id="image" class="cu-image-area__input" type="file" name="image" accept="image/*">
@@ -75,7 +75,7 @@
 
             <div class="cu-form__actions">
                 <a href="{{ route('admin.game-categories.index') }}" class="cu-btn cu-btn--ghost">Cancel</a>
-                <button type="submit" class="cu-btn">Update Category</button>
+                <button type="submit" class="cu-btn">Update Game Category</button>
             </div>
         </form>
     </section>

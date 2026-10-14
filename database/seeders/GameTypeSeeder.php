@@ -64,8 +64,8 @@ class GameTypeSeeder extends Seeder
 
             $game = Game::query()
                 ->where('name', 'Magic Coloring')
-                ->where('year_id', $yearId)
                 ->where('game_category_id', $categoryId)
+                ->whereHas('years', fn ($query) => $query->where('years.id', $yearId))
                 ->first();
 
             if (! $game) {

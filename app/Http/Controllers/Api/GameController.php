@@ -13,15 +13,11 @@ class GameController extends Controller
 {
     public function index(Request $request): GameCollection
     {
-        $yearId = $request->input('year_id');
         $categoryId = $request->input('game_category_id');
 
         $games = Game::query()
-            ->with(['year', 'gameCategory'])
+            ->with('gameCategory')
             ->where('status', 'active')
-            ->when($yearId !== null && $yearId !== '', function ($query) use ($yearId) {
-                $query->where('year_id', (int) $yearId);
-            })
             ->when($categoryId !== null && $categoryId !== '', function ($query) use ($categoryId) {
                 $query->where('game_category_id', (int) $categoryId);
             })
@@ -41,7 +37,7 @@ class GameController extends Controller
             ], 404);
         }
 
-        $game->load(['year', 'gameCategory']);
+        $game->load('gameCategory');
 
         return response()->json([
             'success' => true,

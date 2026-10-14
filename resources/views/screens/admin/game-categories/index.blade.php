@@ -5,10 +5,6 @@
 @section('page_subtitle', 'Manage game categories and linked moods')
 
 @section('content')
-    @if (session('success'))
-        <div class="cu-alert cu-alert--success">{{ session('success') }}</div>
-    @endif
-
     <section class="cu-card">
         <div class="cu-toolbar">
             <form method="GET" action="{{ route('admin.game-categories.index') }}" class="cu-search">
@@ -22,8 +18,8 @@
                 <button type="submit">Search</button>
             </form>
             <div class="cu-toolbar__actions">
-                <p class="cu-toolbar__meta">{{ $categories->total() }} {{ $categories->total() === 1 ? 'category' : 'categories' }}</p>
-                <a href="{{ route('admin.game-categories.create') }}" class="cu-btn">Add Category</a>
+                <p class="cu-toolbar__meta">{{ $categories->total() }} {{ $categories->total() === 1 ? 'game category' : 'game categories' }}</p>
+                <a href="{{ route('admin.game-categories.create') }}" class="cu-btn">Add Game Category</a>
             </div>
         </div>
 
@@ -74,7 +70,8 @@
                                     <form
                                         method="POST"
                                         action="{{ route('admin.game-categories.destroy', $category) }}"
-                                        onsubmit="return confirm('Delete this category?');"
+                                        class="cu-delete-form"
+                                        data-confirm="Delete this game category?"
                                     >
                                         @csrf
                                         @method('DELETE')

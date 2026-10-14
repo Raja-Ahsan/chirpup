@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\CmsModule;
 use App\Models\CmsModulePermission;
+use App\Services\GameCategorySidebarSync;
 use Illuminate\Database\Seeder;
 
 class CmsModulePermissionsSeeder extends Seeder
@@ -20,11 +21,10 @@ class CmsModulePermissionsSeeder extends Seeder
                 'admin.dashboard' => ['is_view' => 1, 'is_add' => 1, 'is_update' => 1, 'is_delete' => 1],
                 'admin.users.index' => ['is_view' => 1, 'is_add' => 1, 'is_update' => 1, 'is_delete' => 1],
                 'admin.characters.index' => ['is_view' => 1, 'is_add' => 1, 'is_update' => 1, 'is_delete' => 1],
+                'admin.books.index' => ['is_view' => 1, 'is_add' => 1, 'is_update' => 1, 'is_delete' => 1],
                 'game-management-module' => ['is_view' => 1, 'is_add' => 1, 'is_update' => 1, 'is_delete' => 1],
                 'admin.game-moods.index' => ['is_view' => 1, 'is_add' => 1, 'is_update' => 1, 'is_delete' => 1],
                 'admin.game-categories.index' => ['is_view' => 1, 'is_add' => 1, 'is_update' => 1, 'is_delete' => 1],
-                'admin.games.index' => ['is_view' => 1, 'is_add' => 1, 'is_update' => 1, 'is_delete' => 1],
-                'admin.game-types.index' => ['is_view' => 1, 'is_add' => 1, 'is_update' => 1, 'is_delete' => 1],
             ],
 
             'user' => [
@@ -49,6 +49,26 @@ class CmsModulePermissionsSeeder extends Seeder
                     'status' => 'active',
                 ]);
             }
+        }
+
+        $categoryModules = CmsModule::query()
+            ->where('route_name', 'like', GameCategorySidebarSync::ROUTE_PREFIX.'%')
+            ->get();
+
+        foreach ($categoryModules as $module) {
+            CmsModulePermission::query()->updateOrCreate(
+                [
+                    'role' => 'admin',
+                    'module_id' => $module->id,
+                ],
+                [
+                    'is_view' => 1,
+                    'is_add' => 1,
+                    'is_update' => 1,
+                    'is_delete' => 1,
+                    'status' => 'active',
+                ]
+            );
         }
     }
 }

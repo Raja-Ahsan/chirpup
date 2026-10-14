@@ -232,7 +232,7 @@ class AuthController extends Controller
 
     private function userPayload(User $user): array
     {
-        $user->loadMissing(['children.year', 'children.character', 'children.todayMood']);
+        $user->loadMissing(['children.year', 'children.character', 'children.todayMoodEntry.mood', 'children.weekMoods.mood']);
 
         return (new UserResource($user))->resolve();
     }

@@ -1,12 +1,15 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\BookController as AdminBookController;
 use App\Http\Controllers\Admin\CharacterController as AdminCharacterController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\GameBookYearController as AdminGameBookYearController;
 use App\Http\Controllers\Admin\GameCategoryController as AdminGameCategoryController;
 use App\Http\Controllers\Admin\GameController as AdminGameController;
 use App\Http\Controllers\Admin\GameMoodController as AdminGameMoodController;
 use App\Http\Controllers\Admin\GameTypeController as AdminGameTypeController;
+use App\Http\Controllers\Admin\SketchController as AdminSketchController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -62,16 +65,35 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('games', [AdminGameController::class, 'index'])->name('admin.games.index');
     Route::get('games/create', [AdminGameController::class, 'create'])->name('admin.games.create');
     Route::post('games', [AdminGameController::class, 'store'])->name('admin.games.store');
+    Route::get('games/category/{gameCategory}', [AdminGameController::class, 'byCategory'])->name('admin.games.by-category');
+    Route::get('games/category/{gameCategory}/games', [AdminGameController::class, 'categoryGames'])->name('admin.games.category-games');
     Route::get('games/{game}/edit', [AdminGameController::class, 'edit'])->name('admin.games.edit');
     Route::put('games/{game}', [AdminGameController::class, 'update'])->name('admin.games.update');
     Route::delete('games/{game}', [AdminGameController::class, 'destroy'])->name('admin.games.destroy');
 
+    Route::get('games/category/{gameCategory}/book-years', [AdminGameBookYearController::class, 'index'])->name('admin.game-book-years.index');
+    Route::get('games/category/{gameCategory}/book-years/create', [AdminGameBookYearController::class, 'create'])->name('admin.game-book-years.create');
+    Route::post('games/category/{gameCategory}/book-years', [AdminGameBookYearController::class, 'store'])->name('admin.game-book-years.store');
+    Route::get('games/category/{gameCategory}/book-years/{gameBookYear}/edit', [AdminGameBookYearController::class, 'edit'])->name('admin.game-book-years.edit');
+    Route::put('games/category/{gameCategory}/book-years/{gameBookYear}', [AdminGameBookYearController::class, 'update'])->name('admin.game-book-years.update');
+    Route::delete('games/category/{gameCategory}/book-years/{gameBookYear}', [AdminGameBookYearController::class, 'destroy'])->name('admin.game-book-years.destroy');
+
+    Route::get('games/category/{gameCategory}/sketches', [AdminSketchController::class, 'index'])->name('admin.sketches.index');
+
     Route::get('game-types', [AdminGameTypeController::class, 'index'])->name('admin.game-types.index');
     Route::get('game-types/create', [AdminGameTypeController::class, 'create'])->name('admin.game-types.create');
     Route::post('game-types', [AdminGameTypeController::class, 'store'])->name('admin.game-types.store');
+    Route::get('game-types/game/{game}', [AdminGameTypeController::class, 'byGame'])->name('admin.game-types.by-game');
     Route::get('game-types/{gameType}/edit', [AdminGameTypeController::class, 'edit'])->name('admin.game-types.edit');
     Route::put('game-types/{gameType}', [AdminGameTypeController::class, 'update'])->name('admin.game-types.update');
     Route::delete('game-types/{gameType}', [AdminGameTypeController::class, 'destroy'])->name('admin.game-types.destroy');
+
+    Route::get('books', [AdminBookController::class, 'index'])->name('admin.books.index');
+    Route::get('books/create', [AdminBookController::class, 'create'])->name('admin.books.create');
+    Route::post('books', [AdminBookController::class, 'store'])->name('admin.books.store');
+    Route::get('books/{book}/edit', [AdminBookController::class, 'edit'])->name('admin.books.edit');
+    Route::put('books/{book}', [AdminBookController::class, 'update'])->name('admin.books.update');
+    Route::delete('books/{book}', [AdminBookController::class, 'destroy'])->name('admin.books.destroy');
 
     Route::post('logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 });

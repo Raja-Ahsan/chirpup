@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Game;
+use App\Models\GameType;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class GameSeeder extends Seeder
 {
@@ -16,91 +16,44 @@ class GameSeeder extends Seeder
         $games = [
             [
                 'name' => 'Magic Coloring',
-                'year_id' => 1,
+                'slug' => 'magic-coloring',
                 'game_category_id' => 2,
                 'image_url' => 'magic_coloring.png',
-                'cover_book_image' => 'book1.png',
-            ],
-            [
-                'name' => 'Magic Coloring',
-                'year_id' => 2,
-                'game_category_id' => 2,
-                'image_url' => 'magic_coloring.png',
-                'cover_book_image' => 'book1.png',
-            ],
-            [
-                'name' => 'Magic Coloring',
-                'year_id' => 3,
-                'game_category_id' => 2,
-                'image_url' => 'magic_coloring.png',
-                'cover_book_image' => 'book1.png',
-            ],
-            [
-                'name' => 'Magic Coloring',
-                'year_id' => 4,
-                'game_category_id' => 2,
-                'image_url' => 'magic_coloring.png',
-                'cover_book_image' => 'book1.png',
-            ],
-            [
-                'name' => 'Magic Coloring',
-                'year_id' => 5,
-                'game_category_id' => 2,
-                'image_url' => 'magic_coloring.png',
-                'cover_book_image' => 'book1.png',
+                'description' => 'Choose your drawing from the magical colouring book.',
             ],
             [
                 'name' => 'Castle Builder',
-                'year_id' => 1,
+                'slug' => 'castle-builder',
                 'game_category_id' => 2,
                 'image_url' => 'castle.png',
-                'cover_book_image' => 'book3.png',
-            ],
-            [
-                'name' => 'Castle Builder',
-                'year_id' => 2,
-                'game_category_id' => 2,
-                'image_url' => 'castle.png',
-                'cover_book_image' => 'book3.png',
-            ],
-            [
-                'name' => 'Castle Builder',
-                'year_id' => 3,
-                'game_category_id' => 2,
-                'image_url' => 'castle.png',
-                'cover_book_image' => 'book3.png',
-            ],
-            [
-                'name' => 'Castle Builder',
-                'year_id' => 4,
-                'game_category_id' => 2,
-                'image_url' => 'castle.png',
-                'cover_book_image' => 'book3.png',
-            ],
-            [
-                'name' => 'Castle Builder',
-                'year_id' => 5,
-                'game_category_id' => 2,
-                'image_url' => 'castle.png',
-                'cover_book_image' => 'book3.png',
+                'description' => 'Build castles in this creative game.',
             ],
         ];
 
-        foreach ($games as $game) {
-            Game::query()->updateOrCreate(
+        foreach ($games as $gameData) {
+            $game = Game::query()->updateOrCreate(
+                ['slug' => $gameData['slug']],
                 [
-                    'year_id' => $game['year_id'],
-                    'name' => $game['name'],
-                ],
-                [
-                    'slug' => Str::slug($game['name']).'-'.$game['year_id'],
-                    'game_category_id' => $game['game_category_id'],
-                    'image_url' => $game['image_url'],
-                    'cover_book_image' => $game['cover_book_image'],
-                    'description' => null,
+                    'name' => $gameData['name'],
+                    'game_category_id' => $gameData['game_category_id'],
+                    'image_url' => $gameData['image_url'],
+                    'description' => $gameData['description'],
                     'status' => 'active',
                 ]
             );
+
+            // Merge legacy duplicate rows into the canonical game.
+            Game::query()
+                ->where('name', $gameData['name'])
+                ->where('id', '!=', $game->id)
+                ->get()
+                ->each(function (Game $legacy) use ($game) {
+                    GameType::query()
+                        ->where('game_id', $legacy->id)
+                        ->update(['game_id' => $game->id]);
+
+                    $legacy->forceDelete();
+                });
         }
     }
 }

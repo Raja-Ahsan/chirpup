@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\GameController;
 use App\Http\Controllers\Api\GameMoodController;
 use App\Http\Controllers\Api\GameTypeController;
 use App\Http\Controllers\Api\OtpController;
+use App\Http\Controllers\Api\StartGameController;
 use App\Http\Controllers\Api\YearController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,8 @@ Route::get('/games/{game:slug}', [GameController::class, 'show']);
 
 Route::get('/game-types', [GameTypeController::class, 'index']);
 Route::get('/game-types/{gameType:slug}', [GameTypeController::class, 'show']);
+
+Route::get('/start_game', StartGameController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);

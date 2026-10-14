@@ -22,28 +22,23 @@
           ]
         });
 
-        function bindPreview(inputId, previewId, placeholderId) {
-          var input = document.getElementById(inputId);
-          var preview = document.getElementById(previewId);
-          var placeholder = document.getElementById(placeholderId);
-          if (!input || !preview) return;
+        var input = document.getElementById('image');
+        var preview = document.getElementById('imagePreview');
+        var placeholder = document.getElementById('imagePlaceholder');
+        if (!input || !preview) return;
 
-          input.addEventListener('change', function () {
-            var file = input.files && input.files[0];
-            if (!file) return;
+        input.addEventListener('change', function () {
+          var file = input.files && input.files[0];
+          if (!file) return;
 
-            var reader = new FileReader();
-            reader.onload = function (event) {
-              preview.src = event.target.result;
-              preview.hidden = false;
-              if (placeholder) placeholder.hidden = true;
-            };
-            reader.readAsDataURL(file);
-          });
-        }
-
-        bindPreview('image', 'imagePreview', 'imagePlaceholder');
-        bindPreview('cover_book_image_file', 'coverBookPreview', 'coverBookPlaceholder');
+          var reader = new FileReader();
+          reader.onload = function (event) {
+            preview.src = event.target.result;
+            preview.hidden = false;
+            if (placeholder) placeholder.hidden = true;
+          };
+          reader.readAsDataURL(file);
+        });
       })();
     </script>
 @endpush

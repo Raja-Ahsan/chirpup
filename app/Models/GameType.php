@@ -20,6 +20,7 @@ class GameType extends Model
         'slug',
         'game_category_id',
         'year_id',
+        'book_id',
         'game_id',
         'points',
         'sketch_image_url',
@@ -97,6 +98,16 @@ class GameType extends Model
     public function year(): BelongsTo
     {
         return $this->belongsTo(Year::class);
+    }
+
+    public function book(): BelongsTo
+    {
+        return $this->belongsTo(Book::class);
+    }
+
+    public function gameBooks(): HasMany
+    {
+        return $this->hasMany(GameBook::class, 'game_id', 'game_id');
     }
 
     public function game(): BelongsTo

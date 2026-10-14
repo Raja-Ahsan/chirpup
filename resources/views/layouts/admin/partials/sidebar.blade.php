@@ -42,7 +42,7 @@
                         <i class="fa-solid fa-thumbtack"></i>
 
                         <a
-                            href="{{ $hasChildren ? '#' : (Route::has($module->route_name) ? route($module->route_name) : '#') }}"
+                            href="{{ $hasChildren ? '#' : sidebar_module_url($module->route_name) }}"
                             class="sidebar-link sidebar-title {{ $hasChildren ? '' : 'link-nav' }}"
                             @if ($hasChildren) aria-expanded="false" @endif
                         >
@@ -63,7 +63,7 @@
                             <ul class="sidebar-submenu">
                                 @foreach ($module->children as $child)
                                     <li>
-                                        <a href="{{ Route::has($child->route_name) ? route($child->route_name) : '#' }}">
+                                        <a href="{{ sidebar_module_url($child->route_name) }}">
                                             {{ $child->name }}
                                         </a>
                                     </li>

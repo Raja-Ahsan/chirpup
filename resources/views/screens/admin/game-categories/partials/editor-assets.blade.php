@@ -12,7 +12,7 @@
       (function () {
         $('#description').summernote({
           height: 240,
-          placeholder: 'Write category description...',
+          placeholder: 'Write game category description...',
           toolbar: [
             ['style', ['style']],
             ['font', ['bold', 'italic', 'underline', 'clear']],

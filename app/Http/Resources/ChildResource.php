@@ -14,6 +14,8 @@ class ChildResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $todayMoodEntry = $this->relationLoaded('todayMoodEntry') ? $this->todayMoodEntry : null;
+
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
@@ -21,11 +23,14 @@ class ChildResource extends JsonResource
             'slug' => $this->slug,
             'year_id' => $this->year_id,
             'character_id' => $this->character_id,
-            'today_mood' => $this->today_mood,
-            'mood_date' => optional($this->mood_date)?->format('Y-m-d'),
-            'mood' => filled($this->mood_date) && $this->mood_date->isToday(),
-            'level' => 0,
-            'progressPercent' => 0,
+            'today_mood' => $todayMoodEntry?->mood_id,
+            'mood_date' => optional($todayMoodEntry?->mood_date)?->format('Y-m-d'),
+            'mood' => filled($todayMoodEntry),
+            'progress' => [
+                'stars' => 0,
+                'coins' => 0,
+                'progress_percent' => 0,
+            ],
             'status' => $this->status,
             'user' => $this->whenLoaded('user', function () {
                 return new UserResource($this->user);
@@ -36,9 +41,7 @@ class ChildResource extends JsonResource
             'character' => $this->whenLoaded('character', function () {
                 return new CharacterResource($this->character);
             }),
-            'todayMood' => $this->whenLoaded('todayMood', function () {
-                return new GameMoodResource($this->todayMood);
-            }),
+            'weekly_mood' => ChildMoodResource::collection($this->whenLoaded('weekMoods')),
         ];
     }
 }

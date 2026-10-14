@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Game;
+use App\Models\GameBook;
+use App\Models\GameBookYear;
 use App\Models\GameCategory;
 use App\Models\GameType;
 use App\Models\GameTypeSketch;
@@ -20,11 +22,35 @@ class GameTypeController extends Controller
 {
     public function index(Request $request): View
     {
+        $categoryId = $request->query('game_category_id');
+
+        $games = Game::query()
+            ->withCount('gameTypes')
+            ->when($categoryId !== null && $categoryId !== '', function ($query) use ($categoryId) {
+                $query->where('game_category_id', (int) $categoryId);
+            })
+            ->orderBy('id')
+            ->get();
+
+        return view('screens.admin.game-types.index', [
+            'games' => $games,
+            'categories' => GameCategory::query()->where('status', 'active')->orderBy('id')->get(),
+            'selectedCategoryId' => $categoryId,
+        ]);
+    }
+
+    public function byGame(Request $request, Game $game): View
+    {
         $search = trim((string) $request->query('q', ''));
+        $categoryId = $request->query('game_category_id');
 
         $gameTypes = GameType::query()
             ->with(['year', 'gameCategory', 'game'])
             ->withCount('sketches')
+            ->where('game_id', $game->id)
+            ->when($categoryId !== null && $categoryId !== '', function ($query) use ($categoryId) {
+                $query->where('game_category_id', (int) $categoryId);
+            })
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($inner) use ($search) {
                     $inner->where('name', 'like', "%{$search}%")
@@ -35,15 +61,39 @@ class GameTypeController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        return view('screens.admin.game-types.index', [
+        return view('screens.admin.game-types.list', [
+            'game' => $game,
+            'categories' => GameCategory::query()->where('status', 'active')->orderBy('id')->get(),
+            'selectedCategoryId' => $categoryId,
             'gameTypes' => $gameTypes,
             'search' => $search,
         ]);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('screens.admin.game-types.create', $this->formOptions());
+        $selectedGameId = old('game_id', $request->query('game_id'));
+        $selectedGame = $selectedGameId
+            ? Game::query()->find($selectedGameId)
+            : null;
+
+        $selectedCategoryId = old(
+            'game_category_id',
+            $request->query('game_category_id', $selectedGame?->game_category_id)
+        );
+        $selectedCategory = $selectedCategoryId
+            ? GameCategory::query()->find($selectedCategoryId)
+            : null;
+
+        return view('screens.admin.game-types.create', array_merge(
+            $this->formOptions(),
+            [
+                'selectedGameId' => $selectedGame?->id,
+                'selectedGame' => $selectedGame,
+                'selectedCategoryId' => $selectedCategory?->id ?? $selectedCategoryId,
+                'selectedCategory' => $selectedCategory,
+            ]
+        ));
     }
 
     public function store(Request $request): RedirectResponse
@@ -67,14 +117,21 @@ class GameTypeController extends Controller
             );
         }
 
-        DB::transaction(function () use ($request, $data) {
+        $gameType = null;
+
+        DB::transaction(function () use ($request, $data, &$gameType) {
             $gameType = GameType::query()->create($data);
             $this->syncSketches($gameType, $request->input('sketches', []), $request->file('sketches', []));
         });
 
+        $parentGame = Game::query()->find($gameType?->game_id);
+
         return redirect()
-            ->route('admin.game-types.index')
-            ->with('success', 'Game type created successfully.');
+            ->route(
+                $parentGame ? 'admin.game-types.by-game' : 'admin.game-types.index',
+                $parentGame ? ['game' => $parentGame] : []
+            )
+            ->with('success', 'Game created successfully.');
     }
 
     public function edit(GameType $gameType): View
@@ -115,13 +172,19 @@ class GameTypeController extends Controller
             $this->syncSketches($gameType, $request->input('sketches', []), $request->file('sketches', []));
         });
 
+        $parentGame = Game::query()->find($gameType->game_id);
+
         return redirect()
-            ->route('admin.game-types.index')
-            ->with('success', 'Game type updated successfully.');
+            ->route(
+                $parentGame ? 'admin.game-types.by-game' : 'admin.game-types.index',
+                $parentGame ? ['game' => $parentGame] : []
+            )
+            ->with('success', 'Game updated successfully.');
     }
 
     public function destroy(GameType $gameType): RedirectResponse
     {
+        $parentGame = Game::query()->find($gameType->game_id);
         $gameType->load('sketches');
 
         foreach ($gameType->sketches as $sketch) {
@@ -134,17 +197,40 @@ class GameTypeController extends Controller
         $gameType->delete();
 
         return redirect()
-            ->route('admin.game-types.index')
-            ->with('success', 'Game type deleted successfully.');
+            ->route(
+                $parentGame ? 'admin.game-types.by-game' : 'admin.game-types.index',
+                $parentGame ? ['game' => $parentGame] : []
+            )
+            ->with('success', 'Game deleted successfully.');
     }
 
     private function formOptions(): array
     {
+        $games = Game::query()
+            ->where('status', 'active')
+            ->orderBy('id')
+            ->get();
+
+        $yearsByGame = GameBookYear::query()
+            ->whereIn('game_id', $games->pluck('id'))
+            ->get(['game_id', 'year_id'])
+            ->groupBy('game_id')
+            ->map(fn ($rows) => $rows->pluck('year_id')->unique()->values()->all());
+
+        $games->each(function (Game $game) use ($yearsByGame) {
+            $game->setAttribute(
+                'book_year_ids',
+                $yearsByGame->get($game->id, [])
+            );
+        });
+
         return [
             'years' => Year::query()->where('status', 'active')->orderBy('id')->get(),
             'categories' => GameCategory::query()->where('status', 'active')->orderBy('id')->get(),
-            'games' => Game::query()
-                ->with('year')
+            'games' => $games,
+            'gameBooks' => GameBook::query()
+                ->with('book')
+                ->whereIn('game_id', $games->pluck('id'))
                 ->where('status', 'active')
                 ->orderBy('id')
                 ->get(),
@@ -168,6 +254,10 @@ class GameTypeController extends Controller
                 Rule::exists('years', 'id')->where(function ($query) {
                     $query->where('status', 'active')->whereNull('deleted_at');
                 }),
+                Rule::exists('game_book_year', 'year_id')->where(function ($query) use ($request) {
+                    $query->where('game_id', (int) $request->input('game_id'))
+                        ->whereNull('deleted_at');
+                }),
             ],
             'game_id' => [
                 'required',
@@ -175,8 +265,17 @@ class GameTypeController extends Controller
                 Rule::exists('game', 'id')->where(function ($query) use ($request) {
                     $query->where('status', 'active')
                         ->whereNull('deleted_at')
-                        ->where('year_id', (int) $request->input('year_id'))
                         ->where('game_category_id', (int) $request->input('game_category_id'));
+                }),
+            ],
+            'book_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('game_books', 'book_id')->where(function ($query) use ($request) {
+                    $query->where('game_id', (int) $request->input('game_id'))
+                        ->where('year_id', (int) $request->input('year_id'))
+                        ->where('status', 'active')
+                        ->whereNull('deleted_at');
                 }),
             ],
             'points' => ['required', 'integer', 'min:0', 'max:999999'],
@@ -189,7 +288,7 @@ class GameTypeController extends Controller
                 'max:4096',
             ],
             'color_image' => [
-                $gameType ? 'nullable' : 'required',
+                'nullable',
                 'image',
                 'mimes:png,jpg,jpeg,webp',
                 'max:4096',
@@ -211,6 +310,8 @@ class GameTypeController extends Controller
                 'mimes:png,jpg,jpeg,webp',
                 'max:4096',
             ],
+        ], [
+            'year_id.exists' => 'Please select a year that was added for this game in Game Book & Year.',
         ]);
     }
 

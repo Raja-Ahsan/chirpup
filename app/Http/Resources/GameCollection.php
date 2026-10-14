@@ -21,9 +21,7 @@ class GameCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        return [
-            'games' => $this->collection,
-        ];
+        return $this->collection->values()->all();
     }
 
     /**

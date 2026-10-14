@@ -1,8 +1,8 @@
 @extends('layouts.admin.app')
 
-@section('title', 'Edit Game Type')
-@section('page_title', 'Edit Game Type')
-@section('page_subtitle', 'Update game type details')
+@section('title', 'Edit Game')
+@section('page_title', 'Edit Game')
+@section('page_subtitle', 'Update game details')
 
 @section('content')
     <section class="cu-card cu-form-card cu-form-card--wide">
@@ -17,9 +17,10 @@
             </div>
 
             <div class="cu-field">
-                <label for="game_category_id">Category <span class="cu-required">*</span></label>
-                <select id="game_category_id" name="game_category_id">
-                    <option value="">Select category</option>
+                <label for="game_category_id">Game Category <span class="cu-required">*</span></label>
+                <input type="hidden" name="game_category_id" value="{{ old('game_category_id', $gameType->game_category_id) }}">
+                <select id="game_category_id" disabled>
+                    <option value="">Select game category</option>
                     @foreach ($categories as $category)
                         <option value="{{ $category->id }}" @selected(old('game_category_id', $gameType->game_category_id) == $category->id)>
                             {{ $category->title }}
@@ -30,6 +31,25 @@
             </div>
 
             <div class="cu-field">
+                <label for="game_id">Game <span class="cu-required">*</span></label>
+                <input type="hidden" name="game_id" value="{{ old('game_id', $gameType->game_id) }}">
+                <select id="game_id" disabled>
+                    <option value="">Select game</option>
+                    @foreach ($games as $game)
+                        <option
+                            value="{{ $game->id }}"
+                            data-category-id="{{ $game->game_category_id }}"
+                            data-year-ids="{{ collect($game->book_year_ids ?? [])->join(',') }}"
+                            @selected(old('game_id', $gameType->game_id) == $game->id)
+                        >
+                            {{ $game->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('game_id') <p class="cu-field__error">{{ $message }}</p> @enderror
+            </div>
+
+            <div class="cu-field" id="yearField">
                 <label for="year_id">Year <span class="cu-required">*</span></label>
                 <select id="year_id" name="year_id">
                     <option value="">Select year</option>
@@ -39,26 +59,45 @@
                         </option>
                     @endforeach
                 </select>
+                <p class="cu-help" id="yearEmptyHelp" hidden>No years found for this game. Add Game Book & Year first.</p>
                 @error('year_id') <p class="cu-field__error">{{ $message }}</p> @enderror
             </div>
 
-            <div class="cu-field">
-                <label for="game_id">Game <span class="cu-required">*</span></label>
-                <select id="game_id" name="game_id">
-                    <option value="">Select game</option>
-                    @foreach ($games as $game)
-                        <option
-                            value="{{ $game->id }}"
-                            data-year-id="{{ $game->year_id }}"
-                            data-category-id="{{ $game->game_category_id }}"
-                            @selected(old('game_id', $gameType->game_id) == $game->id)
+            <div class="cu-field" id="bookField" @if (! filled(old('year_id', $gameType->year_id))) hidden @endif>
+                <label>Book</label>
+                <div class="cu-book-pick-grid" id="bookPickGrid">
+                    @forelse ($gameBooks as $gameBook)
+                        @continue(! $gameBook->book)
+                        <label
+                            class="cu-book-pick"
+                            data-game-id="{{ $gameBook->game_id }}"
+                            data-year-id="{{ $gameBook->year_id }}"
+                            hidden
                         >
-                            {{ $game->name }} ({{ $game->year?->title ?? 'Year '.$game->year_id }})
-                        </option>
-                    @endforeach
-                </select>
-                @error('game_id') <p class="cu-field__error">{{ $message }}</p> @enderror
-                <p class="cu-help">Games are filtered by the selected category and year.</p>
+                            <input
+                                type="radio"
+                                name="book_id"
+                                value="{{ $gameBook->book_id }}"
+                                @checked((string) old('book_id', $gameType->book_id) === (string) $gameBook->book_id)
+                                disabled
+                            >
+                            <span class="cu-book-pick__card">
+                                @if ($gameBook->book->image_url)
+                                    <img class="cu-book-pick__image" src="{{ $gameBook->book->image_path }}" alt="{{ $gameBook->book->title }}">
+                                @else
+                                    <span class="cu-book-pick__placeholder">
+                                        <i class="fa-solid fa-book" aria-hidden="true"></i>
+                                    </span>
+                                @endif
+                                <span class="cu-book-pick__title">{{ $gameBook->book->title }}</span>
+                            </span>
+                        </label>
+                    @empty
+                        <p class="cu-help">No books linked yet.</p>
+                    @endforelse
+                </div>
+                <p class="cu-help" id="bookEmptyHelp" hidden>No books found for this year. Add books in Game Book & Year.</p>
+                @error('book_id') <p class="cu-field__error">{{ $message }}</p> @enderror
             </div>
 
             <div class="cu-field">
@@ -126,7 +165,7 @@
                 <div class="cu-sketches__head">
                     <div>
                         <h3 class="cu-sketches__title">Sketches</h3>
-                        <p class="cu-help">Add extra sketch items for this game type.</p>
+                        <p class="cu-help">Add extra sketch items for this game.</p>
                     </div>
                     <button type="button" class="cu-btn" id="addSketchBtn">Add Sketches</button>
                 </div>
@@ -180,8 +219,8 @@
             </div>
 
             <div class="cu-form__actions">
-                <a href="{{ route('admin.game-types.index') }}" class="cu-btn cu-btn--ghost">Cancel</a>
-                <button type="submit" class="cu-btn">Update Game Type</button>
+                <a href="{{ route('admin.game-types.by-game', $gameType->game) }}" class="cu-btn cu-btn--ghost">Cancel</a>
+                <button type="submit" class="cu-btn">Update Game</button>
             </div>
         </form>
     </section>

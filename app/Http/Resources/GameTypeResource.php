@@ -19,17 +19,33 @@ class GameTypeResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'game_category_id' => $this->game_category_id,
-            'year_id' => $this->year_id,
-            'game_id' => $this->game_id,
-            'points' => $this->points,
-            'sketch_image_url' => $this->sketch_image_path,
-            'color_image_url' => $this->color_image_path,
+            'image_url' => $this->sketch_image_path,
             'description' => $this->description,
             'status' => $this->status,
-            'year' => new YearResource($this->whenLoaded('year')),
+            'is_book' => false,
             'category' => new GameCategoryResource($this->whenLoaded('gameCategory')),
-            'game' => new GameResource($this->whenLoaded('game')),
-            'sketches' => GameTypeSketchResource::collection($this->whenLoaded('sketches')),
+            'books' => $this->when(
+                $this->relationLoaded('gameBooks'),
+                fn () => $this->gameBooks
+                    ->where('year_id', $this->year_id)
+                    ->pluck('book')
+                    ->filter()
+                    ->unique('id')
+                    ->values()
+                    ->map(fn ($book) => [
+                        'id' => $book->id,
+                        'name' => $book->title,
+                        'slug' => $book->slug,
+                        'game_category_id' => $this->game_category_id,
+                        'image_url' => $book->image_path,
+                        'description' => $book->description,
+                        'status' => $book->status,
+                        'is_book' => true,
+                        'category' => $this->relationLoaded('gameCategory')
+                            ? (new GameCategoryResource($this->gameCategory))->resolve()
+                            : null,
+                    ])
+            ),
         ];
     }
 }

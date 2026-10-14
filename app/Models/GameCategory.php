@@ -39,6 +39,18 @@ class GameCategory extends Model
                 $category->slug = static::uniqueSlug($category->title, $category->id);
             }
         });
+
+        static::saved(function (GameCategory $category) {
+            \App\Services\GameCategorySidebarSync::sync($category);
+        });
+
+        static::deleted(function (GameCategory $category) {
+            \App\Services\GameCategorySidebarSync::remove($category);
+        });
+
+        static::restored(function (GameCategory $category) {
+            \App\Services\GameCategorySidebarSync::sync($category);
+        });
     }
 
     public static function uniqueSlug(string $title, ?int $ignoreId = null): string

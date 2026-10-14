@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\CmsModule;
+use App\Services\GameCategorySidebarSync;
 use Illuminate\Database\Seeder;
 
 class CmsModuleSeeder extends Seeder
@@ -14,6 +15,7 @@ class CmsModuleSeeder extends Seeder
      * from old data where child route_names were left as top-level rows.
      *
      * Sidebar: only index / "all" listing routes — never create routes; add buttons live on those pages.
+     * Game Management children are synced from game_categories (not static Game Type / Game links).
      */
     public function run(): void
     {
@@ -50,25 +52,14 @@ class CmsModuleSeeder extends Seeder
             ]
         );
 
-        $gameManagement = CmsModule::updateOrCreate(
-            ['route_name' => 'game-management-module'],
-            [
-                'name' => 'Game Management',
-                'icon' => 'fa-solid fa-gamepad',
-                'sort_order' => 4,
-                'status' => 'active',
-                'parent_id' => 0,
-            ]
-        );
-
         CmsModule::updateOrCreate(
             ['route_name' => 'admin.game-moods.index'],
             [
-                'name' => 'Game Moods',
+                'name' => 'Mood',
                 'icon' => 'fa-regular fa-face-smile',
-                'sort_order' => 1,
+                'sort_order' => 4,
                 'status' => 'active',
-                'parent_id' => $gameManagement->id,
+                'parent_id' => 0,
             ]
         );
 
@@ -77,49 +68,53 @@ class CmsModuleSeeder extends Seeder
             [
                 'name' => 'Game Categories',
                 'icon' => 'fa-solid fa-layer-group',
-                'sort_order' => 2,
+                'sort_order' => 5,
                 'status' => 'active',
-                'parent_id' => $gameManagement->id,
+                'parent_id' => 0,
             ]
         );
 
         CmsModule::updateOrCreate(
-            ['route_name' => 'admin.games.index'],
+            ['route_name' => 'admin.books.index'],
             [
-                'name' => 'Games',
-                'icon' => 'fa-solid fa-puzzle-piece',
-                'sort_order' => 3,
+                'name' => 'Books',
+                'icon' => 'fa-solid fa-book',
+                'sort_order' => 6,
                 'status' => 'active',
-                'parent_id' => $gameManagement->id,
+                'parent_id' => 0,
             ]
         );
 
         CmsModule::updateOrCreate(
-            ['route_name' => 'admin.game-types.index'],
+            ['route_name' => 'game-management-module'],
             [
-                'name' => 'Games Type',
-                'icon' => 'fa-solid fa-shapes',
-                'sort_order' => 4,
+                'name' => 'Game Management',
+                'icon' => 'fa-solid fa-gamepad',
+                'sort_order' => 7,
                 'status' => 'active',
-                'parent_id' => $gameManagement->id,
+                'parent_id' => 0,
             ]
         );
+
+        GameCategorySidebarSync::syncAll();
 
         $allowed = [
             'admin.dashboard',
             'admin.users.index',
             'admin.characters.index',
-            'game-management-module',
             'admin.game-moods.index',
             'admin.game-categories.index',
-            'admin.games.index',
-            'admin.game-types.index',
+            'admin.books.index',
+            'game-management-module',
         ];
 
         CmsModule::query()
             ->where(function ($q) use ($allowed) {
-                $q->whereNotIn('route_name', $allowed)
-                    ->orWhereNull('route_name');
+                $q->whereNull('route_name')
+                    ->orWhere(function ($inner) use ($allowed) {
+                        $inner->whereNotIn('route_name', $allowed)
+                            ->where('route_name', 'not like', GameCategorySidebarSync::ROUTE_PREFIX.'%');
+                    });
             })
             ->delete();
     }

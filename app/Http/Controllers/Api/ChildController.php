@@ -17,7 +17,7 @@ class ChildController extends Controller
     public function index(Request $request): ChildCollection
     {
         $children = Child::query()
-            ->with(['user', 'year', 'character', 'todayMood'])
+            ->with(['user', 'year', 'character', 'todayMoodEntry.mood', 'weekMoods.mood'])
             ->where('user_id', $request->user()->id)
             ->orderByDesc('id')
             ->get();
@@ -36,7 +36,7 @@ class ChildController extends Controller
             'status' => $request->input('status', 'active'),
         ]);
 
-        $child->load(['user', 'year', 'character', 'todayMood']);
+        $child->load(['user', 'year', 'character', 'todayMoodEntry.mood', 'weekMoods.mood']);
 
         return response()->json([
             'success' => true,
@@ -57,7 +57,7 @@ class ChildController extends Controller
             ], 404);
         }
 
-        $child->load(['user', 'year', 'character', 'todayMood']);
+        $child->load(['user', 'year', 'character', 'todayMoodEntry.mood', 'weekMoods.mood']);
 
         return response()->json([
             'success' => true,
@@ -80,7 +80,7 @@ class ChildController extends Controller
 
         $child->fill($request->only(['name', 'year_id', 'character_id', 'pin_code', 'status']));
         $child->save();
-        $child->load(['user', 'year', 'character', 'todayMood']);
+        $child->load(['user', 'year', 'character', 'todayMoodEntry.mood', 'weekMoods.mood']);
 
         return response()->json([
             'success' => true,
@@ -103,7 +103,12 @@ class ChildController extends Controller
 
         $date = $request->string('date')->toString();
 
-        if ($child->mood_date && $child->mood_date->format('Y-m-d') === $date) {
+        $alreadySet = $child->moods()
+            ->whereDate('mood_date', $date)
+            ->where('status', 'active')
+            ->exists();
+
+        if ($alreadySet) {
             return response()->json([
                 'success' => false,
                 'message' => 'You already set the mood today.',
@@ -111,12 +116,14 @@ class ChildController extends Controller
             ], 422);
         }
 
-        $child->forceFill([
-            'today_mood' => $request->integer('mood_id'),
+        $child->moods()->create([
+            'user_id' => $request->user()->id,
+            'mood_id' => $request->integer('mood_id'),
             'mood_date' => $date,
-        ])->save();
+            'status' => 'active',
+        ]);
 
-        $child->load(['user', 'year', 'character', 'todayMood']);
+        $child->load(['user', 'year', 'character', 'todayMoodEntry.mood', 'weekMoods.mood']);
 
         return response()->json([
             'success' => true,

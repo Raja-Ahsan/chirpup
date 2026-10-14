@@ -62,14 +62,14 @@
 
         <section class="cu-card cu-panel-card">
             <div class="cu-panel-card__head">
-                <h3>Games by year</h3>
+                <h3>Game types by year</h3>
             </div>
             <div class="cu-table-wrap">
                 <table class="cu-table">
                     <thead>
                         <tr>
                             <th>Year</th>
-                            <th>Active games</th>
+                            <th>Active game types</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -87,13 +87,13 @@
                 </table>
             </div>
             <p class="cu-note">
-                {{ number_format($activeGameTypes) }} active game types · {{ number_format($sketchCount) }} sketches
+                {{ number_format($activeGameTypes) }} active games · {{ number_format($sketchCount) }} sketches
             </p>
         </section>
 
         <section class="cu-card cu-panel-card">
             <div class="cu-panel-card__head">
-                <h3>Recent game types</h3>
+                <h3>Recent games</h3>
                 <a href="{{ route('admin.game-types.index') }}" class="cu-btn cu-btn--ghost" style="padding:0.35rem 0.7rem;font-size:0.8rem;">View all</a>
             </div>
             <div class="cu-table-wrap">
@@ -114,7 +114,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="3" class="cu-empty">No game types yet.</td>
+                                <td colspan="3" class="cu-empty">No games yet.</td>
                             </tr>
                         @endforelse
                     </tbody>

@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Game;
+use App\Models\GameBookYear;
 use App\Models\GameCategory;
-use App\Models\Year;
+use App\Models\GameType;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -14,12 +15,52 @@ use Illuminate\View\View;
 
 class GameController extends Controller
 {
-    public function index(Request $request): View
+    public function index(): View
+    {
+        $categories = GameCategory::query()
+            ->withCount('games')
+            ->orderBy('id')
+            ->get();
+
+        return view('screens.admin.games.index', [
+            'categories' => $categories,
+        ]);
+    }
+
+    public function byCategory(GameCategory $gameCategory): View|RedirectResponse
+    {
+        // Both hub widgets (Games + Game Book & Year) are Creative-only.
+        if ($gameCategory->slug !== 'creative') {
+            return redirect()->route('admin.games.category-games', $gameCategory);
+        }
+
+        $gamesCount = Game::query()
+            ->where('game_category_id', $gameCategory->id)
+            ->count();
+
+        $bookYearCount = GameBookYear::query()
+            ->whereHas('game', fn ($query) => $query->where('game_category_id', $gameCategory->id))
+            ->count();
+
+        $sketchesCount = GameType::query()
+            ->where('game_category_id', $gameCategory->id)
+            ->count();
+
+        return view('screens.admin.games.hub', [
+            'category' => $gameCategory,
+            'gamesCount' => $gamesCount,
+            'bookYearCount' => $bookYearCount,
+            'sketchesCount' => $sketchesCount,
+        ]);
+    }
+
+    public function categoryGames(Request $request, GameCategory $gameCategory): View
     {
         $search = trim((string) $request->query('q', ''));
 
         $games = Game::query()
-            ->with(['year', 'gameCategory'])
+            ->with('gameCategory')
+            ->where('game_category_id', $gameCategory->id)
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($inner) use ($search) {
                     $inner->where('name', 'like', "%{$search}%")
@@ -30,90 +71,107 @@ class GameController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        return view('screens.admin.games.index', [
+        return view('screens.admin.games.list', [
+            'category' => $gameCategory,
             'games' => $games,
             'search' => $search,
         ]);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
+        $selectedCategoryId = old('game_category_id', $request->query('game_category_id'));
+        $selectedCategory = $selectedCategoryId
+            ? GameCategory::query()->find($selectedCategoryId)
+            : null;
+
         return view('screens.admin.games.create', [
-            'years' => Year::query()->where('status', 'active')->orderBy('id')->get(),
             'categories' => GameCategory::query()->where('status', 'active')->orderBy('id')->get(),
+            'selectedCategoryId' => $selectedCategory?->id ?? $selectedCategoryId,
+            'selectedCategory' => $selectedCategory,
         ]);
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $data = collect($this->validated($request))->except(['image', 'cover_book_image_file'])->all();
+        $validated = $this->validated($request);
+        $data = collect($validated)->except(['image'])->all();
 
         if ($request->hasFile('image')) {
-            $data['image_url'] = $this->storeImage($request, 'image', 'game_');
+            $data['image_url'] = $this->storeImage($request);
         }
 
-        if ($request->hasFile('cover_book_image_file')) {
-            $data['cover_book_image'] = $this->storeImage($request, 'cover_book_image_file', 'cover_');
-        }
+        $game = Game::query()->create($data);
 
-        Game::query()->create($data);
+        $category = GameCategory::query()->find($game->game_category_id);
 
         return redirect()
-            ->route('admin.games.index')
+            ->route(
+                $category ? 'admin.games.category-games' : 'admin.games.index',
+                $category ? ['gameCategory' => $category] : []
+            )
             ->with('success', 'Game created successfully.');
     }
 
     public function edit(Game $game): View
     {
+        $game->load('gameCategory');
+
         return view('screens.admin.games.edit', [
             'game' => $game,
-            'years' => Year::query()->where('status', 'active')->orderBy('id')->get(),
             'categories' => GameCategory::query()->where('status', 'active')->orderBy('id')->get(),
+            'selectedCategoryId' => $game->game_category_id,
+            'selectedCategory' => $game->gameCategory,
         ]);
     }
 
     public function update(Request $request, Game $game): RedirectResponse
     {
-        $data = collect($this->validated($request, $game))->except(['image', 'cover_book_image_file'])->all();
+        $validated = $this->validated($request, $game);
+        $data = collect($validated)->except(['image'])->all();
 
         if ($request->hasFile('image')) {
             $this->deleteImageFile($game->image_url);
-            $data['image_url'] = $this->storeImage($request, 'image', 'game_');
-        }
-
-        if ($request->hasFile('cover_book_image_file')) {
-            $this->deleteImageFile($game->cover_book_image);
-            $data['cover_book_image'] = $this->storeImage($request, 'cover_book_image_file', 'cover_');
+            $data['image_url'] = $this->storeImage($request);
         }
 
         $game->update($data);
 
+        $category = GameCategory::query()->find($game->game_category_id);
+
         return redirect()
-            ->route('admin.games.index')
+            ->route(
+                $category ? 'admin.games.category-games' : 'admin.games.index',
+                $category ? ['gameCategory' => $category] : []
+            )
             ->with('success', 'Game updated successfully.');
     }
 
     public function destroy(Game $game): RedirectResponse
     {
+        $category = GameCategory::query()->find($game->game_category_id);
+
         $this->deleteImageFile($game->image_url);
-        $this->deleteImageFile($game->cover_book_image);
         $game->delete();
 
         return redirect()
-            ->route('admin.games.index')
+            ->route(
+                $category ? 'admin.games.category-games' : 'admin.games.index',
+                $category ? ['gameCategory' => $category] : []
+            )
             ->with('success', 'Game deleted successfully.');
     }
 
     private function validated(Request $request, ?Game $game = null): array
     {
         return $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'year_id' => [
+            'name' => [
                 'required',
-                'integer',
-                Rule::exists('years', 'id')->where(function ($query) {
-                    $query->where('status', 'active')->whereNull('deleted_at');
-                }),
+                'string',
+                'max:255',
+                Rule::unique('game', 'name')
+                    ->whereNull('deleted_at')
+                    ->ignore($game?->id),
             ],
             'game_category_id' => [
                 'required',
@@ -130,22 +188,16 @@ class GameController extends Controller
                 'mimes:png,jpg,jpeg,webp',
                 'max:4096',
             ],
-            'cover_book_image_file' => [
-                'nullable',
-                'image',
-                'mimes:png,jpg,jpeg,webp',
-                'max:4096',
-            ],
         ]);
     }
 
-    private function storeImage(Request $request, string $field, string $prefix): string
+    private function storeImage(Request $request): string
     {
         $directory = public_path('assets/games');
         File::ensureDirectoryExists($directory);
 
-        $filename = uniqid($prefix, true).'.'.$request->file($field)->getClientOriginalExtension();
-        $request->file($field)->move($directory, $filename);
+        $filename = uniqid('game_', true).'.'.$request->file('image')->getClientOriginalExtension();
+        $request->file('image')->move($directory, $filename);
 
         return $filename;
     }

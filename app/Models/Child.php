@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
@@ -19,8 +21,6 @@ class Child extends Model
         'slug',
         'year_id',
         'character_id',
-        'today_mood',
-        'mood_date',
         'pin_code',
         'status',
     ];
@@ -33,7 +33,6 @@ class Child extends Model
     {
         return [
             'pin_code' => 'hashed',
-            'mood_date' => 'date',
         ];
     }
 
@@ -91,8 +90,28 @@ class Child extends Model
         return $this->belongsTo(Character::class);
     }
 
-    public function todayMood(): BelongsTo
+    public function moods(): HasMany
     {
-        return $this->belongsTo(GameMood::class, 'today_mood');
+        return $this->hasMany(ChildMood::class);
+    }
+
+    public function weekMoods(): HasMany
+    {
+        return $this->hasMany(ChildMood::class)
+            ->where('status', 'active')
+            ->whereDate('mood_date', '>=', today()->subDays(6))
+            ->whereDate('mood_date', '<=', today())
+            ->orderBy('mood_date');
+    }
+
+    public function todayMoodEntry(): HasOne
+    {
+        return $this->hasOne(ChildMood::class)->ofMany(
+            ['id' => 'max'],
+            function ($query) {
+                $query->whereDate('mood_date', today())
+                    ->where('status', 'active');
+            }
+        );
     }
 }

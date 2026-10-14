@@ -5,10 +5,6 @@
 @section('page_subtitle', 'Manage ChirpUp story characters')
 
 @section('content')
-    @if (session('success'))
-        <div class="cu-alert cu-alert--success">{{ session('success') }}</div>
-    @endif
-
     <section class="cu-card">
         <div class="cu-toolbar">
             <form method="GET" action="{{ route('admin.characters.index') }}" class="cu-search">
@@ -72,7 +68,8 @@
                                     <form
                                         method="POST"
                                         action="{{ route('admin.characters.destroy', $character) }}"
-                                        onsubmit="return confirm('Delete this character?');"
+                                        class="cu-delete-form"
+                                        data-confirm="Delete this character?"
                                     >
                                         @csrf
                                         @method('DELETE')

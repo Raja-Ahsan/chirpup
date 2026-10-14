@@ -18,10 +18,10 @@
             <div class="cu-field">
                 <label for="image">Image <span class="cu-required">*</span></label>
                 <label class="cu-image-area" for="image">
-                    <img id="imagePreview" class="cu-image-area__preview" alt="Category preview" hidden>
+                    <img id="imagePreview" class="cu-image-area__preview" alt="Game category preview" hidden>
                     <span class="cu-image-area__placeholder" id="imagePlaceholder">
                         <i class="fa-regular fa-image" aria-hidden="true"></i>
-                        <strong>Click to upload category image</strong>
+                        <strong>Click to upload game category image</strong>
                         <small>PNG, JPG, or WEBP up to 4MB</small>
                     </span>
                     <input id="image" class="cu-image-area__input" type="file" name="image" accept="image/*">
@@ -67,7 +67,7 @@
 
             <div class="cu-form__actions">
                 <a href="{{ route('admin.game-categories.index') }}" class="cu-btn cu-btn--ghost">Cancel</a>
-                <button type="submit" class="cu-btn">Save Category</button>
+                <button type="submit" class="cu-btn">Save Game Category</button>
             </div>
         </form>
     </section>

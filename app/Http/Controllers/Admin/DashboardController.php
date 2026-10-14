@@ -62,14 +62,14 @@ class DashboardController extends Controller
                 'icon' => 'fa-solid fa-layer-group',
             ],
             [
-                'label' => 'Games',
+                'label' => 'Game Type',
                 'value' => Game::query()->count(),
                 'meta' => Game::query()->where('status', 'active')->count().' active',
                 'route' => 'admin.games.index',
                 'icon' => 'fa-solid fa-puzzle-piece',
             ],
             [
-                'label' => 'Game Types',
+                'label' => 'Game',
                 'value' => GameType::query()->count(),
                 'meta' => GameTypeSketch::query()->count().' sketches',
                 'route' => 'admin.game-types.index',

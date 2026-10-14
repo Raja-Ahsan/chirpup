@@ -18,10 +18,8 @@ class Game extends Model
     protected $fillable = [
         'name',
         'slug',
-        'year_id',
         'game_category_id',
         'image_url',
-        'cover_book_image',
         'description',
         'status',
     ];
@@ -76,22 +74,6 @@ class Game extends Model
         });
     }
 
-    protected function coverBookImagePath(): Attribute
-    {
-        return Attribute::get(function (): ?string {
-            if (! $this->cover_book_image) {
-                return null;
-            }
-
-            return asset('assets/games/'.$this->cover_book_image);
-        });
-    }
-
-    public function year(): BelongsTo
-    {
-        return $this->belongsTo(Year::class);
-    }
-
     public function gameCategory(): BelongsTo
     {
         return $this->belongsTo(GameCategory::class);
@@ -100,5 +82,15 @@ class Game extends Model
     public function gameTypes(): HasMany
     {
         return $this->hasMany(GameType::class);
+    }
+
+    public function gameBooks(): HasMany
+    {
+        return $this->hasMany(GameBook::class);
+    }
+
+    public function gameBookYears(): HasMany
+    {
+        return $this->hasMany(GameBookYear::class);
     }
 }

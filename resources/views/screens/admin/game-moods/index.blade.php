@@ -5,10 +5,6 @@
 @section('page_subtitle', 'Manage moods for ChirpUp games')
 
 @section('content')
-    @if (session('success'))
-        <div class="cu-alert cu-alert--success">{{ session('success') }}</div>
-    @endif
-
     <section class="cu-card">
         <div class="cu-toolbar">
             <form method="GET" action="{{ route('admin.game-moods.index') }}" class="cu-search">
@@ -72,7 +68,8 @@
                                     <form
                                         method="POST"
                                         action="{{ route('admin.game-moods.destroy', $mood) }}"
-                                        onsubmit="return confirm('Delete this mood?');"
+                                        class="cu-delete-form"
+                                        data-confirm="Delete this mood?"
                                     >
                                         @csrf
                                         @method('DELETE')

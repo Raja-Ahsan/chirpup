@@ -20,9 +20,7 @@
                     });
                     $isActive = (!$hasChildren && sidebar_route_is_active($module->route_name))
                         || $childActive;
-                    $moduleUrl = $hasChildren
-                        ? '#'
-                        : (Route::has($module->route_name) ? route($module->route_name) : '#');
+                    $moduleUrl = $hasChildren ? '#' : sidebar_module_url($module->route_name);
                 @endphp
 
                 <li class="cu-nav__item {{ $hasChildren ? 'has-children' : '' }} {{ $isActive ? 'is-open is-active' : '' }}">
@@ -38,7 +36,7 @@
                         <ul class="cu-nav__children" @if(!$isActive) hidden @endif>
                             @foreach ($module->children as $child)
                                 @php
-                                    $childUrl = Route::has($child->route_name) ? route($child->route_name) : '#';
+                                    $childUrl = sidebar_module_url($child->route_name);
                                     $childIsActive = sidebar_route_is_active($child->route_name);
                                 @endphp
                                 <li>
