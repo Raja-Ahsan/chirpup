@@ -78,7 +78,7 @@ class DashboardController extends Controller
         ];
 
         $gamesByYear = Year::query()
-            ->withCount(['games' => function ($query) {
+            ->withCount(['gameTypes as games_count' => function ($query) {
                 $query->where('status', 'active');
             }])
             ->orderBy('id')
