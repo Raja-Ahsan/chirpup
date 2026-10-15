@@ -4,6 +4,19 @@
 
 @section('content')
     <div class="auth-shell">
+        <div class="auth-shell__fx" aria-hidden="true">
+            <span class="auth-shell__spark"></span>
+            <span class="auth-shell__spark"></span>
+            <span class="auth-shell__spark"></span>
+            <span class="auth-shell__spark"></span>
+            <span class="auth-shell__spark"></span>
+            <span class="auth-shell__spark"></span>
+            <span class="auth-shell__bubble"></span>
+            <span class="auth-shell__bubble"></span>
+            <span class="auth-shell__bubble"></span>
+            <span class="auth-shell__bubble"></span>
+        </div>
+
         <aside class="auth-visual" aria-hidden="true">
             <img
                 class="auth-visual__prince"

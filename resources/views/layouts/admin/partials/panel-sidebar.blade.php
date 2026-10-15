@@ -2,11 +2,14 @@
     $modules = dynamic_sidebar();
 @endphp
 
-<aside class="cu-sidebar">
+<aside class="cu-sidebar" id="cuSidebar">
     <div class="cu-sidebar__top">
         <a class="cu-sidebar__brand" href="{{ route('admin.dashboard') }}">
             <img src="{{ asset('assets/admin/images/brand/chirpup-logo.png') }}" alt="ChirpUp" />
         </a>
+        <button type="button" class="cu-sidebar__close" id="cuSidebarClose" aria-label="Close navigation">
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
     </div>
 
     <nav class="cu-sidebar__nav" aria-label="Admin navigation">

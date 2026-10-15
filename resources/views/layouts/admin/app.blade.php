@@ -17,31 +17,38 @@
 <body class="cu-panel">
     <div id="cuPageLoader" class="cu-page-loader is-visible" aria-live="polite" aria-busy="true">
         <div class="cu-page-loader__inner">
+            <div class="cu-page-loader__orb" aria-hidden="true">
+                <span class="cu-page-loader__glow"></span>
+                <span class="cu-page-loader__ring cu-page-loader__ring--outer"></span>
+                <span class="cu-page-loader__ring cu-page-loader__ring--mid"></span>
+                <span class="cu-page-loader__ring cu-page-loader__ring--inner"></span>
+                <span class="cu-page-loader__core">
+                    <span class="cu-page-loader__spark"></span>
+                </span>
+            </div>
             <img
-                class="cu-page-loader__character"
-                src="{{ asset('assets/admin/images/character_babydragon.png') }}"
-                alt="Loading"
+                class="cu-page-loader__brand"
+                src="{{ asset('assets/admin/images/brand/chirpup-logo.png') }}"
+                alt="ChirpUp"
             >
-            <p class="cu-page-loader__text">Loading...</p>
+            <p class="cu-page-loader__text">Loading</p>
         </div>
     </div>
 
     <div class="cu-ambiance" aria-hidden="true">
-        <div class="cu-ambiance__dots"></div>
-        <div class="cu-ambiance__glow"></div>
-        <img
-            class="cu-ambiance__character"
-            src="{{ asset('assets/admin/images/brand/chirpup-characters-bg.png') }}"
-            alt="" />
+        <div class="cu-ambiance__aurora"></div>
+        <div class="cu-ambiance__grid"></div>
         <div class="cu-ambiance__hex"></div>
-        <div class="cu-ambiance__hex cu-ambiance__hex--2"></div>
-        <div class="cu-ambiance__beam cu-ambiance__beam--1"></div>
-        <div class="cu-ambiance__beam cu-ambiance__beam--2"></div>
-        <div class="cu-ambiance__beam cu-ambiance__beam--3"></div>
+        <div class="cu-ambiance__orb cu-ambiance__orb--1"></div>
+        <div class="cu-ambiance__orb cu-ambiance__orb--2"></div>
+        <div class="cu-ambiance__orb cu-ambiance__orb--3"></div>
+        <div class="cu-ambiance__beams"></div>
+        <canvas id="cu-neural-canvas"></canvas>
     </div>
 
     <div class="cu-shell">
         @include('layouts.admin.partials.panel-sidebar')
+        <div class="cu-sidebar-overlay" id="cuSidebarOverlay" aria-hidden="true"></div>
 
         <div class="cu-main">
             @include('layouts.admin.partials.panel-header')
@@ -57,6 +64,7 @@
     </div>
 
     <script src="{{ asset('assets/admin/js/sweet-alert/sweetalert.min.js') }}"></script>
+    <script src="{{ asset('assets/admin/js/admin-motion.js') }}"></script>
     @stack('scripts')
     <script>
       (function () {
@@ -124,6 +132,57 @@
 
           showLoader();
         });
+
+        var sidebar = document.getElementById('cuSidebar');
+        var overlay = document.getElementById('cuSidebarOverlay');
+        var menuToggle = document.getElementById('cuMenuToggle');
+        var sidebarClose = document.getElementById('cuSidebarClose');
+        var mobileQuery = window.matchMedia('(max-width: 991.98px)');
+
+        function openSidebar() {
+          document.body.classList.add('cu-sidebar-open');
+          if (menuToggle) menuToggle.setAttribute('aria-expanded', 'true');
+        }
+
+        function closeSidebar() {
+          document.body.classList.remove('cu-sidebar-open');
+          if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
+        }
+
+        if (menuToggle) {
+          menuToggle.addEventListener('click', function () {
+            if (document.body.classList.contains('cu-sidebar-open')) {
+              closeSidebar();
+            } else {
+              openSidebar();
+            }
+          });
+        }
+        if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+        if (overlay) overlay.addEventListener('click', closeSidebar);
+
+        if (sidebar) {
+          sidebar.addEventListener('click', function (event) {
+            if (mobileQuery.matches && event.target.closest('a[href]:not([href="#"])')) {
+              closeSidebar();
+            }
+          });
+        }
+
+        document.addEventListener('keydown', function (event) {
+          if (event.key === 'Escape' && document.body.classList.contains('cu-sidebar-open')) {
+            closeSidebar();
+          }
+        });
+
+        var onBreakpointChange = function (event) {
+          if (!event.matches) closeSidebar();
+        };
+        if (mobileQuery.addEventListener) {
+          mobileQuery.addEventListener('change', onBreakpointChange);
+        } else if (mobileQuery.addListener) {
+          mobileQuery.addListener(onBreakpointChange);
+        }
 
         document.querySelectorAll('.cu-nav__toggle').forEach(function (btn) {
           btn.addEventListener('click', function () {

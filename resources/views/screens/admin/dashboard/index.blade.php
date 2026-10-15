@@ -5,7 +5,7 @@
 @section('page_subtitle', 'Overview of your ChirpUp admin workspace')
 
 @section('content')
-    <div class="cu-grid cu-grid--stats">
+    <div class="cu-grid cu-grid--stats cu-stagger">
         @foreach ($stats as $stat)
             @if (! empty($stat['route']))
                 <a href="{{ route($stat['route']) }}" class="cu-card cu-stat-card">
@@ -29,7 +29,7 @@
         @endforeach
     </div>
 
-    <div class="cu-grid cu-grid--secondary">
+    <div class="cu-grid cu-grid--secondary cu-stagger cu-stagger--late">
         <section class="cu-card cu-panel-card">
             <div class="cu-panel-card__head">
                 <h3>Recent users</h3>

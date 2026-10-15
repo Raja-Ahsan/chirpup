@@ -7,22 +7,27 @@
 @section('content')
     <section class="cu-card">
         <div class="cu-toolbar">
-            <form method="GET" action="{{ route('admin.sketches.index', $category) }}" class="cu-search">
-                <input
-                    type="search"
-                    name="q"
-                    value="{{ $search }}"
-                    placeholder="Search by name"
-                    aria-label="Search sketches"
-                >
-                <button type="submit">Search</button>
-            </form>
+            <p class="cu-toolbar__meta">{{ $gameTypes->total() }} {{ $gameTypes->total() === 1 ? 'game' : 'games' }}</p>
             <div class="cu-toolbar__actions">
-                <p class="cu-toolbar__meta">{{ $gameTypes->total() }} {{ $gameTypes->total() === 1 ? 'game' : 'games' }}</p>
+                <form method="GET" action="{{ route('admin.sketches.index', $category) }}" class="cu-search">
+                    <input
+                        type="search"
+                        name="q"
+                        value="{{ $search }}"
+                        placeholder="Search by name"
+                        aria-label="Search sketches"
+                    >
+                    <button type="submit" class="cu-btn" aria-label="Search">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                    </button>
+                </form>
                 <a
                     href="{{ route('admin.game-types.create', ['game_category_id' => $category->id]) }}"
                     class="cu-btn"
-                >Add Game</a>
+                >
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    Add Game
+                </a>
             </div>
         </div>
 

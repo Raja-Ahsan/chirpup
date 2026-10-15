@@ -7,19 +7,24 @@
 @section('content')
     <section class="cu-card">
         <div class="cu-toolbar">
-            <form method="GET" action="{{ route('admin.game-moods.index') }}" class="cu-search">
-                <input
-                    type="search"
-                    name="q"
-                    value="{{ $search }}"
-                    placeholder="Search by name"
-                    aria-label="Search game moods"
-                >
-                <button type="submit">Search</button>
-            </form>
+            <p class="cu-toolbar__meta">{{ $moods->total() }} {{ $moods->total() === 1 ? 'mood' : 'moods' }}</p>
             <div class="cu-toolbar__actions">
-                <p class="cu-toolbar__meta">{{ $moods->total() }} {{ $moods->total() === 1 ? 'mood' : 'moods' }}</p>
-                <a href="{{ route('admin.game-moods.create') }}" class="cu-btn">Add Mood</a>
+                <form method="GET" action="{{ route('admin.game-moods.index') }}" class="cu-search">
+                    <input
+                        type="search"
+                        name="q"
+                        value="{{ $search }}"
+                        placeholder="Search by name"
+                        aria-label="Search game moods"
+                    >
+                    <button type="submit" class="cu-btn" aria-label="Search">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                    </button>
+                </form>
+                <a href="{{ route('admin.game-moods.create') }}" class="cu-btn">
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    Add Mood
+                </a>
             </div>
         </div>
 

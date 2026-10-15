@@ -7,19 +7,24 @@
 @section('content')
     <section class="cu-card">
         <div class="cu-toolbar">
-            <form method="GET" action="{{ route('admin.books.index') }}" class="cu-search">
-                <input
-                    type="search"
-                    name="q"
-                    value="{{ $search }}"
-                    placeholder="Search by title"
-                    aria-label="Search books"
-                >
-                <button type="submit">Search</button>
-            </form>
+            <p class="cu-toolbar__meta">{{ $books->total() }} {{ $books->total() === 1 ? 'book' : 'books' }}</p>
             <div class="cu-toolbar__actions">
-                <p class="cu-toolbar__meta">{{ $books->total() }} {{ $books->total() === 1 ? 'book' : 'books' }}</p>
-                <a href="{{ route('admin.books.create') }}" class="cu-btn">Add Book</a>
+                <form method="GET" action="{{ route('admin.books.index') }}" class="cu-search">
+                    <input
+                        type="search"
+                        name="q"
+                        value="{{ $search }}"
+                        placeholder="Search by title"
+                        aria-label="Search books"
+                    >
+                    <button type="submit" class="cu-btn" aria-label="Search">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                    </button>
+                </form>
+                <a href="{{ route('admin.books.create') }}" class="cu-btn">
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    Add Book
+                </a>
             </div>
         </div>
 

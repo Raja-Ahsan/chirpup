@@ -7,19 +7,24 @@
 @section('content')
     <section class="cu-card">
         <div class="cu-toolbar">
-            <form method="GET" action="{{ route('admin.characters.index') }}" class="cu-search">
-                <input
-                    type="search"
-                    name="q"
-                    value="{{ $search }}"
-                    placeholder="Search by name"
-                    aria-label="Search characters"
-                >
-                <button type="submit">Search</button>
-            </form>
+            <p class="cu-toolbar__meta">{{ $characters->total() }} {{ $characters->total() === 1 ? 'character' : 'characters' }}</p>
             <div class="cu-toolbar__actions">
-                <p class="cu-toolbar__meta">{{ $characters->total() }} {{ $characters->total() === 1 ? 'character' : 'characters' }}</p>
-                <a href="{{ route('admin.characters.create') }}" class="cu-btn">Add Character</a>
+                <form method="GET" action="{{ route('admin.characters.index') }}" class="cu-search">
+                    <input
+                        type="search"
+                        name="q"
+                        value="{{ $search }}"
+                        placeholder="Search by name"
+                        aria-label="Search characters"
+                    >
+                    <button type="submit" class="cu-btn" aria-label="Search">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                    </button>
+                </form>
+                <a href="{{ route('admin.characters.create') }}" class="cu-btn">
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    Add Character
+                </a>
             </div>
         </div>
 

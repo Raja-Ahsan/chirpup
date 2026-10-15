@@ -7,6 +7,7 @@
 @section('content')
     <section class="cu-card">
         <div class="cu-toolbar">
+            <p class="cu-toolbar__meta">{{ $users->total() }} {{ $users->total() === 1 ? 'user' : 'users' }}</p>
             <form method="GET" action="{{ route('admin.users.index') }}" class="cu-search">
                 <input
                     type="search"
@@ -15,9 +16,10 @@
                     placeholder="Search by name or email"
                     aria-label="Search users"
                 >
-                <button type="submit">Search</button>
+                <button type="submit" class="cu-btn" aria-label="Search">
+                    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                </button>
             </form>
-            <p class="cu-toolbar__meta">{{ $users->total() }} {{ $users->total() === 1 ? 'user' : 'users' }}</p>
         </div>
 
         <div class="cu-table-wrap">
@@ -77,7 +79,7 @@
                             <td>
                                 <button
                                     type="button"
-                                    class="cu-action-btn"
+                                    class="cu-action-btn cu-action-btn--view"
                                     title="View user"
                                     aria-label="View {{ $user->name }}"
                                     data-user-view

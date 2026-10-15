@@ -22,6 +22,9 @@
                         <input type="hidden" name="q" value="{{ $search }}">
                     @endif
                 </form>
+                <p class="cu-toolbar__meta">{{ $gameTypes->total() }} {{ $gameTypes->total() === 1 ? 'game' : 'games' }}</p>
+            </div>
+            <div class="cu-toolbar__actions">
                 <form method="GET" action="{{ route('admin.game-types.by-game', $game) }}" class="cu-search">
                     @if ($selectedCategoryId)
                         <input type="hidden" name="game_category_id" value="{{ $selectedCategoryId }}">
@@ -33,13 +36,15 @@
                         placeholder="Search by name"
                         aria-label="Search games"
                     >
-                    <button type="submit">Search</button>
+                    <button type="submit" class="cu-btn" aria-label="Search">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                    </button>
                 </form>
-            </div>
-            <div class="cu-toolbar__actions">
                 <a href="{{ route('admin.game-types.index') }}" class="cu-btn cu-btn--ghost">All Game Types</a>
-                <p class="cu-toolbar__meta">{{ $gameTypes->total() }} {{ $gameTypes->total() === 1 ? 'game' : 'games' }}</p>
-                <a href="{{ route('admin.game-types.create', ['game_id' => $game->id]) }}" class="cu-btn">Add Game</a>
+                <a href="{{ route('admin.game-types.create', ['game_id' => $game->id]) }}" class="cu-btn">
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    Add Game
+                </a>
             </div>
         </div>
 
