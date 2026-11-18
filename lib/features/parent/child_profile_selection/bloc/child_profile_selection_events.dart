@@ -18,9 +18,9 @@ class SelectChildProfileEvent extends ChildProfileSelectionEvents {
   List<Object?> get props => [index];
 }
 
-class CheckPinStatusAndNavigateEvent extends ChildProfileSelectionEvents {
+class EnterKingdomEvent extends ChildProfileSelectionEvents {
   final BuildContext context;
-  const CheckPinStatusAndNavigateEvent({required this.context});
+  const EnterKingdomEvent({required this.context});
 }
 
 class VerifyPinEvent extends ChildProfileSelectionEvents {

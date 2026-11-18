@@ -16,11 +16,18 @@ class CharacterGifMap {
   static const String _fallbackLottie = 'assets/lotties/dragon_lottie.json';
   static const String _fallbackQuote = "I am me, and\nthat's pretty great.";
 
+  // "1" ya 1 aaye to 'char_01' bana deta hai, 'char_01' aaye to waisa hi rehta hai
+  static String _normalize(String? id) {
+    if (id == null || id.isEmpty) return '';
+    final n = int.tryParse(id);
+    return n != null ? 'char_${n.toString().padLeft(2, '0')}' : id;
+  }
+
   static String lottieForCharacterId(String? characterId) {
-    return _lottieByCharacterId[characterId] ?? _fallbackLottie;
+    return _lottieByCharacterId[_normalize(characterId)] ?? _fallbackLottie;
   }
 
   static String quoteForCharacterId(String? characterId) {
-    return _quoteByCharacterId[characterId] ?? _fallbackQuote;
+    return _quoteByCharacterId[_normalize(characterId)] ?? _fallbackQuote;
   }
 }

@@ -1,6 +1,5 @@
 import 'package:chirp_up_app/core/constants/app_colors.dart';
 import 'package:chirp_up_app/core/constants/app_sizes.dart';
-import 'package:chirp_up_app/core/utils/helper_methods.dart';
 import 'package:chirp_up_app/core/widgets/common_button.dart';
 import 'package:chirp_up_app/core/widgets/custom_text.dart';
 import 'package:chirp_up_app/core/widgets/heading_text.dart';
@@ -34,9 +33,8 @@ class _ChildProfileSelectionViewState extends State<ChildProfileSelectionView> {
       builder: (context, state) {
         final selected = state.selectedChild;
 
-        // progress value
-        final double progressValue =
-            (double.tryParse(selected?.progressPercent ?? '0') ?? 0.0) / 100;
+        // progress_percent (0-100) -> 0.0-1.0
+        final double progressValue = (selected?.progressPercent ?? 0.0) / 100;
 
         return Stack(
           children: [
@@ -92,10 +90,8 @@ class _ChildProfileSelectionViewState extends State<ChildProfileSelectionView> {
 
                       if (selected != null) ...[
                         CustomText(
-                          text: HelperMethods()
-                              .characterSpecialityFromCharacterId(
-                                selected.characterId,
-                              ),
+                          // character ki description API se ("Kind and thoughtful")
+                          text: selected.character?.description ?? '',
                           fontSize: 14,
                           fontFamily: 'LuckiestGuy',
                           textAlign: TextAlign.center,
@@ -109,7 +105,7 @@ class _ChildProfileSelectionViewState extends State<ChildProfileSelectionView> {
                           lineSpacing: 1,
                         ),
                         CustomText(
-                          text: (selected.age ?? '').toUpperCase(),
+                          text: selected.age.toUpperCase(),
                           fontSize: 14,
                           fontFamily: 'LuckiestGuy',
                           textAlign: TextAlign.center,
@@ -132,17 +128,13 @@ class _ChildProfileSelectionViewState extends State<ChildProfileSelectionView> {
                     const SizedBox(height: 10),
                     const Spacer(),
                     CommonButton(
-                      title: state.isPinLoading
-                          ? "       Loading...        "
-                          : 'Enter Kingdom',
+                      title: 'Enter Kingdom',
                       horizontalPadding: 50,
-                      onPressed: state.isLoading || state.isPinLoading
+                      onPressed: state.isLoading || selected == null
                           ? null
                           : () {
                               context.read<ChildProfileSelectionBloc>().add(
-                                CheckPinStatusAndNavigateEvent(
-                                  context: context,
-                                ),
+                                EnterKingdomEvent(context: context),
                               );
                             },
                     ),

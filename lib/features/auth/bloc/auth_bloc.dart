@@ -422,7 +422,8 @@ class AuthBloc extends Bloc<AuthEvents, AuthStates> {
       });
 
       if (response['code'] == 200 || response['code'] == 201) {
-        final accessToken = response['accessToken'];
+        final accessToken = response['data']['token'];
+        print(accessToken);
         if (accessToken != null && accessToken.toString().isNotEmpty) {
           await StorageService.setToken(accessToken.toString());
         }

@@ -27,7 +27,7 @@ class ApiService {
             },
           )
           .timeout(const Duration(seconds: 30));
-
+      print(url);    
       print(response.body);
 
       return await returnResponse(response);

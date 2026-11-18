@@ -5,18 +5,22 @@ class MoodSelectionRepository {
   final ApiService _apiService;
 
   MoodSelectionRepository({ApiService? apiService})
-      : _apiService = apiService ?? ApiService();
+    : _apiService = apiService ?? ApiService();
 
+  Future<dynamic> getMoods() async {
+    return await _apiService.getApi(
+      ApiConstants.baseUrl + ApiConstants.getMoods,
+    );
+  }
   Future<dynamic> submitMood({
+    required String childSlug,
     required String childId,
-    required String mood,
+    required int moodId,
     required String date,
   }) async {
-    final response = await _apiService.postApi(
-      "${ApiConstants.baseUrl}/children/$childId/mood",
-      {'mood': mood, 'date': date},
+    return await _apiService.postApi(
+      '${ApiConstants.baseUrl}/children/$childSlug/mood',
+      {'children_id': childId, 'mood_id': moodId, 'date': date},
     );
-
-    return response;
   }
 }

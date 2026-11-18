@@ -13,9 +13,16 @@ class ApiConstants {
   static const String parentPinSkip = '/parent-pin/skip';
 
   // parent dashboard
-  static const String getParentChildrens = '/children-all';
+  static const String getParentChildrens = '/children';
 
   // child profile selection
   static const String pinStatus = '/parent-pin/status';
   static const String verifyPin = '/parent-pin/verify';
+
+  // moods
+  static const String getMoods = '/moods';
+
+  // games
+  static const String getGames = '/games';
+  static const String getGameCategories = '/game-categories';
 }

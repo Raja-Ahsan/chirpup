@@ -66,10 +66,6 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => EnterPinCodeView());
       case AppRoutes.pickYourMagicalFriend:
         return MaterialPageRoute(builder: (_) => PickYourMagicalFriendView());
-      case AppRoutes.moodSelection:
-        return MaterialPageRoute(builder: (_) => MoodSelectionView());
-      case AppRoutes.childDashboard:
-        return MaterialPageRoute(builder: (_) => ChildDashboardView());
       case AppRoutes.magicColoringOnboarding:
         return MaterialPageRoute(builder: (_) => MagicColoringOnboardingView());
       case AppRoutes.kingdomWorkShop:

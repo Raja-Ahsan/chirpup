@@ -2,6 +2,7 @@
 import 'package:chirp_up_app/core/utils/show_common_dialog.dart';
 import 'package:chirp_up_app/core/widgets/error_dialog.dart';
 import 'package:chirp_up_app/features/child/child_dashboard/data/models/child_dashboard_model.dart';
+import 'package:chirp_up_app/features/child/child_dashboard/data/models/game_category_model.dart';
 import 'package:chirp_up_app/features/child/child_dashboard/data/repositories/child_dashboard_repository.dart';
 import 'package:chirp_up_app/features/child/mood_selection/data/models/mood_items_model.dart';
 import 'package:flutter/material.dart';
@@ -54,37 +55,106 @@ class ChildDashboardBloc
     on<SelectMoodEvent>(_onSelectMood);
   }
 
+  String _today() {
+    final now = DateTime.now();
+    return '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+  }
+
+  // /moods se slug -> id map. Fail ho to khali map, kabhi throw nahi karta
+  Future<Map<String, int>> _fetchMoodIds() async {
+    try {
+      final response = await _repository.getMoods();
+      final list = (response['data']?['moods'] as List?) ?? [];
+      final map = <String, int>{};
+      for (final m in list) {
+        if (m is Map && m['slug'] != null && m['id'] != null) {
+          final id = m['id'] is int
+              ? m['id'] as int
+              : int.tryParse('${m['id']}');
+          if (id != null) map[m['slug'].toString().toLowerCase()] = id;
+        }
+      }
+      return map;
+    } catch (_) {
+      return {};
+    }
+  }
+
+  // Fail ho to khali list, dashboard kabhi nahi rukta
+Future<List<GameCategoryModel>> _fetchGameCategories() async {
+    try {
+      final response = await _repository.getGameCategories();
+      final list = (response['data']?['categories'] as List?) ?? [];
+      return list
+          .whereType<Map>()
+          .map((e) => GameCategoryModel.fromJson(Map<String, dynamic>.from(e)))
+          .where((c) => c.status == 'active')
+          .toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
   Future<void> _onLoadDashboard(
     LoadDashboardEvent event,
     Emitter<ChildDashboardStates> emit,
   ) async {
     emit(state.copyWith(isLoading: true));
     try {
-      final dashboardResponse = await _repository.getDashboard(event.childId);
-      final moodResponse = await _repository.getTodayMood(event.childId);
+      final results = await Future.wait<dynamic>([
+        _repository.getChild(event.childSlug),
+        _fetchMoodIds(),
+        _fetchGameCategories(),
+      ]);
+      final dynamic childResponse = results[0];
+      final Map<String, int> moodIds = results[1] as Map<String, int>;
+      final List<GameCategoryModel> gameCategories = results[2] as List<GameCategoryModel>;
 
-      ChildDashboardModel? dashboardInfo;
-      if (dashboardResponse['statusCode'] == 200 ||
-          dashboardResponse['statusCode'] == 201) {
-        dashboardInfo = ChildDashboardModel.fromJson(
-          dashboardResponse['data'] ?? dashboardResponse,
-        );
+      // ternary hata kar simple if, taake parser confuse na ho
+      dynamic childJson;
+      if (childResponse is Map && childResponse['success'] == true) {
+        final dynamic data = childResponse['data'];
+        if (data is Map) {
+          childJson = data['child'];
+        }
       }
 
+      if (childJson is! Map) {
+        final dynamic msg = childResponse is Map
+            ? childResponse['message']
+            : null;
+        throw Exception(msg?.toString() ?? 'Could not load dashboard.');
+      }
+
+      final info = ChildDashboardModel.fromJson(
+        Map<String, dynamic>.from(childJson),
+      );
+
+      // sirf aaj ka mood select dikhao: today_mood ho AUR mood_date aaj ki ho
       int? selectedIndex;
-      if ((moodResponse['statusCode'] == 200 ||
-              moodResponse['statusCode'] == 201) &&
-          moodResponse['moodSubmitted'] == true) {
-        final moodLabel = moodResponse['mood']?.toString().toLowerCase();
-        final idx = state.moods.indexWhere(
-          (m) => m.label.toLowerCase() == moodLabel,
-        );
-        selectedIndex = idx == -1 ? null : idx;
+      if (info.todayMoodId != null && info.moodDate == _today()) {
+        String? slug;
+        for (final e in moodIds.entries) {
+          if (e.value == info.todayMoodId) {
+            slug = e.key;
+            break;
+          }
+        }
+        slug ??= info.todayMoodSlug;
+
+        if (slug != null) {
+          final idx = state.moods.indexWhere(
+            (m) => m.label.toLowerCase() == slug,
+          );
+          selectedIndex = idx == -1 ? null : idx;
+        }
       }
 
       emit(
         state.copyWith(
-          dashboardInfo: dashboardInfo,
+          dashboardInfo: info,
+          moodIds: moodIds,
+          gameCategories: gameCategories,
           selectedMoodIndex: selectedIndex,
           clearMood: selectedIndex == null,
         ),
@@ -92,10 +162,13 @@ class ChildDashboardBloc
     } catch (e) {
       showCommonDialog(
         context: event.context,
-        child: errorDialog(event.context, e.toString()),
+        child: errorDialog(
+          event.context,
+          e.toString().replaceFirst('Exception: ', ''),
+        ),
         barrierDismissible: true,
       );
-    }finally {
+    } finally {
       emit(state.copyWith(isLoading: false));
     }
   }
@@ -105,20 +178,38 @@ class ChildDashboardBloc
     Emitter<ChildDashboardStates> emit,
   ) async {
     final previousIndex = state.selectedMoodIndex;
+    final slug = state.moods[event.index].label.toLowerCase();
+    final moodId = state.moodIds[slug];
+
+    if (moodId == null) {
+      showCommonDialog(
+        context: event.context,
+        child: errorDialog(
+          event.context,
+          'Could not update mood.\nPlease try again.',
+        ),
+        barrierDismissible: true,
+      );
+      return;
+    }
+
     emit(state.copyWith(selectedMoodIndex: event.index));
 
     try {
-      final now = DateTime.now();
-      final formattedDate =
-          '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
-
       final response = await _repository.updateMood(
+        childSlug: event.childSlug,
         childId: event.childId,
-        mood: state.moods[event.index].label.toLowerCase(),
-        date: formattedDate,
+        moodId: moodId,
+        date: _today(),
       );
 
-      if (!(response['statusCode'] == 200 || response['statusCode'] == 201)) {
+      final bool ok =
+          response is Map &&
+          (response['success'] == true ||
+              response['code'] == 200 ||
+              response['code'] == 201);
+
+      if (!ok) {
         emit(
           state.copyWith(
             selectedMoodIndex: previousIndex,
@@ -129,7 +220,11 @@ class ChildDashboardBloc
           context: event.context,
           child: errorDialog(
             event.context,
-            response['error'] ?? response['message'] ?? "Mood Update Failed.",
+            ((response is Map
+                        ? (response['error'] ?? response['message'])
+                        : null) ??
+                    'Mood Update Failed.')
+                .toString(),
           ),
           barrierDismissible: true,
         );
@@ -143,7 +238,10 @@ class ChildDashboardBloc
       );
       showCommonDialog(
         context: event.context,
-        child: errorDialog(event.context, e.toString()),
+        child: errorDialog(
+          event.context,
+          e.toString().replaceFirst('Exception: ', ''),
+        ),
         barrierDismissible: true,
       );
     }

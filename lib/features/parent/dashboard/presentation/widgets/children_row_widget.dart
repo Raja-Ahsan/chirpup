@@ -45,7 +45,7 @@ class ChildrenRow extends StatelessWidget {
           final int diff = index - selectedIdx;
 
           final imagePath = HelperMethods().imagePathFromCharacterId(
-            child.characterId,
+            child.characterId.toString(),
           );
 
           final bool isDragon = _isDragon(imagePath);

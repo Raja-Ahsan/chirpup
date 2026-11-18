@@ -4,89 +4,183 @@ import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/utils/get_character_by_id_helper.dart';
 import 'package:chirp_up_app/core/widgets/custom_text.dart';
 import 'package:chirp_up_app/core/widgets/heading_text.dart';
+import 'package:chirp_up_app/features/child/child_dashboard/presentation/widgets/shimmer_box_widget.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/bloc/kingdom_workshop_bloc.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/bloc/kingdom_workshop_events.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/bloc/kingdom_workshop_states.dart';
+import 'package:chirp_up_app/features/child/kingdom_workshop/data/models/game_model.dart';
 import 'package:chirp_up_app/features/child/kingdom_workshop/presentation/views/magic_coloring/presentation/views/magic_coloring_entry_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class KingdomWorkshopView extends StatelessWidget {
   final String? childId;
   final String? characterId;
-  const KingdomWorkshopView({super.key, this.childId, this.characterId});
+  final int? gameCategoryId;
+  final int? yearId;
+
+  const KingdomWorkshopView({
+    super.key,
+    this.childId,
+    this.characterId,
+    this.gameCategoryId,
+    this.yearId,
+  });
 
   @override
   Widget build(BuildContext context) {
-    print(childId);
-    print(characterId);
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _TopSection(characterId: characterId),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: AppSizes.verticalPadding,
-                horizontal: AppSizes.horizontalPadding,
-              ),
-              child: SafeArea(
-                top: false,
-                child: Column(
-                  children: [
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final double itemWidth =
-                            (constraints.maxWidth - 10) / 2;
-                        final double itemHeight = itemWidth * 1.4;
+    return BlocProvider(
+      create: (context) =>
+          KingdomWorkshopBloc()
+            ..add(LoadGamesEvent(context, gameCategoryId??1, yearId)),
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              _TopSection(characterId: characterId),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: AppSizes.verticalPadding,
+                  horizontal: AppSizes.horizontalPadding,
+                ),
+                child: SafeArea(
+                  top: false,
+                  child: Column(
+                    children: [
+                      BlocBuilder<KingdomWorkshopBloc, KingdomWorkshopStates>(
+                        builder: (context, state) {
+                          return LayoutBuilder(
+                            builder: (context, constraints) {
+                              final double itemWidth =
+                                  (constraints.maxWidth - 10) / 2;
+                              final double itemHeight = itemWidth * 1.4;
 
-                        return Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                InkWell(
-                                  onTap: () => Navigator.pushNamed(
-                                    context,
-                                    AppRoutes.buildCastle,
-                                  ),
-                                  child: Image.asset(
-                                    'assets/png/castle_builder_bg.png',
-                                    width: itemWidth,
-                                    height: itemHeight,
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                InkWell(
-                                  onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          MagicColoringEntryView(
-                                            childId: childId ?? '',
-                                            characterId: characterId ?? '',
-                                          ),
+                              if (state.isLoading) {
+                                return _buildGamesSkeleton(
+                                  itemWidth,
+                                  itemHeight,
+                                );
+                              }
+
+                              if (state.games.isEmpty) {
+                                return const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 30),
+                                  child: Center(
+                                    child: CustomText(
+                                      text: 'Could not load games.',
+                                      fontSize: 14,
+                                      weight: FontWeight.w700,
+                                      color: Color(0xff645973),
                                     ),
                                   ),
-                                  child: Image.asset(
-                                    'assets/png/magic_coloring_bg_game.png',
-                                    width: itemWidth,
-                                    height: itemHeight,
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                    SizedBox(height: 15),
-                    Image.asset('assets/png/kingdom_workshop_banner_bg.png'),
-                  ],
+                                );
+                              }
+
+                              return Wrap(
+                                alignment: WrapAlignment.center,
+                                spacing: 10,
+                                runSpacing: 10,
+                                children: state.games.map((game) {
+                                  return InkWell(
+                                    onTap: () => _onGameTap(context, game),
+                                    child: SizedBox(
+                                      width: itemWidth,
+                                      height: itemHeight,
+                                      child: Image.network(
+                                        game.imageUrl,
+                                        width: itemWidth,
+                                        height: itemHeight,
+                                        fit: BoxFit.fill,
+                                        loadingBuilder:
+                                            (context, child, progress) {
+                                              if (progress == null) {
+                                                return child;
+                                              }
+                                              return ShimmerBox(
+                                                width: itemWidth,
+                                                height: itemHeight,
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              );
+                                            },
+                                        errorBuilder: (_, __, ___) => Container(
+                                          width: itemWidth,
+                                          height: itemHeight,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                          ),
+                                          alignment: Alignment.center,
+                                          child: CustomText(
+                                            text: game.name,
+                                            fontSize: 14,
+                                            weight: FontWeight.w700,
+                                            color: const Color(0xff645973),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 15),
+                      Image.asset('assets/png/kingdom_workshop_banner_bg.png'),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  // ── Game slug ke hisab se kholo ──
+  void _onGameTap(BuildContext context, GameModel game) {
+    switch (game.slug) {
+      case 'castle-builder':
+        Navigator.pushNamed(context, AppRoutes.buildCastle);
+        break;
+      case 'magic-coloring':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MagicColoringEntryView(
+              childId: childId ?? '',
+              characterId: characterId ?? '',
+            ),
+          ),
+        );
+        break;
+      default:
+        break;
+    }
+  }
+
+  // ── Cards skeleton (dashboard jaisa) ──
+  Widget _buildGamesSkeleton(double itemWidth, double itemHeight) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ShimmerBox(
+          width: itemWidth,
+          height: itemHeight,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        const SizedBox(width: 10),
+        ShimmerBox(
+          width: itemWidth,
+          height: itemHeight,
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ],
     );
   }
 }

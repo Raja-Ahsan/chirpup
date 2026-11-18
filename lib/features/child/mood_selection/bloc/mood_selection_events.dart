@@ -7,6 +7,10 @@ abstract class MoodSelectionEvents extends Equatable {
   List<Object?> get props => [];
 }
 
+class MoodsRequested extends MoodSelectionEvents {
+  const MoodsRequested();
+}
+
 class SelectMoodEvent extends MoodSelectionEvents {
   final int index;
   const SelectMoodEvent(this.index);
@@ -15,10 +19,16 @@ class SelectMoodEvent extends MoodSelectionEvents {
 }
 
 class SubmitMoodEvent extends MoodSelectionEvents {
-  final String childId;
   final BuildContext context;
+  final String childSlug;
+  final String childId;
   final Future<void> Function() onSuccess;
-  const SubmitMoodEvent(this.context, this.childId, this.onSuccess);
+  const SubmitMoodEvent(
+    this.context,
+    this.childSlug,
+    this.childId,
+    this.onSuccess,
+  );
   @override
-  List<Object?> get props => [context, childId];
+  List<Object?> get props => [childSlug, childId];
 }

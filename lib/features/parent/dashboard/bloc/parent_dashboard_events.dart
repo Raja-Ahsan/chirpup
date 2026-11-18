@@ -12,17 +12,9 @@ class FetchChildrenEvent extends ParentDashboardEvents {
 
 class SelectChildEvent extends ParentDashboardEvents {
   final int index;
-  final String childId;
-  const SelectChildEvent(this.index, this.childId);
+  final String childSlug;
+  const SelectChildEvent(this.index, this.childSlug);
 
   @override
-  List<Object?> get props => [index, childId];
-}
-
-class FetchChildWeeklyStatsEvent extends ParentDashboardEvents {
-  final String childId;
-  const FetchChildWeeklyStatsEvent(this.childId);
-
-  @override
-  List<Object?> get props => [childId];
+  List<Object?> get props => [index, childSlug];
 }

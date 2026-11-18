@@ -12,22 +12,11 @@ class ChildProfileSelectionRepository {
     return AllChildrenModel.fromJson(response);
   }
 
-  Future<dynamic> checkTodayMood(String childId) async {
-    return await _apiService.getApi(
-      '${ApiConstants.baseUrl}/children/$childId/mood/today',
-    );
-  }
-
-  Future<dynamic> checkPinStatus() async {
-    return await _apiService.getApi(
-      ApiConstants.baseUrl + ApiConstants.pinStatus,
-    );
-  }
-
+  // POST {{base_url}}parent-pin/verify
   Future<dynamic> verifyPin(String pin) async {
     return await _apiService.postApi(
       ApiConstants.baseUrl + ApiConstants.verifyPin,
-      {"pin": pin},
+      {"user_pin": pin},
     );
   }
 }

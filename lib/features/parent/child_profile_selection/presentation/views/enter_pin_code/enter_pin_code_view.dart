@@ -1,6 +1,5 @@
 import 'package:chirp_up_app/core/constants/app_colors.dart';
 import 'package:chirp_up_app/core/constants/app_sizes.dart';
-import 'package:chirp_up_app/core/utils/helper_methods.dart';
 import 'package:chirp_up_app/core/widgets/common_button.dart';
 import 'package:chirp_up_app/core/widgets/custom_text.dart';
 import 'package:chirp_up_app/core/widgets/heading_text.dart';
@@ -27,11 +26,28 @@ class _EnterPinCodeViewState extends State<EnterPinCodeView> {
     super.dispose();
   }
 
+  PinTheme get _pinTheme => PinTheme(
+    width: 59,
+    height: 69,
+    textStyle: const TextStyle(
+      fontSize: 29,
+      color: Colors.white,
+      fontWeight: FontWeight.w500,
+      fontFamily: 'Nutino',
+    ),
+    decoration: BoxDecoration(
+      color: AppColors.otpFieldDarkBlueBg,
+      border: Border.all(color: Colors.white, width: 2),
+      borderRadius: BorderRadius.circular(16),
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChildProfileSelectionBloc, ChildProfileSelectionStates>(
       builder: (context, state) {
         final selected = state.selectedChild;
+        final imageUrl = selected?.characterImage ?? '';
 
         return Scaffold(
           body: Stack(
@@ -51,13 +67,26 @@ class _EnterPinCodeViewState extends State<EnterPinCodeView> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // ── Character Image ─────────────────────────────────
-                      if (selected != null)
-                        Image.asset(
-                          HelperMethods().imagePathFromCharacterId(
-                            selected.characterId,
-                          ),
+                      // ── Character Image (API se) ────────────────────────
+                      if (imageUrl.isNotEmpty)
+                        Image.network(
+                          imageUrl,
                           height: MediaQuery.of(context).size.height * 0.4,
+                          fit: BoxFit.contain,
+                          loadingBuilder: (context, child, progress) {
+                            if (progress == null) return child;
+                            return SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.4,
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            );
+                          },
+                          errorBuilder: (_, __, ___) => SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.4,
+                          ),
                         ),
 
                       const SizedBox(height: 10),
@@ -73,7 +102,7 @@ class _EnterPinCodeViewState extends State<EnterPinCodeView> {
                           lineSpacing: 1,
                         ),
                         CustomText(
-                          text: (selected.age ?? '').toUpperCase(),
+                          text: selected.age.toUpperCase(),
                           fontSize: 14,
                           fontFamily: 'LuckiestGuy',
                           textAlign: TextAlign.center,
@@ -100,86 +129,31 @@ class _EnterPinCodeViewState extends State<EnterPinCodeView> {
                           obscureText: true,
                           obscuringCharacter: '*',
                           keyboardType: TextInputType.number,
-                          defaultPinTheme: PinTheme(
-                            width: 59,
-                            height: 69,
-                            textStyle: const TextStyle(
-                              fontSize: 29,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'Nutino',
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.otpFieldDarkBlueBg,
-                              border: Border.all(color: Colors.white, width: 2),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          focusedPinTheme: PinTheme(
-                            width: 59,
-                            height: 69,
-                            textStyle: const TextStyle(
-                              fontSize: 29,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'Nutino',
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.otpFieldDarkBlueBg,
-                              border: Border.all(color: Colors.white, width: 2),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          submittedPinTheme: PinTheme(
-                            width: 59,
-                            height: 69,
-                            textStyle: const TextStyle(
-                              fontSize: 29,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'Nutino',
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.otpFieldDarkBlueBg,
-                              border: Border.all(color: Colors.white, width: 2),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          onChanged: (value) {},
-                          onCompleted: (pin) {},
+                          defaultPinTheme: _pinTheme,
+                          focusedPinTheme: _pinTheme,
+                          submittedPinTheme: _pinTheme,
                         ),
                       ),
 
                       const Spacer(flex: 1),
 
                       // ── Button ──────────────────────────────────────────
-                      BlocBuilder<
-                        ChildProfileSelectionBloc,
-                        ChildProfileSelectionStates
-                      >(
-                        buildWhen: (prev, curr) =>
-                            prev.isPinLoading != curr.isPinLoading,
-                        builder: (context, state) {
-                          return CommonButton(
-                            title: 'Enter Kingdom',
-                            isLoading: state.isPinLoading,
-                            horizontalPadding: 50,
-                            bgColor: AppColors.textYellow,
-                            shadowColor: const Color(0xff6E613E),
-                            onPressed: state.isPinLoading
-                                ? null
-                                : () {
-                                    context
-                                        .read<ChildProfileSelectionBloc>()
-                                        .add(
-                                          VerifyPinEvent(
-                                            context: context,
-                                            pin: _pinController.text,
-                                          ),
-                                        );
-                                  },
-                          );
-                        },
+                      CommonButton(
+                        title: 'Enter Kingdom',
+                        isLoading: state.isPinLoading,
+                        horizontalPadding: 50,
+                        bgColor: AppColors.textYellow,
+                        shadowColor: const Color(0xff6E613E),
+                        onPressed: state.isPinLoading
+                            ? null
+                            : () {
+                                context.read<ChildProfileSelectionBloc>().add(
+                                  VerifyPinEvent(
+                                    context: context,
+                                    pin: _pinController.text,
+                                  ),
+                                );
+                              },
                       ),
 
                       const SizedBox(height: 10),

@@ -1,10 +1,10 @@
 import 'package:chirp_up_app/core/constants/app_colors.dart';
 import 'package:chirp_up_app/core/constants/app_sizes.dart';
-import 'package:chirp_up_app/core/routes/app_routes.dart';
 import 'package:chirp_up_app/core/widgets/common_button.dart';
 import 'package:chirp_up_app/core/widgets/custom_text.dart';
 import 'package:chirp_up_app/core/widgets/heading_text.dart';
 import 'package:chirp_up_app/features/child/child_dashboard/presentation/views/child_dashboard_view.dart';
+import 'package:chirp_up_app/features/child/child_dashboard/presentation/widgets/shimmer_box_widget.dart';
 import 'package:chirp_up_app/features/child/mood_selection/bloc/mood_selection_bloc.dart';
 import 'package:chirp_up_app/features/child/mood_selection/bloc/mood_selection_events.dart';
 import 'package:chirp_up_app/features/child/mood_selection/bloc/mood_selection_states.dart';
@@ -14,7 +14,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MoodSelectionView extends StatefulWidget {
   final String? childId;
-  const MoodSelectionView({super.key, this.childId});
+  final String childSlug;
+  const MoodSelectionView({super.key, this.childId, required this.childSlug});
 
   @override
   State<MoodSelectionView> createState() => _MoodSelectionViewState();
@@ -44,12 +45,17 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
     super.dispose();
   }
 
-  // 👈 ye callback bloc ko diya jayega, success pe bloc isko await karega
   Future<void> _playAnimationAndNavigate(BuildContext context) async {
     await _controller.forward();
     await Future.delayed(const Duration(milliseconds: 100));
     if (context.mounted) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> ChildDashboardView(childId: widget.childId??'')));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              ChildDashboardView(childId: widget.childId ?? '', childSlug: widget.childSlug,),
+        ),
+      );
     }
   }
 
@@ -57,6 +63,7 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
     context.read<MoodSelectionBloc>().add(
       SubmitMoodEvent(
         context,
+        widget.childSlug,
         widget.childId ?? '',
         () => _playAnimationAndNavigate(context),
       ),
@@ -66,7 +73,8 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => MoodSelectionBloc(),
+      // 👈 view khulte hi moods fetch
+      create: (_) => MoodSelectionBloc()..add(const MoodsRequested()),
       child: BlocBuilder<MoodSelectionBloc, MoodSelectionStates>(
         builder: (context, state) {
           return Scaffold(
@@ -119,7 +127,7 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
                             ),
                           ),
                           child: Container(
-                            margin: EdgeInsets.only(top: 5),
+                            margin: const EdgeInsets.only(top: 5),
                             child: SingleChildScrollView(
                               padding: EdgeInsets.symmetric(
                                 horizontal: AppSizes.horizontalPadding,
@@ -154,19 +162,82 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
                                         final aspectRatio =
                                             itemWidth / itemHeight;
 
+                                        final gridDelegate =
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 2,
+                                              crossAxisSpacing:
+                                                  crossAxisSpacing,
+                                              mainAxisSpacing: 2,
+                                              childAspectRatio: aspectRatio,
+                                            );
+
+                                        // ── Loading: shimmer, same grid shape ──
+                                        if (state.isMoodsLoading) {
+                                          return GridView.builder(
+                                            shrinkWrap: true,
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            itemCount: 5,
+                                            gridDelegate: gridDelegate,
+                                            itemBuilder: (context, index) {
+                                              return Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  ShimmerBox(
+                                                    width: double.infinity,
+                                                    height: boxHeight,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          30,
+                                                        ),
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  ShimmerBox(
+                                                    width: 70,
+                                                    height: 16,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          8,
+                                                        ),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        }
+
+                                        // ── Load fail / empty: tap to retry ──
+                                        if (state.moods.isEmpty) {
+                                          return GestureDetector(
+                                            onTap: () => context
+                                                .read<MoodSelectionBloc>()
+                                                .add(const MoodsRequested()),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 30,
+                                                  ),
+                                              child: Center(
+                                                child: CustomText(
+                                                  text:
+                                                      'Could not load moods.\nTap to try again.',
+                                                  fontSize: 14,
+                                                  weight: FontWeight.w700,
+                                                  color: AppColors
+                                                      .dialogGreyTextColor,
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        }
+
                                         return GridView.builder(
                                           shrinkWrap: true,
                                           physics:
                                               const NeverScrollableScrollPhysics(),
                                           itemCount: state.moods.length,
-                                          gridDelegate:
-                                              SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount: 2,
-                                                crossAxisSpacing:
-                                                    crossAxisSpacing,
-                                                mainAxisSpacing: 2,
-                                                childAspectRatio: aspectRatio,
-                                              ),
+                                          gridDelegate: gridDelegate,
                                           itemBuilder: (context, index) {
                                             final mood = state.moods[index];
                                             final bool isSelected =
@@ -196,17 +267,51 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
                                                           ),
                                                     ),
                                                     child: Center(
-                                                      child: Image.asset(
-                                                        mood.imagePath,
+                                                      child: Image.network(
+                                                        mood.imageUrl,
                                                         height:
                                                             boxHeight * 0.72,
                                                         fit: BoxFit.contain,
+                                                        loadingBuilder:
+                                                            (
+                                                              context,
+                                                              child,
+                                                              progress,
+                                                            ) {
+                                                              if (progress ==
+                                                                  null) {
+                                                                return child;
+                                                              }
+                                                              return SizedBox(
+                                                                height:
+                                                                    boxHeight *
+                                                                    0.72,
+                                                                child: const Center(
+                                                                  child: SizedBox(
+                                                                    width: 20,
+                                                                    height: 20,
+                                                                    child: CircularProgressIndicator(
+                                                                      strokeWidth:
+                                                                          2,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            },
+                                                        errorBuilder:
+                                                            (_, __, ___) =>
+                                                                const Icon(
+                                                                  Icons
+                                                                      .broken_image_outlined,
+                                                                  color: Colors
+                                                                      .grey,
+                                                                ),
                                                       ),
                                                     ),
                                                   ),
                                                   const SizedBox(height: 8),
                                                   HeadingText(
-                                                    text: mood.label
+                                                    text: mood.name
                                                         .toUpperCase(),
                                                     fontSize: 20,
                                                     textAlign: TextAlign.center,
@@ -227,7 +332,7 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
                                   const SizedBox(height: 15),
 
                                   if (state.suggestedGames.isEmpty) ...[
-                                    SizedBox(height: 25),
+                                    const SizedBox(height: 25),
                                     Center(
                                       child: CustomText(
                                         text:
@@ -238,7 +343,7 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
-                                    SizedBox(height: 25),
+                                    const SizedBox(height: 25),
                                   ]
                                   // ── Magical Adventures ──
                                   else
@@ -299,7 +404,10 @@ class _MoodSelectionViewState extends State<MoodSelectionView>
                                   // ── Button ──
                                   CommonButton(
                                     title: 'Enter Kingdom',
-                                    onPressed: () => _onEnterKingdom(context),
+                                    onPressed:
+                                        state.isLoading || state.isMoodsLoading
+                                        ? null
+                                        : () => _onEnterKingdom(context),
                                     bgColor: AppColors.purple,
                                     isLoading: state.isLoading,
                                     borderColor: const Color(0xff5B51AE),

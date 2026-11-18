@@ -36,7 +36,9 @@ class _ParentDashboardViewState extends State<ParentDashboardView> {
     return Scaffold(
       body: BlocBuilder<ParentDashboardBloc, ParentDashboardStates>(
         builder: (context, state) {
-          final selected = state.children.isEmpty
+          final Child? selected =
+              (state.children.isEmpty ||
+                  state.selectedChildIndex >= state.children.length)
               ? null
               : state.children[state.selectedChildIndex];
 
@@ -103,9 +105,10 @@ class _TopSection extends StatelessWidget {
     final double childrenRowWidth =
         screenWidth - (horizontalPadding * 2) - levelBarWidth;
 
-    // progressPercent string to double
-    final double progressValue =
-        (double.tryParse(selected?.progressPercent ?? '0') ?? 0.0) / 100;
+    // CHANGED: detail API ka progress use hoga, na aaye to list wala
+    final double progressPercent =
+        state.childDetail?.progressPercent ?? selected?.progressPercent ?? 0.0;
+    final double progressValue = progressPercent / 100;
 
     return Container(
       decoration: const BoxDecoration(
@@ -182,13 +185,11 @@ class _TopSection extends StatelessWidget {
                                       selectedIdx: state.selectedChildIndex,
                                       availableWidth: childrenRowWidth,
                                       onSelect: (index) {
-                                        final childId =
-                                            state.children[index].id;
+                                        // CHANGED: ab slug bhej rahe (children/{slug})
+                                        final childSlug =
+                                            state.children[index].slug ?? '';
                                         context.read<ParentDashboardBloc>().add(
-                                          SelectChildEvent(
-                                            index,
-                                            childId ?? '',
-                                          ),
+                                          SelectChildEvent(index, childSlug),
                                         );
                                       },
                                     ),
@@ -200,7 +201,8 @@ class _TopSection extends StatelessWidget {
                                         left: levelBarWidth / 1,
                                       ),
                                       child: HeadingText(
-                                        text: selected!.name!.toUpperCase(),
+                                        text: (selected!.name ?? '')
+                                            .toUpperCase(),
                                         fontSize: 28,
                                         color: AppColors.textYellow,
                                         textAlign: TextAlign.center,
@@ -214,7 +216,7 @@ class _TopSection extends StatelessWidget {
                                         left: levelBarWidth / 1,
                                       ),
                                       child: CustomText(
-                                        text: selected!.age!.toUpperCase(),
+                                        text: selected!.age.toUpperCase(),
                                         fontSize: 14,
                                         fontFamily: 'LuckiestGuy',
                                         textAlign: TextAlign.center,
@@ -229,7 +231,7 @@ class _TopSection extends StatelessWidget {
                           width: levelBarWidth,
                           child: LevelBar(
                             percent: progressValue.clamp(0.0, 1.0),
-                            level: selected?.level ?? 1,
+                            level: 1,
                           ),
                         ),
                     ],
@@ -250,14 +252,20 @@ class _WeeklyJourneySection extends StatelessWidget {
   final ParentDashboardStates state;
   const _WeeklyJourneySection({required this.state});
 
+  // CHANGED: category slug se weekly_play nikalo, na mile to 0
+  int _weeklyPlay(String slug) {
+    for (final category in state.categories) {
+      if (category.slug == slug) return category.weeklyPlay;
+    }
+    return 0;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final journey = state.weeklyStats?.weeklyJourney;
-
     final items = [
       JourneyItem(
         label: 'Breathing',
-        count: (journey?.breathing ?? 0).toInt(),
+        count: _weeklyPlay('breathing'),
         imagePath: 'assets/png/dashboard_dragon.png',
         bgColor: const Color(0xffD6E4F1),
         textColor: const Color(0xff3688E8),
@@ -265,7 +273,7 @@ class _WeeklyJourneySection extends StatelessWidget {
       ),
       JourneyItem(
         label: 'Creative',
-        count: (journey?.creative ?? 0).toInt(),
+        count: _weeklyPlay('creative'),
         imagePath: 'assets/png/dashboard_paintbox.png',
         bgColor: const Color(0xffEFEAD3),
         textColor: const Color(0xffF9C846),
@@ -273,7 +281,7 @@ class _WeeklyJourneySection extends StatelessWidget {
       ),
       JourneyItem(
         label: 'Gratitude',
-        count: (journey?.gratitude ?? 0).toInt(),
+        count: _weeklyPlay('gratitude'),
         imagePath: 'assets/png/dashboard_gratitude.png',
         bgColor: const Color(0xffE1ECE2),
         textColor: const Color(0xff7FAB32),
@@ -281,7 +289,7 @@ class _WeeklyJourneySection extends StatelessWidget {
       ),
       JourneyItem(
         label: 'Music',
-        count: (journey?.music ?? 0).toInt(),
+        count: _weeklyPlay('music'),
         imagePath: 'assets/png/dashboard_music.png',
         bgColor: const Color(0xffDDE2EF),
         textColor: const Color(0xff7B6CF4),
@@ -297,6 +305,7 @@ class _WeeklyJourneySection extends StatelessWidget {
           color: const Color(0xffECF3F6),
           borderRadius: BorderRadius.circular(24),
         ),
+        // CHANGED: ab categories ka loading flag
         child: state.isStatsLoading || state.isLoading
             ? const WeeklyJourneyShimmer()
             : Column(
@@ -337,25 +346,24 @@ class _MoodSection extends StatelessWidget {
   final ParentDashboardStates state;
   const _MoodSection({required this.state});
 
+  // CHANGED: weekly_mood ki mood_date se weekday nikal ke SUN..SAT mein set
   List<MoodItem> _buildMoodItems() {
-    final mood = state.weeklyStats?.moodThisWeek;
     final days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-    final values = [
-      mood?.sun?.toString(),
-      mood?.mon?.toString(),
-      mood?.tue?.toString(),
-      mood?.wed?.toString(),
-      mood?.thu?.toString(),
-      mood?.fri?.toString(),
-      mood?.sat?.toString(),
-    ];
+    final List<ChildMood?> moods = List<ChildMood?>.filled(7, null);
+
+    for (final entry in state.childDetail?.weeklyMood ?? <WeeklyMood>[]) {
+      final date = DateTime.tryParse(entry.moodDate ?? '');
+      if (date == null) continue;
+      // DateTime.weekday: Mon=1 ... Sun=7  ->  Sun=0, Mon=1 ... Sat=6
+      moods[date.weekday % 7] = entry.mood;
+    }
 
     return List.generate(7, (i) {
-      final moodStr = values[i];
+      final mood = moods[i];
       return MoodItem(
         day: days[i],
-        imagePath: moodImagePath(moodStr),
-        moodLabel: moodLabel(moodStr),
+        imagePath: moodImagePath(mood?.slug),
+        moodLabel: mood?.name ?? 'None',
       );
     });
   }
@@ -363,7 +371,6 @@ class _MoodSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final moodItems = _buildMoodItems();
-    final summary = state.weeklyStats?.moodSummary ?? '';
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppSizes.horizontalPadding),
@@ -400,18 +407,7 @@ class _MoodSection extends StatelessWidget {
                         .map((mood) => MoodDayItem(mood: mood))
                         .toList(),
                   ),
-                  const SizedBox(height: 10),
-                  if (summary.isNotEmpty)
-                    Center(
-                      child: CustomText(
-                        text: summary,
-                        fontSize: 14,
-                        lineSpacing: 1.2,
-                        weight: FontWeight.w500,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                 ],
               ),
       ),

@@ -8,6 +8,7 @@ import 'package:chirp_up_app/features/child/mood_selection/presentation/views/mo
 import 'package:chirp_up_app/features/parent/child_profile_selection/bloc/child_profile_selection_events.dart';
 import 'package:chirp_up_app/features/parent/child_profile_selection/bloc/child_profile_selection_states.dart';
 import 'package:chirp_up_app/features/parent/child_profile_selection/data/repositories/child_profile_selection_repository.dart';
+import 'package:chirp_up_app/features/parent/dashboard/data/models/all_children_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,7 +20,7 @@ class ChildProfileSelectionBloc
   ChildProfileSelectionBloc() : super(const ChildProfileSelectionStates()) {
     on<FetchChildrenEvent>(_fetchChildren);
     on<SelectChildProfileEvent>(_selectChild);
-    on<CheckPinStatusAndNavigateEvent>(_checkPinStatusAndNavigate);
+    on<EnterKingdomEvent>(_enterKingdom);
     on<VerifyPinEvent>(_verifyPin);
   }
 
@@ -27,8 +28,8 @@ class ChildProfileSelectionBloc
     FetchChildrenEvent event,
     Emitter<ChildProfileSelectionStates> emit,
   ) async {
+    emit(state.copyWith(isLoading: true));
     try {
-      emit(state.copyWith(isLoading: true));
       final result = await _repository.fetchChildren();
       emit(
         state.copyWith(
@@ -51,43 +52,18 @@ class ChildProfileSelectionBloc
     emit(state.copyWith(selectedChildIndex: event.index));
   }
 
-  Future<void> _checkPinStatusAndNavigate(
-    CheckPinStatusAndNavigateEvent event,
+  /// hasPin true -> pin screen, false -> seedha mood/dashboard
+  Future<void> _enterKingdom(
+    EnterKingdomEvent event,
     Emitter<ChildProfileSelectionStates> emit,
   ) async {
-    emit(state.copyWith(isPinLoading: true));
-    try {
-      final response = await _repository.checkPinStatus();
+    final child = state.selectedChild;
+    if (child == null) return;
 
-      emit(state.copyWith(isPinLoading: false));
-
-      if (response['statusCode'] == 200 || response['statusCode'] == 201) {
-        final bool hasPin = response['hasPin'] == true;
-
-        if (hasPin) {
-          Navigator.pushNamed(event.context, AppRoutes.enterPinCode);
-        } else {
-          final childId = state.selectedChild?.id ?? '';
-          await _checkAndNavigateByMood(event.context, childId);
-        }
-      } else {
-        showCommonDialog(
-          context: event.context,
-          child: errorDialog(
-            event.context,
-            response['error'] ?? response['message'] ?? "Something went wrong.",
-          ),
-          barrierDismissible: true,
-        );
-      }
-    } catch (e) {
-      showCommonDialog(
-        context: event.context,
-        child: errorDialog(event.context, e.toString()),
-        barrierDismissible: true,
-      );
-    } finally {
-      emit(state.copyWith(isPinLoading: false));
+    if (child.hasPin) {
+      Navigator.pushNamed(event.context, AppRoutes.enterPinCode);
+    } else {
+      await _openChild(event.context, child);
     }
   }
 
@@ -96,76 +72,58 @@ class ChildProfileSelectionBloc
     Emitter<ChildProfileSelectionStates> emit,
   ) async {
     if (event.pin.length < 4) {
-      showCommonDialog(
-        context: event.context,
-        child: errorDialog(
-          event.context,
-          "Please enter your full\nmagic code to continue.",
-        ),
-        barrierDismissible: true,
-      );
+      _showError(event.context, "Please enter your full\nmagic code to continue.");
       return;
     }
+
+    final child = state.selectedChild;
+    if (child == null) return;
 
     emit(state.copyWith(isPinLoading: true));
     try {
       final response = await _repository.verifyPin(event.pin);
-      if (response['statusCode'] == 200 || response['statusCode'] == 201) {
-        final childId = state.selectedChild?.id ?? '';
-        await _checkAndNavigateByMood(event.context, childId);
+
+      final bool verified =
+          response is Map &&
+          response['success'] == true &&
+          response['data'] is Map &&
+          response['data']['verified'] == true;
+
+      if (verified) {
+        await _openChild(event.context, child);
       } else {
-        showCommonDialog(
-          context: event.context,
-          child: errorDialog(
-            event.context,
-            response['error'] ??
-                response['message'] ??
-                "Incorrect PIN. Try again.",
-          ),
-          barrierDismissible: true,
+        _showError(
+          event.context,
+          (response is Map ? response['message'] : null)?.toString() ??
+              "The parent pin is incorrect.",
         );
       }
     } catch (e) {
-      showCommonDialog(
-        context: event.context,
-        child: errorDialog(event.context, e.toString()),
-        barrierDismissible: true,
-      );
+      _showError(event.context, e.toString().replaceFirst('Exception: ', ''));
     } finally {
       emit(state.copyWith(isPinLoading: false));
     }
   }
 
-  Future<void> _checkAndNavigateByMood(
-    BuildContext context,
-    String childId,
-  ) async {
+  Future<void> _openChild(BuildContext context, Child child) async {
+    final childId = child.id?.toString() ?? '';
     await StorageService.setChildId(childId);
-    try {
-      final response = await _repository.checkTodayMood(childId);
 
-      if (response['moodSubmitted'] == true) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChildDashboardView(childId: childId),
-          ),
-        );
-      } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MoodSelectionView(childId: childId),
-          ),
-        );
-      }
-    } catch (e) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MoodSelectionView(childId: childId),
-        ),
-      );
-    }
+    final Widget screen = child.todayMood == null
+        ? MoodSelectionView(childId: childId, childSlug: child.slug ?? '')
+        : ChildDashboardView(childId: childId, childSlug: child.slug ?? '');
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => screen),
+    );
+  }
+
+  void _showError(BuildContext context, String message) {
+    showCommonDialog(
+      context: context,
+      child: errorDialog(context, message),
+      barrierDismissible: true,
+    );
   }
 }

@@ -15,7 +15,9 @@ class ChildProfileSelectionStates extends Equatable {
   });
 
   Child? get selectedChild =>
-      children.isEmpty ? null : children[selectedChildIndex];
+      (children.isEmpty || selectedChildIndex >= children.length)
+      ? null
+      : children[selectedChildIndex];
 
   ChildProfileSelectionStates copyWith({
     int? selectedChildIndex,
