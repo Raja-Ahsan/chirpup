@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -97,10 +98,14 @@ class Child extends Model
 
     public function weekMoods(): HasMany
     {
+        // Current calendar week: Sunday → next Sunday (inclusive)
+        $weekStart = today()->copy()->startOfWeek(Carbon::SUNDAY);
+        $weekEnd = $weekStart->copy()->addWeek();
+
         return $this->hasMany(ChildMood::class)
             ->where('status', 'active')
-            ->whereDate('mood_date', '>=', today()->subDays(6))
-            ->whereDate('mood_date', '<=', today())
+            ->whereDate('mood_date', '>=', $weekStart->toDateString())
+            ->whereDate('mood_date', '<=', $weekEnd->toDateString())
             ->orderBy('mood_date');
     }
 
