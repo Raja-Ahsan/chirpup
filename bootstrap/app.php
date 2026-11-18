@@ -24,20 +24,12 @@ return Application::configure(basePath: dirname(__DIR__))
             AddApiStatusCode::class,
         ]);
 
-        $middleware->redirectGuestsTo(function (Request $request) {
-            return $request->is('admin') || $request->is('admin/*')
-                ? route('admin.login')
-                : route('login');
+        $middleware->redirectGuestsTo(function () {
+            return route('admin.login');
         });
 
-        $middleware->redirectUsersTo(function (Request $request) {
-            $user = $request->user();
-
-            if ($user && $user->hasRole(config('roles.admin'))) {
-                return route('admin.dashboard');
-            }
-
-            return route('dashboard');
+        $middleware->redirectUsersTo(function () {
+            return route('admin.dashboard');
         });
     })
     ->withExceptions(function (Exceptions $exceptions): void {

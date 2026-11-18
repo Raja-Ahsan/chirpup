@@ -16,12 +16,20 @@ use Illuminate\Support\Facades\Route;
 
 // web routes
 Route::get('/', function () {
-    return view('welcome');
+    return auth()->check() && auth()->user()?->hasRole(config('roles.admin'))
+        ? redirect()->route('admin.dashboard')
+        : redirect()->route('admin.login');
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    $user = auth()->user();
+
+    if ($user && $user->hasRole(config('roles.admin'))) {
+        return redirect()->route('admin.dashboard');
+    }
+
+    return redirect()->route('admin.login');
+})->middleware(['auth'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

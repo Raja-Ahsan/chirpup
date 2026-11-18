@@ -7,16 +7,15 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(): RedirectResponse
     {
-        return view('auth.login');
+        return redirect()->route('admin.login');
     }
 
     /**
@@ -28,7 +27,13 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+
+        if ($user && $user->hasRole(config('roles.admin'))) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->route('admin.login');
     }
 
     /**

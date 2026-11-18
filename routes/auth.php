@@ -17,10 +17,14 @@ Route::middleware('guest')->group(function () {
 
     Route::post('register', [RegisteredUserController::class, 'store']);
 
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])
-        ->name('login');
+    // Use ChirpUp admin login UI (not default Breeze)
+    Route::get('login', function () {
+        return redirect()->route('admin.login');
+    })->name('login');
 
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    Route::post('login', function () {
+        return redirect()->route('admin.login');
+    });
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');

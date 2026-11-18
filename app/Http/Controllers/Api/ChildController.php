@@ -102,32 +102,33 @@ class ChildController extends Controller
         }
 
         $date = $request->string('date')->toString();
+        $moodId = $request->integer('mood_id');
 
-        $alreadySet = $child->moods()
+        $existingMood = $child->moods()
             ->whereDate('mood_date', $date)
             ->where('status', 'active')
-            ->exists();
+            ->first();
 
-        if ($alreadySet) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You already set the mood today.',
-                'data' => null,
-            ], 422);
+        if ($existingMood) {
+            $existingMood->update([
+                'mood_id' => $moodId,
+            ]);
+        } else {
+            $child->moods()->create([
+                'user_id' => $request->user()->id,
+                'mood_id' => $moodId,
+                'mood_date' => $date,
+                'status' => 'active',
+            ]);
         }
-
-        $child->moods()->create([
-            'user_id' => $request->user()->id,
-            'mood_id' => $request->integer('mood_id'),
-            'mood_date' => $date,
-            'status' => 'active',
-        ]);
 
         $child->load(['user', 'year', 'character', 'todayMoodEntry.mood', 'weekMoods.mood']);
 
         return response()->json([
             'success' => true,
-            'message' => 'Child mood updated successfully.',
+            'message' => $existingMood
+                ? 'Child mood updated successfully.'
+                : 'Child mood set successfully.',
             'data' => [
                 'child' => new ChildResource($child),
             ],
