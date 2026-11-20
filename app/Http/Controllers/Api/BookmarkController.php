@@ -10,7 +10,7 @@ use App\Models\BookMark;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class BookmarkController extends Controller
 {
@@ -130,28 +130,21 @@ class BookmarkController extends Controller
 
     private function storeImage(UploadedFile $file): string
     {
-        $directory = public_path('assets/book-mark');
-        File::ensureDirectoryExists($directory);
-
-        $filename = uniqid('bookmark_', true).'.'.$file->getClientOriginalExtension();
-        $file->move($directory, $filename);
-
-        return $filename;
+        return $file->store('book-mark', 'public');
     }
 
-    private function deleteImageFile(?string $filename): void
+    private function deleteImageFile(?string $path): void
     {
-        if (! $filename) {
+        if (! $path) {
             return;
         }
 
-        if (str_starts_with($filename, 'http://') || str_starts_with($filename, 'https://')) {
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
             return;
         }
 
-        $path = public_path('assets/book-mark/'.$filename);
-        if (File::exists($path)) {
-            File::delete($path);
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
         }
     }
 }

@@ -10,7 +10,7 @@ use App\Models\GameType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class CompleteGameController extends Controller
 {
@@ -98,12 +98,6 @@ class CompleteGameController extends Controller
 
     private function storeCompletedImage(UploadedFile $file): string
     {
-        $directory = public_path('assets/game-complete');
-        File::ensureDirectoryExists($directory);
-
-        $filename = uniqid('complete_', true).'.'.$file->getClientOriginalExtension();
-        $file->move($directory, $filename);
-
-        return $filename;
+        return $file->store('game-complete', 'public');
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class GameComplete extends Model
 {
@@ -51,7 +52,12 @@ class GameComplete extends Model
                 return $this->sketch_complete_image_url;
             }
 
-            return asset('assets/game-complete/'.$this->sketch_complete_image_url);
+            // Legacy assets path fallback.
+            if (! str_contains($this->sketch_complete_image_url, '/')) {
+                return asset('assets/game-complete/'.$this->sketch_complete_image_url);
+            }
+
+            return Storage::disk('public')->url($this->sketch_complete_image_url);
         });
     }
 
