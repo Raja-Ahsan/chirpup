@@ -30,7 +30,8 @@ class BookmarkResource extends JsonResource
             'child' => $this->whenLoaded('child', fn () => new ChildResource($this->child)),
             'year' => $this->whenLoaded('year', fn () => new YearResource($this->year)),
             'game_category' => $this->whenLoaded('gameCategory', fn () => new GameCategoryResource($this->gameCategory)),
-            'sketch' => $this->whenLoaded('sketch', fn () => new GameTypeSketchResource($this->sketch)),
+            'game_type' => $this->whenLoaded('gameType', fn () => new GameTypeResource($this->gameType)),
+            'sketch' => $this->whenLoaded('sketchImage', fn () => new GameTypeSketchResource($this->sketchImage)),
         ];
     }
 }

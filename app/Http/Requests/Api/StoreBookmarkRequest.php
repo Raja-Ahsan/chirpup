@@ -40,6 +40,7 @@ class StoreBookmarkRequest extends FormRequest
     public function rules(): array
     {
         $userId = $this->user()?->id;
+        $gameTypeId = $this->integer('sketche_id');
 
         return [
             'user_id' => [
@@ -73,11 +74,19 @@ class StoreBookmarkRequest extends FormRequest
             'sketche_id' => [
                 'required',
                 'integer',
-                Rule::exists('games_type_sketches', 'id')->where(function ($query) {
+                Rule::exists('games_type', 'id')->where(function ($query) {
                     $query->where('status', 'active')->whereNull('deleted_at');
                 }),
             ],
-            'sketche_image_id' => ['nullable', 'integer'],
+            'sketche_image_id' => [
+                'required',
+                'integer',
+                Rule::exists('games_type_sketches', 'id')->where(function ($query) use ($gameTypeId) {
+                    $query->where('status', 'active')
+                        ->whereNull('deleted_at')
+                        ->when($gameTypeId, fn ($q) => $q->where('game_type_id', $gameTypeId));
+                }),
+            ],
             'sketch_complete_image_url' => [
                 'required',
                 'file',
@@ -95,7 +104,8 @@ class StoreBookmarkRequest extends FormRequest
         return [
             'user_id.in' => 'The user id must match the authenticated user.',
             'child_id.exists' => 'The selected child id is invalid.',
-            'sketche_id.exists' => 'The selected sketche id is invalid. Use a sketch id from start_game nested sketches (not the game type id).',
+            'sketche_id.exists' => 'The selected sketche id is invalid. Use the game type id from start_game sketches[].id.',
+            'sketche_image_id.exists' => 'The selected sketche image id is invalid. Use the nested sketch id from start_game sketches[].sketches[].id for this game type.',
             'play_date.date_format' => 'The play date must be in Y-m-d format.',
             'sketch_complete_image_url.required' => 'Please upload the bookmark sketch image.',
             'sketch_complete_image_url.image' => 'The bookmark sketch must be an image file.',

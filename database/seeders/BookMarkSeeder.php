@@ -27,14 +27,14 @@ class BookMarkSeeder extends Seeder
             [
                 'user_id' => $child->user_id,
                 'child_id' => $child->id,
-                'sketche_id' => $sketch->id,
+                'sketche_id' => $sketch->game_type_id,
+                'sketche_image_id' => $sketch->id,
                 'play_date' => now()->toDateString(),
             ],
             [
                 'year_id' => $child->year_id,
                 'category_id' => null,
                 'game_category_id' => $gameCategory->id,
-                'sketche_image_id' => $sketch->id,
                 'sketch_complete_image_url' => $sketch->image_url,
                 'css_style_json' => [
                     'background' => '#0d2744',

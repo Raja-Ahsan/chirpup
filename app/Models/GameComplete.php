@@ -75,9 +75,14 @@ class GameComplete extends Model
         return $this->belongsTo(GameCategory::class, 'game_category_id');
     }
 
-    public function sketch(): BelongsTo
+    public function gameType(): BelongsTo
     {
-        return $this->belongsTo(GameTypeSketch::class, 'sketche_id');
+        return $this->belongsTo(GameType::class, 'sketche_id');
+    }
+
+    public function sketchImage(): BelongsTo
+    {
+        return $this->belongsTo(GameTypeSketch::class, 'sketche_image_id');
     }
 
     public function mood(): BelongsTo

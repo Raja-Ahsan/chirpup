@@ -115,7 +115,7 @@ class Child extends Model
         $stars = (int) $completes->sum('stars_rating');
         $coins = (int) $completes->sum('points');
 
-        $completedSketchIds = $completes->pluck('sketche_id')->unique()->filter()->count();
+        $completedSketchIds = $completes->pluck('sketche_image_id')->unique()->filter()->count();
 
         $totalSketches = GameTypeSketch::query()
             ->where('status', 'active')

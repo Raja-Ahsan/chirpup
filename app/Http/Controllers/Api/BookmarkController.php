@@ -17,7 +17,7 @@ class BookmarkController extends Controller
     public function index(Request $request): JsonResponse
     {
         $records = BookMark::query()
-            ->with(['user', 'child', 'year', 'gameCategory', 'sketch'])
+            ->with(['user', 'child', 'year', 'gameCategory', 'gameType', 'sketchImage'])
             ->where('user_id', $request->user()->id)
             ->when($request->filled('child_id'), function ($query) use ($request) {
                 $query->where('child_id', (int) $request->input('child_id'));
@@ -54,13 +54,13 @@ class BookmarkController extends Controller
             'category_id' => $request->filled('category_id') ? $request->integer('category_id') : null,
             'game_category_id' => $request->integer('game_category_id'),
             'sketche_id' => $request->integer('sketche_id'),
-            'sketche_image_id' => $request->filled('sketche_image_id') ? $request->integer('sketche_image_id') : null,
+            'sketche_image_id' => $request->integer('sketche_image_id'),
             'sketch_complete_image_url' => $this->storeImage($request->file('sketch_complete_image_url')),
             'play_date' => $request->string('play_date')->toString(),
             'css_style_json' => $request->input('css_style_json'),
         ]);
 
-        $bookmark->load(['user', 'child', 'year', 'gameCategory', 'sketch']);
+        $bookmark->load(['user', 'child', 'year', 'gameCategory', 'gameType', 'sketchImage']);
 
         return response()->json([
             'success' => true,
@@ -99,7 +99,7 @@ class BookmarkController extends Controller
 
         $bookmark->fill($data);
         $bookmark->save();
-        $bookmark->load(['user', 'child', 'year', 'gameCategory', 'sketch']);
+        $bookmark->load(['user', 'child', 'year', 'gameCategory', 'gameType', 'sketchImage']);
 
         return response()->json([
             'success' => true,

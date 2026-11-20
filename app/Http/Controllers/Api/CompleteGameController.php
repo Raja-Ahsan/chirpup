@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\CompleteGameRequest;
 use App\Http\Resources\GameCompleteResource;
 use App\Models\GameComplete;
-use App\Models\GameTypeSketch;
+use App\Models\GameType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -17,7 +17,7 @@ class CompleteGameController extends Controller
     public function index(Request $request): JsonResponse
     {
         $records = GameComplete::query()
-            ->with(['user', 'child', 'year', 'gameCategory', 'sketch', 'mood'])
+            ->with(['user', 'child', 'year', 'gameCategory', 'gameType', 'sketchImage', 'mood'])
             ->where('user_id', $request->user()->id)
             ->when($request->filled('child_id'), function ($query) use ($request) {
                 $query->where('child_id', (int) $request->input('child_id'));
@@ -53,12 +53,11 @@ class CompleteGameController extends Controller
 
     public function store(CompleteGameRequest $request): JsonResponse
     {
-        $sketch = GameTypeSketch::query()
-            ->with('gameType')
+        $gameType = GameType::query()
             ->whereKey($request->integer('sketche_id'))
             ->firstOrFail();
 
-        $points = (int) ($sketch->gameType?->points ?? 0);
+        $points = (int) ($gameType->points ?? 0);
         $starsRating = $this->calculateStars($points);
 
         $gameComplete = GameComplete::query()->create([
@@ -67,8 +66,8 @@ class CompleteGameController extends Controller
             'year_id' => $request->integer('year_id'),
             'category_id' => $request->filled('category_id') ? $request->integer('category_id') : null,
             'game_category_id' => $request->integer('game_category_id'),
-            'sketche_id' => $sketch->id,
-            'sketche_image_id' => $request->filled('sketche_image_id') ? $request->integer('sketche_image_id') : null,
+            'sketche_id' => $gameType->id,
+            'sketche_image_id' => $request->integer('sketche_image_id'),
             'sketch_complete_image_url' => $this->storeCompletedImage(
                 $request->file('sketch_complete_image_url')
             ),
@@ -79,7 +78,7 @@ class CompleteGameController extends Controller
             'css_style_json' => $request->input('css_style_json'),
         ]);
 
-        $gameComplete->load(['user', 'child', 'year', 'gameCategory', 'sketch', 'mood']);
+        $gameComplete->load(['user', 'child', 'year', 'gameCategory', 'gameType', 'sketchImage', 'mood']);
 
         return response()->json([
             'success' => true,
