@@ -17,7 +17,7 @@ class GameCompleteResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'character_id' => $this->character_id,
+            'child_id' => $this->child_id,
             'year_id' => $this->year_id,
             'category_id' => $this->category_id,
             'game_category_id' => $this->game_category_id,
@@ -30,7 +30,7 @@ class GameCompleteResource extends JsonResource
             'play_date' => optional($this->play_date)?->format('Y-m-d'),
             'css_style_json' => $this->css_style_json,
             'user' => $this->whenLoaded('user', fn () => new UserResource($this->user)),
-            'character' => $this->whenLoaded('character', fn () => new CharacterResource($this->character)),
+            'child' => $this->whenLoaded('child', fn () => new ChildResource($this->child)),
             'year' => $this->whenLoaded('year', fn () => new YearResource($this->year)),
             'game_category' => $this->whenLoaded('gameCategory', fn () => new GameCategoryResource($this->gameCategory)),
             'sketch' => $this->whenLoaded('sketch', fn () => new GameTypeSketchResource($this->sketch)),

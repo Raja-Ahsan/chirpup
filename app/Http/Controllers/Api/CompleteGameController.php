@@ -17,16 +17,22 @@ class CompleteGameController extends Controller
     public function index(Request $request): JsonResponse
     {
         $records = GameComplete::query()
-            ->with(['user', 'character', 'year', 'gameCategory', 'sketch', 'mood'])
+            ->with(['user', 'child', 'year', 'gameCategory', 'sketch', 'mood'])
             ->where('user_id', $request->user()->id)
-            ->when($request->filled('character_id'), function ($query) use ($request) {
-                $query->where('character_id', (int) $request->input('character_id'));
+            ->when($request->filled('child_id'), function ($query) use ($request) {
+                $query->where('child_id', (int) $request->input('child_id'));
             })
             ->when($request->filled('year_id'), function ($query) use ($request) {
                 $query->where('year_id', (int) $request->input('year_id'));
             })
+            ->when($request->filled('category_id'), function ($query) use ($request) {
+                $query->where('category_id', (int) $request->input('category_id'));
+            })
             ->when($request->filled('game_category_id'), function ($query) use ($request) {
                 $query->where('game_category_id', (int) $request->input('game_category_id'));
+            })
+            ->when($request->filled('sketche_id'), function ($query) use ($request) {
+                $query->where('sketche_id', (int) $request->input('sketche_id'));
             })
             ->when($request->filled('mood_id'), function ($query) use ($request) {
                 $query->where('mood_id', (int) $request->input('mood_id'));
@@ -57,7 +63,7 @@ class CompleteGameController extends Controller
 
         $gameComplete = GameComplete::query()->create([
             'user_id' => $request->integer('user_id'),
-            'character_id' => $request->integer('character_id'),
+            'child_id' => $request->integer('child_id'),
             'year_id' => $request->integer('year_id'),
             'category_id' => $request->filled('category_id') ? $request->integer('category_id') : null,
             'game_category_id' => $request->integer('game_category_id'),
@@ -73,7 +79,7 @@ class CompleteGameController extends Controller
             'css_style_json' => $request->input('css_style_json'),
         ]);
 
-        $gameComplete->load(['user', 'character', 'year', 'gameCategory', 'sketch', 'mood']);
+        $gameComplete->load(['user', 'child', 'year', 'gameCategory', 'sketch', 'mood']);
 
         return response()->json([
             'success' => true,

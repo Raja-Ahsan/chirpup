@@ -3,11 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\BookMark;
-use App\Models\Character;
+use App\Models\Child;
 use App\Models\GameCategory;
 use App\Models\GameTypeSketch;
-use App\Models\User;
-use App\Models\Year;
 use Illuminate\Database\Seeder;
 
 class BookMarkSeeder extends Seeder
@@ -17,25 +15,23 @@ class BookMarkSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::query()->first();
-        $character = Character::query()->where('status', 'active')->first();
-        $year = Year::query()->where('status', 'active')->first();
+        $child = Child::query()->first();
         $gameCategory = GameCategory::query()->where('status', 'active')->first();
         $sketch = GameTypeSketch::query()->where('status', 'active')->first();
 
-        if (! $user || ! $character || ! $year || ! $gameCategory || ! $sketch) {
+        if (! $child || ! $gameCategory || ! $sketch) {
             return;
         }
 
         BookMark::query()->updateOrCreate(
             [
-                'user_id' => $user->id,
-                'character_id' => $character->id,
+                'user_id' => $child->user_id,
+                'child_id' => $child->id,
                 'sketche_id' => $sketch->id,
                 'play_date' => now()->toDateString(),
             ],
             [
-                'year_id' => $year->id,
+                'year_id' => $child->year_id,
                 'category_id' => null,
                 'game_category_id' => $gameCategory->id,
                 'sketche_image_id' => $sketch->id,

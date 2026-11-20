@@ -237,7 +237,7 @@ class AuthController extends Controller
             'children.character',
             'children.todayMoodEntry.mood',
             'children.weekMoods.mood',
-            'children.gameCompletes' => fn ($query) => $query->where('user_id', $user->id),
+            'children.gameCompletes',
         ]);
 
         return (new UserResource($user))->resolve();

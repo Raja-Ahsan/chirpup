@@ -23,7 +23,7 @@ class ChildController extends Controller
                 'character',
                 'todayMoodEntry.mood',
                 'weekMoods.mood',
-                'gameCompletes' => fn ($query) => $query->where('user_id', $request->user()->id),
+                'gameCompletes',
             ])
             ->where('user_id', $request->user()->id)
             ->orderByDesc('id')
@@ -49,7 +49,7 @@ class ChildController extends Controller
             'character',
             'todayMoodEntry.mood',
             'weekMoods.mood',
-            'gameCompletes' => fn ($query) => $query->where('user_id', $request->user()->id),
+            'gameCompletes',
         ]);
 
         return response()->json([
@@ -77,7 +77,7 @@ class ChildController extends Controller
             'character',
             'todayMoodEntry.mood',
             'weekMoods.mood',
-            'gameCompletes' => fn ($query) => $query->where('user_id', $request->user()->id),
+            'gameCompletes',
         ]);
 
         return response()->json([
@@ -107,7 +107,7 @@ class ChildController extends Controller
             'character',
             'todayMoodEntry.mood',
             'weekMoods.mood',
-            'gameCompletes' => fn ($query) => $query->where('user_id', $request->user()->id),
+            'gameCompletes',
         ]);
 
         return response()->json([
@@ -156,7 +156,7 @@ class ChildController extends Controller
             'character',
             'todayMoodEntry.mood',
             'weekMoods.mood',
-            'gameCompletes' => fn ($query) => $query->where('user_id', $request->user()->id),
+            'gameCompletes',
         ]);
 
         return response()->json([

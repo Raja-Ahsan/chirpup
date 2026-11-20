@@ -17,10 +17,10 @@ class BookmarkController extends Controller
     public function index(Request $request): JsonResponse
     {
         $records = BookMark::query()
-            ->with(['user', 'character', 'year', 'gameCategory', 'sketch'])
+            ->with(['user', 'child', 'year', 'gameCategory', 'sketch'])
             ->where('user_id', $request->user()->id)
-            ->when($request->filled('character_id'), function ($query) use ($request) {
-                $query->where('character_id', (int) $request->input('character_id'));
+            ->when($request->filled('child_id'), function ($query) use ($request) {
+                $query->where('child_id', (int) $request->input('child_id'));
             })
             ->when($request->filled('year_id'), function ($query) use ($request) {
                 $query->where('year_id', (int) $request->input('year_id'));
@@ -49,7 +49,7 @@ class BookmarkController extends Controller
     {
         $bookmark = BookMark::query()->create([
             'user_id' => $request->integer('user_id'),
-            'character_id' => $request->integer('character_id'),
+            'child_id' => $request->integer('child_id'),
             'year_id' => $request->integer('year_id'),
             'category_id' => $request->filled('category_id') ? $request->integer('category_id') : null,
             'game_category_id' => $request->integer('game_category_id'),
@@ -60,7 +60,7 @@ class BookmarkController extends Controller
             'css_style_json' => $request->input('css_style_json'),
         ]);
 
-        $bookmark->load(['user', 'character', 'year', 'gameCategory', 'sketch']);
+        $bookmark->load(['user', 'child', 'year', 'gameCategory', 'sketch']);
 
         return response()->json([
             'success' => true,
@@ -80,7 +80,7 @@ class BookmarkController extends Controller
         }
 
         $data = $request->only([
-            'character_id',
+            'child_id',
             'year_id',
             'category_id',
             'game_category_id',
@@ -99,7 +99,7 @@ class BookmarkController extends Controller
 
         $bookmark->fill($data);
         $bookmark->save();
-        $bookmark->load(['user', 'character', 'year', 'gameCategory', 'sketch']);
+        $bookmark->load(['user', 'child', 'year', 'gameCategory', 'sketch']);
 
         return response()->json([
             'success' => true,

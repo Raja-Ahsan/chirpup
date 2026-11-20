@@ -20,6 +20,13 @@ class CompleteGameRequest extends FormRequest
             ]);
         }
 
+        // Backward compatible: accept character_id as child_id alias.
+        if ($this->filled('character_id') && ! $this->filled('child_id')) {
+            $this->merge([
+                'child_id' => $this->input('character_id'),
+            ]);
+        }
+
         $css = $this->input('css_style_json');
         if (is_string($css) && $css !== '') {
             $decoded = json_decode($css, true);
@@ -33,18 +40,20 @@ class CompleteGameRequest extends FormRequest
 
     public function rules(): array
     {
+        $userId = $this->user()?->id;
+
         return [
             'user_id' => [
                 'required',
                 'integer',
                 Rule::exists('users', 'id'),
-                Rule::in([$this->user()?->id]),
+                Rule::in([$userId]),
             ],
-            'character_id' => [
+            'child_id' => [
                 'required',
                 'integer',
-                Rule::exists('characters', 'id')->where(function ($query) {
-                    $query->where('status', 'active')->whereNull('deleted_at');
+                Rule::exists('children', 'id')->where(function ($query) use ($userId) {
+                    $query->where('user_id', $userId)->whereNull('deleted_at');
                 }),
             ],
             'year_id' => [
@@ -93,6 +102,8 @@ class CompleteGameRequest extends FormRequest
     {
         return [
             'user_id.in' => 'The user id must match the authenticated user.',
+            'child_id.exists' => 'The selected child id is invalid.',
+            'sketche_id.exists' => 'The selected sketche id is invalid. Use a sketch id from start_game nested sketches (not the game type id).',
             'play_date.date_format' => 'The play date must be in Y-m-d format.',
             'sketch_complete_image_url.required' => 'Please upload the completed sketch image.',
             'sketch_complete_image_url.image' => 'The completed sketch must be an image file.',

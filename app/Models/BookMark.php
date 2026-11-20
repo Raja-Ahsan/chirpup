@@ -15,7 +15,7 @@ class BookMark extends Model
 
     protected $fillable = [
         'user_id',
-        'character_id',
+        'child_id',
         'year_id',
         'category_id',
         'game_category_id',
@@ -55,9 +55,9 @@ class BookMark extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function character(): BelongsTo
+    public function child(): BelongsTo
     {
-        return $this->belongsTo(Character::class);
+        return $this->belongsTo(Child::class);
     }
 
     public function year(): BelongsTo

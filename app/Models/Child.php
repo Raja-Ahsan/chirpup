@@ -98,7 +98,7 @@ class Child extends Model
 
     public function gameCompletes(): HasMany
     {
-        return $this->hasMany(GameComplete::class, 'character_id', 'character_id');
+        return $this->hasMany(GameComplete::class, 'child_id');
     }
 
     /**
@@ -107,10 +107,9 @@ class Child extends Model
     public function progressStats(): array
     {
         $completes = $this->relationLoaded('gameCompletes')
-            ? $this->gameCompletes->where('user_id', $this->user_id)->values()
+            ? $this->gameCompletes
             : GameComplete::query()
-                ->where('user_id', $this->user_id)
-                ->where('character_id', $this->character_id)
+                ->where('child_id', $this->id)
                 ->get();
 
         $stars = (int) $completes->sum('stars_rating');
