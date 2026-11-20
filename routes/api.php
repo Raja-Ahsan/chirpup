@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BookmarkController;
 use App\Http\Controllers\Api\CharacterController;
 use App\Http\Controllers\Api\ChildController;
 use App\Http\Controllers\Api\CompleteGameController;
@@ -59,4 +60,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/complete-game', [CompleteGameController::class, 'index']);
     Route::post('/complete-game', [CompleteGameController::class, 'store']);
+
+    Route::get('/bookmark', [BookmarkController::class, 'index']);
+    Route::post('/bookmark', [BookmarkController::class, 'store']);
+    Route::put('/bookmark/{bookmark}', [BookmarkController::class, 'update']);
+    Route::patch('/bookmark/{bookmark}', [BookmarkController::class, 'update']);
+    Route::delete('/bookmark/{bookmark}', [BookmarkController::class, 'destroy']);
 });
