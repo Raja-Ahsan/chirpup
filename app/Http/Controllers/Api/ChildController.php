@@ -17,7 +17,14 @@ class ChildController extends Controller
     public function index(Request $request): ChildCollection
     {
         $children = Child::query()
-            ->with(['user', 'year', 'character', 'todayMoodEntry.mood', 'weekMoods.mood'])
+            ->with([
+                'user',
+                'year',
+                'character',
+                'todayMoodEntry.mood',
+                'weekMoods.mood',
+                'gameCompletes' => fn ($query) => $query->where('user_id', $request->user()->id),
+            ])
             ->where('user_id', $request->user()->id)
             ->orderByDesc('id')
             ->get();
@@ -36,7 +43,14 @@ class ChildController extends Controller
             'status' => $request->input('status', 'active'),
         ]);
 
-        $child->load(['user', 'year', 'character', 'todayMoodEntry.mood', 'weekMoods.mood']);
+        $child->load([
+            'user',
+            'year',
+            'character',
+            'todayMoodEntry.mood',
+            'weekMoods.mood',
+            'gameCompletes' => fn ($query) => $query->where('user_id', $request->user()->id),
+        ]);
 
         return response()->json([
             'success' => true,
@@ -57,7 +71,14 @@ class ChildController extends Controller
             ], 404);
         }
 
-        $child->load(['user', 'year', 'character', 'todayMoodEntry.mood', 'weekMoods.mood']);
+        $child->load([
+            'user',
+            'year',
+            'character',
+            'todayMoodEntry.mood',
+            'weekMoods.mood',
+            'gameCompletes' => fn ($query) => $query->where('user_id', $request->user()->id),
+        ]);
 
         return response()->json([
             'success' => true,
@@ -80,7 +101,14 @@ class ChildController extends Controller
 
         $child->fill($request->only(['name', 'year_id', 'character_id', 'pin_code', 'status']));
         $child->save();
-        $child->load(['user', 'year', 'character', 'todayMoodEntry.mood', 'weekMoods.mood']);
+        $child->load([
+            'user',
+            'year',
+            'character',
+            'todayMoodEntry.mood',
+            'weekMoods.mood',
+            'gameCompletes' => fn ($query) => $query->where('user_id', $request->user()->id),
+        ]);
 
         return response()->json([
             'success' => true,
@@ -122,7 +150,14 @@ class ChildController extends Controller
             ]);
         }
 
-        $child->load(['user', 'year', 'character', 'todayMoodEntry.mood', 'weekMoods.mood']);
+        $child->load([
+            'user',
+            'year',
+            'character',
+            'todayMoodEntry.mood',
+            'weekMoods.mood',
+            'gameCompletes' => fn ($query) => $query->where('user_id', $request->user()->id),
+        ]);
 
         return response()->json([
             'success' => true,

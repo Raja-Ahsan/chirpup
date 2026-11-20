@@ -1,0 +1,104 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\CompleteGameRequest;
+use App\Http\Resources\GameCompleteResource;
+use App\Models\GameComplete;
+use App\Models\GameTypeSketch;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\File;
+
+class CompleteGameController extends Controller
+{
+    public function index(Request $request): JsonResponse
+    {
+        $records = GameComplete::query()
+            ->with(['user', 'character', 'year', 'gameCategory', 'sketch', 'mood'])
+            ->where('user_id', $request->user()->id)
+            ->when($request->filled('character_id'), function ($query) use ($request) {
+                $query->where('character_id', (int) $request->input('character_id'));
+            })
+            ->when($request->filled('year_id'), function ($query) use ($request) {
+                $query->where('year_id', (int) $request->input('year_id'));
+            })
+            ->when($request->filled('game_category_id'), function ($query) use ($request) {
+                $query->where('game_category_id', (int) $request->input('game_category_id'));
+            })
+            ->when($request->filled('mood_id'), function ($query) use ($request) {
+                $query->where('mood_id', (int) $request->input('mood_id'));
+            })
+            ->when($request->filled('play_date'), function ($query) use ($request) {
+                $query->whereDate('play_date', $request->string('play_date')->toString());
+            })
+            ->orderByDesc('play_date')
+            ->orderByDesc('id')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Game completes fetched successfully.',
+            'data' => GameCompleteResource::collection($records),
+        ], 200);
+    }
+
+    public function store(CompleteGameRequest $request): JsonResponse
+    {
+        $sketch = GameTypeSketch::query()
+            ->with('gameType')
+            ->whereKey($request->integer('sketche_id'))
+            ->firstOrFail();
+
+        $points = (int) ($sketch->gameType?->points ?? 0);
+        $starsRating = $this->calculateStars($points);
+
+        $gameComplete = GameComplete::query()->create([
+            'user_id' => $request->integer('user_id'),
+            'character_id' => $request->integer('character_id'),
+            'year_id' => $request->integer('year_id'),
+            'category_id' => $request->filled('category_id') ? $request->integer('category_id') : null,
+            'game_category_id' => $request->integer('game_category_id'),
+            'sketche_id' => $sketch->id,
+            'sketche_image_id' => $request->filled('sketche_image_id') ? $request->integer('sketche_image_id') : null,
+            'sketch_complete_image_url' => $this->storeCompletedImage(
+                $request->file('sketch_complete_image_url')
+            ),
+            'stars_rating' => $starsRating,
+            'points' => $points,
+            'mood_id' => $request->integer('mood_id'),
+            'play_date' => $request->string('play_date')->toString(),
+            'css_style_json' => $request->input('css_style_json'),
+        ]);
+
+        $gameComplete->load(['user', 'character', 'year', 'gameCategory', 'sketch', 'mood']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Game completed successfully.',
+            'data' => new GameCompleteResource($gameComplete),
+        ], 200);
+    }
+
+    private function calculateStars(int $points): int
+    {
+        if ($points <= 0) {
+            return 0;
+        }
+
+        return min(5, max(1, $points));
+    }
+
+    private function storeCompletedImage(UploadedFile $file): string
+    {
+        $directory = public_path('assets/game-complete');
+        File::ensureDirectoryExists($directory);
+
+        $filename = uniqid('complete_', true).'.'.$file->getClientOriginalExtension();
+        $file->move($directory, $filename);
+
+        return $filename;
+    }
+}

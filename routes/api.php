@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CharacterController;
 use App\Http\Controllers\Api\ChildController;
+use App\Http\Controllers\Api\CompleteGameController;
 use App\Http\Controllers\Api\GameCategoryController;
 use App\Http\Controllers\Api\GameController;
 use App\Http\Controllers\Api\GameMoodController;
@@ -55,4 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/children/{child:slug}', [ChildController::class, 'update']);
     Route::post('/children/{child:slug}/mood', [ChildController::class, 'updateMood']);
     Route::delete('/children/{child:slug}', [ChildController::class, 'destroy']);
+
+    Route::get('/complete-game', [CompleteGameController::class, 'index']);
+    Route::post('/complete-game', [CompleteGameController::class, 'store']);
 });

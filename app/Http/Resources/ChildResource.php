@@ -26,11 +26,7 @@ class ChildResource extends JsonResource
             'today_mood' => $todayMoodEntry?->mood_id,
             'mood_date' => optional($todayMoodEntry?->mood_date)?->format('Y-m-d'),
             'mood' => filled($todayMoodEntry),
-            'progress' => [
-                'stars' => 0,
-                'coins' => 0,
-                'progress_percent' => 0,
-            ],
+            'progress' => $this->progressStats(),
             'status' => $this->status,
             'user' => $this->whenLoaded('user', function () {
                 return new UserResource($this->user);
@@ -42,6 +38,7 @@ class ChildResource extends JsonResource
                 return new CharacterResource($this->character);
             }),
             'weekly_mood' => ChildMoodResource::collection($this->whenLoaded('weekMoods')),
+            'game_completes' => GameCompleteResource::collection($this->whenLoaded('gameCompletes')),
         ];
     }
 }

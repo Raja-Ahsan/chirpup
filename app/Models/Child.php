@@ -96,6 +96,50 @@ class Child extends Model
         return $this->hasMany(ChildMood::class);
     }
 
+    public function gameCompletes(): HasMany
+    {
+        return $this->hasMany(GameComplete::class, 'character_id', 'character_id');
+    }
+
+    /**
+     * @return array{stars: int, coins: int, progress_percent: int}
+     */
+    public function progressStats(): array
+    {
+        $completes = $this->relationLoaded('gameCompletes')
+            ? $this->gameCompletes->where('user_id', $this->user_id)->values()
+            : GameComplete::query()
+                ->where('user_id', $this->user_id)
+                ->where('character_id', $this->character_id)
+                ->get();
+
+        $stars = (int) $completes->sum('stars_rating');
+        $coins = (int) $completes->sum('points');
+
+        $completedSketchIds = $completes->pluck('sketche_id')->unique()->filter()->count();
+
+        $totalSketches = GameTypeSketch::query()
+            ->where('status', 'active')
+            ->whereHas('gameType', function ($query) {
+                $query->where('status', 'active')
+                    ->whereNull('deleted_at')
+                    ->when($this->year_id, function ($q) {
+                        $q->where('year_id', $this->year_id);
+                    });
+            })
+            ->count();
+
+        $progressPercent = $totalSketches > 0
+            ? (int) min(100, round(($completedSketchIds / $totalSketches) * 100))
+            : 0;
+
+        return [
+            'stars' => $stars,
+            'coins' => $coins,
+            'progress_percent' => $progressPercent,
+        ];
+    }
+
     public function weekMoods(): HasMany
     {
         // Current calendar week: Sunday → next Sunday (inclusive)

@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             BookSeeder::class,
             GameSeeder::class,
             GameTypeSeeder::class,
+            GameCompleteSeeder::class,
         ]);
     }
 }

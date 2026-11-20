@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class GameCompleteResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'user_id' => $this->user_id,
+            'character_id' => $this->character_id,
+            'year_id' => $this->year_id,
+            'category_id' => $this->category_id,
+            'game_category_id' => $this->game_category_id,
+            'sketche_id' => $this->sketche_id,
+            'sketche_image_id' => $this->sketche_image_id,
+            'sketch_complete_image_url' => $this->sketch_complete_image_path,
+            'stars_rating' => $this->stars_rating,
+            'points' => $this->points,
+            'mood_id' => $this->mood_id,
+            'play_date' => optional($this->play_date)?->format('Y-m-d'),
+            'css_style_json' => $this->css_style_json,
+            'user' => $this->whenLoaded('user', fn () => new UserResource($this->user)),
+            'character' => $this->whenLoaded('character', fn () => new CharacterResource($this->character)),
+            'year' => $this->whenLoaded('year', fn () => new YearResource($this->year)),
+            'game_category' => $this->whenLoaded('gameCategory', fn () => new GameCategoryResource($this->gameCategory)),
+            'sketch' => $this->whenLoaded('sketch', fn () => new GameTypeSketchResource($this->sketch)),
+            'mood' => $this->whenLoaded('mood', fn () => new GameMoodResource($this->mood)),
+        ];
+    }
+}
