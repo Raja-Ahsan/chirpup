@@ -34,6 +34,9 @@ class CompleteGameController extends Controller
             ->when($request->filled('sketche_id'), function ($query) use ($request) {
                 $query->where('sketche_id', (int) $request->input('sketche_id'));
             })
+            ->when($request->filled('sketche_image_id'), function ($query) use ($request) {
+                $query->where('sketche_image_id', (int) $request->input('sketche_image_id'));
+            })
             ->when($request->filled('mood_id'), function ($query) use ($request) {
                 $query->where('mood_id', (int) $request->input('mood_id'));
             })
@@ -48,6 +51,60 @@ class CompleteGameController extends Controller
             'success' => true,
             'message' => 'Game completes fetched successfully.',
             'data' => GameCompleteResource::collection($records),
+        ], 200);
+    }
+
+    public function view(Request $request): JsonResponse
+    {
+        $request->validate([
+            'sketche_id' => ['required', 'integer'],
+            'sketche_image_id' => ['required', 'integer'],
+            'child_id' => ['nullable', 'integer'],
+        ]);
+
+        $gameComplete = GameComplete::query()
+            ->with(['user', 'child', 'year', 'gameCategory', 'gameType', 'sketchImage', 'mood'])
+            ->where('user_id', $request->user()->id)
+            ->where('sketche_id', (int) $request->input('sketche_id'))
+            ->where('sketche_image_id', (int) $request->input('sketche_image_id'))
+            ->when($request->filled('child_id'), function ($query) use ($request) {
+                $query->where('child_id', (int) $request->input('child_id'));
+            })
+            ->orderByDesc('play_date')
+            ->orderByDesc('id')
+            ->first();
+
+        if (! $gameComplete) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Game complete not found for the given sketche_id and sketche_image_id.',
+                'data' => null,
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Game complete fetched successfully.',
+            'data' => new GameCompleteResource($gameComplete),
+        ], 200);
+    }
+
+    public function show(Request $request, GameComplete $gameComplete): JsonResponse
+    {
+        if ($gameComplete->user_id !== $request->user()->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Game complete not found.',
+                'data' => null,
+            ], 404);
+        }
+
+        $gameComplete->load(['user', 'child', 'year', 'gameCategory', 'gameType', 'sketchImage', 'mood']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Game complete fetched successfully.',
+            'data' => new GameCompleteResource($gameComplete),
         ], 200);
     }
 

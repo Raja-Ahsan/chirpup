@@ -59,6 +59,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/children/{child:slug}', [ChildController::class, 'destroy']);
 
     Route::get('/complete-game', [CompleteGameController::class, 'index']);
+    Route::get('/complete-game/view', [CompleteGameController::class, 'view']);
+    Route::get('/complete-game/{gameComplete}', [CompleteGameController::class, 'show']);
     Route::post('/complete-game', [CompleteGameController::class, 'store']);
 
     Route::get('/bookmark', [BookmarkController::class, 'index']);
