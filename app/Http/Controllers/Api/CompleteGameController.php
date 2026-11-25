@@ -131,6 +131,7 @@ class CompleteGameController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Game complete image updated successfully.',
+                'is_update' => true,
                 'data' => new GameCompleteResource($existing),
             ], 200);
         }
@@ -165,6 +166,7 @@ class CompleteGameController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Game completed successfully.',
+            'is_update' => false,
             'data' => new GameCompleteResource($gameComplete),
         ], 200);
     }
