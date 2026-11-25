@@ -110,6 +110,31 @@ class CompleteGameController extends Controller
 
     public function store(CompleteGameRequest $request): JsonResponse
     {
+        $existing = GameComplete::query()
+            ->where('user_id', $request->integer('user_id'))
+            ->where('child_id', $request->integer('child_id'))
+            ->where('sketche_id', $request->integer('sketche_id'))
+            ->where('sketche_image_id', $request->integer('sketche_image_id'))
+            ->first();
+
+        if ($existing) {
+            $this->deleteCompletedImage($existing->sketch_complete_image_url);
+
+            $existing->update([
+                'sketch_complete_image_url' => $this->storeCompletedImage(
+                    $request->file('sketch_complete_image_url')
+                ),
+            ]);
+
+            $existing->load(['user', 'child', 'year', 'gameCategory', 'gameType', 'sketchImage', 'mood']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Game complete image updated successfully.',
+                'data' => new GameCompleteResource($existing),
+            ], 200);
+        }
+
         $gameType = GameType::query()
             ->whereKey($request->integer('sketche_id'))
             ->firstOrFail();
@@ -156,5 +181,29 @@ class CompleteGameController extends Controller
     private function storeCompletedImage(UploadedFile $file): string
     {
         return $file->store('game-complete', 'public');
+    }
+
+    private function deleteCompletedImage(?string $path): void
+    {
+        if (! $path) {
+            return;
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return;
+        }
+
+        // New storage path: game-complete/filename.ext
+        if (str_contains($path, '/') && Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+
+            return;
+        }
+
+        // Legacy assets path fallback.
+        $legacy = public_path('assets/game-complete/'.$path);
+        if (is_file($legacy)) {
+            @unlink($legacy);
+        }
     }
 }

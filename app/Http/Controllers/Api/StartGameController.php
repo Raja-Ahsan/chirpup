@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\GameCollection;
 use App\Models\Game;
+use App\Models\GameComplete;
 use Illuminate\Http\Request;
 
 class StartGameController extends Controller
@@ -14,6 +15,9 @@ class StartGameController extends Controller
         $categoryId = $request->input('game_category_id');
         $yearId = $request->input('year_id');
         $bookId = $request->input('book_id');
+
+        $playedSketches = $this->playedSketches($request);
+        $request->attributes->set('played_sketches', $playedSketches);
 
         $games = Game::query()
             ->with([
@@ -71,5 +75,32 @@ class StartGameController extends Controller
             ->get();
 
         return new GameCollection($games);
+    }
+
+    /**
+     * @return array<int, string|null> sketche_image_id => sketch_complete_image_url
+     */
+    private function playedSketches(Request $request): array
+    {
+        $user = $request->user('sanctum');
+
+        if (! $user) {
+            return [];
+        }
+
+        return GameComplete::query()
+            ->where('user_id', $user->id)
+            ->when($request->filled('child_id'), function ($query) use ($request) {
+                $query->where('child_id', (int) $request->input('child_id'));
+            })
+            ->whereNotNull('sketche_image_id')
+            ->orderByDesc('play_date')
+            ->orderByDesc('id')
+            ->get(['sketche_image_id', 'sketch_complete_image_url'])
+            ->unique('sketche_image_id')
+            ->mapWithKeys(fn (GameComplete $complete) => [
+                (int) $complete->sketche_image_id => $complete->sketch_complete_image_path,
+            ])
+            ->all();
     }
 }
